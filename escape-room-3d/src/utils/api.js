@@ -13,7 +13,7 @@ export const createSession = async () => {
   try {
     // Crea sessione semplice con PIN - senza room_id
     // Backend: POST /api/sessions
-    const response = await apiClient.post('/sessions')
+    const response = await apiClient.post('/api/sessions')
     return response.data
   } catch (error) {
     console.error('Error creating session:', error)
@@ -23,7 +23,7 @@ export const createSession = async () => {
 
 export const getSession = async (sessionId) => {
   try {
-    const response = await apiClient.get(`/sessions/${sessionId}`)
+    const response = await apiClient.get(`/api/sessions/${sessionId}`)
     return response.data
   } catch (error) {
     console.error('Error getting session:', error)
@@ -67,8 +67,8 @@ export const fetchSpawnPosition = async (roomName, retryCount = 0) => {
     }
     
     // Fetch from API
-    console.log(`[API] 🌐 Fetching spawn from backend: /spawn/${roomName}${retryCount > 0 ? ` (retry ${retryCount}/${MAX_RETRIES})` : ''}`)
-    const response = await apiClient.get(`/spawn/${roomName}`)
+    console.log(`[API] 🌐 Fetching spawn from backend: /api/spawn/${roomName}${retryCount > 0 ? ` (retry ${retryCount}/${MAX_RETRIES})` : ''}`)
+    const response = await apiClient.get(`/api/spawn/${roomName}`)
     const spawnData = response.data
     
     // Cache response
@@ -108,7 +108,7 @@ export const updateSpawnPosition = async (roomName, spawnData) => {
   
   try {
     console.log(`[API] 💾 Updating spawn for ${roomName}:`, spawnData)
-    const response = await apiClient.post(`/rooms/${roomName}/spawn`, spawnData)
+    const response = await apiClient.post(`/api/rooms/${roomName}/spawn`, spawnData)
     
     // Update cache with new data from backend
     localStorage.setItem(CACHE_KEY, JSON.stringify({
