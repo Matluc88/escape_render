@@ -34,7 +34,7 @@ export function useLivingRoomPuzzle(sessionId) {
 
     try {
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/livingroom-puzzles/state`
+        `${BACKEND_URL}/api/sessions/${sessionId}/livingroom-puzzles/state`
       );
       
       if (!response.ok) {
@@ -68,7 +68,7 @@ export function useLivingRoomPuzzle(sessionId) {
       console.log('[useLivingRoomPuzzle] Completing TV puzzle...');
       
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/livingroom-puzzles/tv/complete`,
+        `${BACKEND_URL}/api/sessions/${sessionId}/livingroom-puzzles/tv/complete`,
         { method: 'POST' }
       );
 
@@ -103,7 +103,7 @@ export function useLivingRoomPuzzle(sessionId) {
       console.log('[useLivingRoomPuzzle] Completing pianta puzzle...');
       
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/livingroom-puzzles/pianta/complete`,
+        `${BACKEND_URL}/api/sessions/${sessionId}/livingroom-puzzles/pianta/complete`,
         { method: 'POST' }
       );
 
@@ -138,7 +138,7 @@ export function useLivingRoomPuzzle(sessionId) {
       console.log('[useLivingRoomPuzzle] Completing condizionatore puzzle...');
       
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/livingroom-puzzles/condizionatore/complete`,
+        `${BACKEND_URL}/api/sessions/${sessionId}/livingroom-puzzles/condizionatore/complete`,
         { method: 'POST' }
       );
 
@@ -171,7 +171,7 @@ export function useLivingRoomPuzzle(sessionId) {
       console.log(`[useLivingRoomPuzzle] Resetting puzzles (level: ${level})...`);
       
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/livingroom-puzzles/reset`,
+        `${BACKEND_URL}/api/sessions/${sessionId}/livingroom-puzzles/reset`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

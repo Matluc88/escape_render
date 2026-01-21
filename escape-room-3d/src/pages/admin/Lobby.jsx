@@ -5,7 +5,7 @@ import { io } from 'socket.io-client'
 // In produzione (Docker) usa percorso relativo, nginx proxya /socket.io/
 // In dev locale usa http://localhost:3000 se VITE_WS_URL non è impostato
 const WS_URL = import.meta.env.VITE_WS_URL || (import.meta.env.DEV ? 'http://localhost:3000' : '')
-const API_URL = import.meta.env.VITE_BACKEND_URL || '/api'
+const API_URL = import.meta.env.VITE_BACKEND_URL || ''
 
 function Lobby() {
   const { sessionId } = useParams()
@@ -20,7 +20,7 @@ function Lobby() {
   useEffect(() => {
     const fetchPin = async () => {
       try {
-        const response = await fetch(`${API_URL}/sessions/${sessionId}`)
+        const response = await fetch(`${API_URL}/api/sessions/${sessionId}`)
         if (response.ok) {
           const data = await response.json()
           // Se il PIN non esiste, usa l'ID sessione come fallback
@@ -78,7 +78,7 @@ function Lobby() {
     
     // Inizializza enigmi nel database
     try {
-      await fetch(`${API_URL}/puzzles/session/${sessionId}/initialize`, {
+      await fetch(`${API_URL}/api/puzzles/session/${sessionId}/initialize`, {
         method: 'POST'
       })
     } catch (error) {
@@ -113,7 +113,7 @@ function Lobby() {
     }
 
     try {
-      const response = await fetch(`${API_URL}/puzzles/session/${sessionId}/reset`, {
+      const response = await fetch(`${API_URL}/api/puzzles/session/${sessionId}/reset`, {
         method: 'POST'
       })
       

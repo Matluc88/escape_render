@@ -44,7 +44,7 @@ export function useKitchenPuzzle(sessionId, socket) {
     try {
       setIsLoading(true)
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/kitchen-puzzles/state`
+        `${BACKEND_URL}/api/sessions/${sessionId}/kitchen-puzzles/state`
       )
       
       if (!response.ok) {
@@ -172,7 +172,7 @@ export function useKitchenPuzzle(sessionId, socket) {
     try {
       console.log('🔥 [useKitchenPuzzle] Completing fornelli puzzle...')
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/kitchen-puzzles/fornelli/complete`,
+        `${BACKEND_URL}/api/sessions/${sessionId}/kitchen-puzzles/fornelli/complete`,
         { method: 'POST' }
       )
       
@@ -214,7 +214,7 @@ export function useKitchenPuzzle(sessionId, socket) {
     try {
       console.log('🧊 [useKitchenPuzzle] Completing frigo puzzle...')
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/kitchen-puzzles/frigo/complete`,
+        `${BACKEND_URL}/api/sessions/${sessionId}/kitchen-puzzles/frigo/complete`,
         { method: 'POST' }
       )
       
@@ -239,7 +239,7 @@ export function useKitchenPuzzle(sessionId, socket) {
     try {
       console.log('🌿 [useKitchenPuzzle] Completing serra puzzle...')
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/kitchen-puzzles/serra/complete`,
+        `${BACKEND_URL}/api/sessions/${sessionId}/kitchen-puzzles/serra/complete`,
         { method: 'POST' }
       )
       
@@ -262,7 +262,7 @@ export function useKitchenPuzzle(sessionId, socket) {
     try {
       console.log(`🔄 [useKitchenPuzzle] Resetting puzzles (${level})...`)
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/kitchen-puzzles/reset`,
+        `${BACKEND_URL}/api/sessions/${sessionId}/kitchen-puzzles/reset`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

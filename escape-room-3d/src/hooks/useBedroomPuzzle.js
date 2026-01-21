@@ -34,7 +34,7 @@ export function useBedroomPuzzle(sessionId, socket) {
     try {
       setIsLoading(true)
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/bedroom-puzzles/state`
+        `${BACKEND_URL}/api/sessions/${sessionId}/bedroom-puzzles/state`
       )
       
       if (!response.ok) {
@@ -148,7 +148,7 @@ export function useBedroomPuzzle(sessionId, socket) {
     try {
       console.log('🪑 [useBedroomPuzzle] Completing comodino puzzle...')
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/bedroom-puzzles/comodino/complete`,
+        `${BACKEND_URL}/api/sessions/${sessionId}/bedroom-puzzles/comodino/complete`,
         { method: 'POST' }
       )
       
@@ -194,7 +194,7 @@ export function useBedroomPuzzle(sessionId, socket) {
     try {
       console.log('🛏️ [useBedroomPuzzle] Completing materasso puzzle...')
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/bedroom-puzzles/materasso/complete`,
+        `${BACKEND_URL}/api/sessions/${sessionId}/bedroom-puzzles/materasso/complete`,
         { method: 'POST' }
       )
       
@@ -237,7 +237,7 @@ export function useBedroomPuzzle(sessionId, socket) {
     try {
       console.log('🪑 [useBedroomPuzzle] Completing poltrona puzzle...')
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/bedroom-puzzles/poltrona/complete`,
+        `${BACKEND_URL}/api/sessions/${sessionId}/bedroom-puzzles/poltrona/complete`,
         { method: 'POST' }
       )
       
@@ -280,7 +280,7 @@ export function useBedroomPuzzle(sessionId, socket) {
     try {
       console.log('🌬️ [useBedroomPuzzle] Completing ventola puzzle...')
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/bedroom-puzzles/ventola/complete`,
+        `${BACKEND_URL}/api/sessions/${sessionId}/bedroom-puzzles/ventola/complete`,
         { method: 'POST' }
       )
       
@@ -320,7 +320,7 @@ export function useBedroomPuzzle(sessionId, socket) {
     try {
       console.log(`🔄 [useBedroomPuzzle] Resetting puzzles (${level})...`)
       const response = await fetch(
-        `${BACKEND_URL}/sessions/${sessionId}/bedroom-puzzles/reset`,
+        `${BACKEND_URL}/api/sessions/${sessionId}/bedroom-puzzles/reset`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

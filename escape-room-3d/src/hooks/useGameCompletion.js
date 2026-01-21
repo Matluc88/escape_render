@@ -23,7 +23,7 @@ export function useGameCompletion(sessionId, socket = null) {
 
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}/game-completion/state`);
+      const response = await fetch(`${API_BASE_URL}/api/sessions/${sessionId}/game-completion/state`);
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
