@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🧹 Clear Soggiorno Cache</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 600px;
+        }
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        button {
+            background: #00ff88;
+            color: black;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.4);
+        }
+        .status {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.1em;
+        }
+        .success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00ff00;
+        }
+        .info {
+            background: rgba(0, 170, 255, 0.2);
+            border: 2px solid #00aaff;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Clear Soggiorno Cache</h1>
+        
+        <div class="info">
+            📢 Questo cancellerà il flag localStorage per vedere la sequenza messaggi completa come PRIMA VISITA
+        </div>
+        
+        <button onclick="clearCache()">🗑️ CANCELLA CACHE SOGGIORNO</button>
+        
+        <div id="status"></div>
+    </div>
+
+    <script>
+        function clearCache() {
+            try {
+                // Rimuovi flag messaggio iniziale
+                localStorage.removeItem('soggiorno_messaggio_iniziale_mostrato');
+                
+                // Mostra conferma
+                const statusDiv = document.getElementById('status');
+                statusDiv.className = 'status success';
+                statusDiv.innerHTML = `
+                    ✅ <strong>Cache Cancellata!</strong><br><br>
+                    ♻️ Ora puoi ricaricare la scena soggiorno per vedere:<br>
+                    1️⃣ Messaggio "Mettiti comodo" (3s)<br>
+                    2️⃣ Messaggio Obiettivo (5s)<br><br>
+                    🔄 Ricarica la pagina per vedere la sequenza completa!
+                `;
+                
+                console.log('✅ [Clear Cache] localStorage.soggiorno_messaggio_iniziale_mostrato removed');
+            } catch (error) {
+                const statusDiv = document.getElementById('status');
+                statusDiv.className = 'status';
+                statusDiv.style.background = 'rgba(255, 0, 0, 0.2)';
+                statusDiv.style.border = '2px solid #ff0000';
+                statusDiv.innerHTML = `❌ Errore: ${error.message}`;
+                
+                console.error('❌ [Clear Cache] Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

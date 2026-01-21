@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>🗑️ PULIZIA CACHE TOTALE - ESCAPE ROOM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2em;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        
+        .warning strong {
+            color: #856404;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(245, 87, 108, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
+        }
+        
+        .status {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .info-box h3 {
+            color: #1976D2;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .info-box ul {
+            margin-left: 20px;
+            color: #333;
+        }
+        
+        .info-box li {
+            margin: 5px 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗑️ PULIZIA CACHE TOTALE</h1>
+        <div class="subtitle">Escape Room 3D - Reset Completo</div>
+        
+        <div class="warning">
+            <strong>⚠️ ATTENZIONE:</strong> Questa operazione cancellerà TUTTA la cache del browser per questo sito, inclusi:
+            coordinate spawn, modelli 3D, texture, script, e tutti i dati memorizzati.
+        </div>
+
+        <div class="info-box">
+            <h3>📋 Cosa verrà pulito:</h3>
+            <ul>
+                <li>✅ Cache coordinate spawn</li>
+                <li>✅ LocalStorage (spawn_soggiorno, spawn_cucina, etc.)</li>
+                <li>✅ SessionStorage</li>
+                <li>✅ Cache API (Service Workers)</li>
+                <li>✅ Cache IndexedDB</li>
+                <li>✅ Cookies del sito</li>
+            </ul>
+        </div>
+
+        <button class="btn btn-primary" onclick="clearAllCache()">
+            🗑️ PULISCI TUTTA LA CACHE
+        </button>
+        
+        <button class="btn btn-danger" onclick="clearSpawnOnly()">
+            📍 PULISCI SOLO COORDINATE SPAWN
+        </button>
+        
+        <button class="btn btn-success" onclick="hardReload()">
+            🔄 HARD RELOAD (CTRL+SHIFT+R)
+        </button>
+
+        <div class="progress-bar" id="progressBar">
+            <div class="progress-fill" id="progressFill">0%</div>
+        </div>
+
+        <div class="status" id="status"></div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            statusEl.style.display = 'block';
+        }
+
+        function updateProgress(percent, text) {
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            progressBar.style.display = 'block';
+            progressFill.style.width = percent + '%';
+            progressFill.textContent = text || percent + '%';
+        }
+
+        async function clearSpawnOnly() {
+            console.log('🗑️ Pulizia coordinate spawn...');
+            showStatus('🔄 Pulizia coordinate spawn in corso...', 'info');
+            
+            let cleared = 0;
+            const spawnKeys = [
+                'spawn_cucina',
+                'spawn_soggiorno', 
+                'spawn_bagno',
+                'spawn_camera',
+                'spawn_esterno'
+            ];
+
+            updateProgress(0, 'Inizio...');
+
+            spawnKeys.forEach((key, index) => {
+                try {
+                    localStorage.removeItem(key);
+                    cleared++;
+                    console.log(`✓ Rimosso ${key}`);
+                } catch (e) {
+                    console.warn(`⚠️ Errore rimozione ${key}:`, e);
+                }
+                updateProgress(((index + 1) / spawnKeys.length) * 100, `${index + 1}/${spawnKeys.length}`);
+            });
+
+            setTimeout(() => {
+                showStatus(`✅ ${cleared} coordinate spawn rimosse! Ricarica la pagina.`, 'success');
+                console.log('✅ Pulizia coordinate completata');
+            }, 500);
+        }
+
+        async function clearAllCache() {
+            console.log('🗑️ Pulizia TOTALE cache...');
+            showStatus('🔄 Pulizia totale in corso...', 'info');
+            
+            let progress = 0;
+            updateProgress(progress, 'Inizio pulizia...');
+
+            // 1. LocalStorage
+            try {
+                const localStorageKeys = Object.keys(localStorage);
+                localStorage.clear();
+                console.log(`✓ LocalStorage pulito (${localStorageKeys.length} chiavi)`);
+                progress += 20;
+                updateProgress(progress, 'LocalStorage ✓');
+            } catch (e) {
+                console.warn('⚠️ Errore LocalStorage:', e);
+            }
+
+            // 2. SessionStorage
+            try {
+                sessionStorage.clear();
+                console.log('✓ SessionStorage pulito');
+                progress += 15;
+                updateProgress(progress, 'SessionStorage ✓');
+            } catch (e) {
+                console.warn('⚠️ Errore SessionStorage:', e);
+            }
+
+            // 3. Cookies
+            try {
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    const eqPos = cookie.indexOf('=');
+                    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+                }
+                console.log(`✓ Cookies puliti (${cookies.length} cookies)`);
+                progress += 15;
+                updateProgress(progress, 'Cookies ✓');
+            } catch (e) {
+                console.warn('⚠️ Errore Cookies:', e);
+            }
+
+            // 4. Cache API (Service Workers)
+            try {
+                const cacheNames = await caches.keys();
+                for (let cacheName of cacheNames) {
+                    await caches.delete(cacheName);
+                    console.log(`✓ Cache eliminata: ${cacheName}`);
+                }
+                console.log(`✓ Cache API pulita (${cacheNames.length} caches)`);
+                progress += 25;
+                updateProgress(progress, 'Cache API ✓');
+            } catch (e) {
+                console.warn('⚠️ Errore Cache API:', e);
+                progress += 25;
+            }
+
+            // 5. IndexedDB
+            try {
+                const dbs = await indexedDB.databases();
+                for (let db of dbs) {
+                    indexedDB.deleteDatabase(db.name);
+                    console.log(`✓ Database eliminato: ${db.name}`);
+                }
+                console.log(`✓ IndexedDB pulito (${dbs.length} databases)`);
+                progress += 25;
+                updateProgress(progress, 'IndexedDB ✓');
+            } catch (e) {
+                console.warn('⚠️ Errore IndexedDB:', e);
+                progress += 25;
+            }
+
+            updateProgress(100, 'Completato! ✓');
+
+            setTimeout(() => {
+                showStatus('✅ CACHE COMPLETAMENTE PULITA! Ora ricarica la pagina con CTRL+SHIFT+R', 'success');
+                console.log('✅ Pulizia totale completata');
+            }, 500);
+        }
+
+        function hardReload() {
+            console.log('🔄 Hard reload in corso...');
+            showStatus('🔄 Ricaricamento forzato...', 'info');
+            
+            // Imposta headers no-cache
+            window.location.reload(true);
+            
+            // Fallback per browser moderni
+            setTimeout(() => {
+                window.location.href = window.location.href + '?t=' + Date.now();
+            }, 100);
+        }
+
+        // Log iniziale
+        console.log('═══════════════════════════════════════');
+        console.log('🗑️ TOOL PULIZIA CACHE - ESCAPE ROOM');
+        console.log('═══════════════════════════════════════');
+        console.log('LocalStorage keys:', Object.keys(localStorage));
+        console.log('SessionStorage keys:', Object.keys(sessionStorage));
+        console.log('═══════════════════════════════════════');
+    </script>
+</body>
+</html>

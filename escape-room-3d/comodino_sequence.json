@@ -1,0 +1,53 @@
+{
+  "objectName": "Comodino_Samuelson",
+  "objectIds": [
+    "9EC68E8D-5D4A-4CC2-AA0B-B64FEFC940C3",
+    "506AD06A-2C99-4062-BD08-1261C616FEDB",
+    "F8B2F30A-DAE5-4815-BCBE-5CC5883CFB21",
+    "CF7CACC7-CA5A-4642-B7D6-691C675BCE6A"
+  ],
+  "description": "Sequenza animazione comodino: 1) Rotazione 45°, 2) Spostamento al muro (coordinate invertite)",
+  "sequence": [
+    {
+      "phase": "rotation",
+      "mode": "rotation",
+      "pivotX": -1.5917912823791507,
+      "pivotY": 0,
+      "pivotZ": 0.07503913232421905,
+      "axis": "y",
+      "angle": 45,
+      "speed": 45,
+      "direction": 1,
+      "duration_estimate": "1.0s"
+    },
+    {
+      "phase": "position",
+      "mode": "position",
+      "startX": -1.5917912823791507,
+      "startY": 0,
+      "startZ": 0.07503913232421905,
+      "endX": -1.85,
+      "endY": 0,
+      "endZ": -0.15,
+      "speed": 2.0,
+      "distance": 0.779,
+      "duration_estimate": "0.39s"
+    }
+  ],
+  "trigger": {
+    "method": "keyboard",
+    "key": "K",
+    "description": "Premi tasto K per attivare sequenza"
+  },
+  "_notes": [
+    "✅ CORREZIONI FINALI:",
+    "1. pivotY = 0 (pavimento, era 0.556)",
+    "2. startY = 0 (pavimento, era 0.556)",
+    "3. endX INVERTITO = -1.968 (era -1.215) → direzione corretta",
+    "4. endZ INVERTITO = -0.307 (era 0.457) → direzione corretta",
+    "Formula inversione: newEnd = start - (oldEnd - start)",
+    "Sequenza completa: rotation → position (automatica)",
+    "Generato da Animation Editor + correzioni manuali"
+  ],
+  "_timestamp": "2025-12-23T12:36:00.000Z"
+}

@@ -1,0 +1,331 @@
+/* AnimationEditor.css */
+/* Stili per il pannello di editing animazioni */
+
+.animation-editor {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 380px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #00aaff;
+  border-radius: 12px;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: white;
+  box-shadow: 0 8px 32px rgba(0, 170, 255, 0.3);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animation-editor::-webkit-scrollbar {
+  width: 8px;
+}
+
+.animation-editor::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.animation-editor::-webkit-scrollbar-thumb {
+  background: #00aaff;
+  border-radius: 4px;
+}
+
+.animation-editor__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #00aaff;
+}
+
+.animation-editor__title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #00aaff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.animation-editor__close {
+  background: none;
+  border: none;
+  color: #ff4444;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.animation-editor__close:hover {
+  background: rgba(255, 68, 68, 0.2);
+}
+
+.animation-editor__section {
+  margin-bottom: 20px;
+}
+
+.animation-editor__section-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #aaa;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+
+.animation-editor__object-name {
+  font-size: 16px;
+  color: #0f0;
+  padding: 10px;
+  background: rgba(0, 255, 0, 0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  margin-bottom: 10px;
+  word-wrap: break-word;
+}
+
+.animation-editor__mode-selector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.animation-editor__mode-button {
+  flex: 1;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.animation-editor__mode-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.animation-editor__mode-button--active {
+  background: #00aaff;
+  border-color: #00aaff;
+  box-shadow: 0 0 20px rgba(0, 170, 255, 0.5);
+}
+
+.animation-editor__control {
+  margin-bottom: 15px;
+}
+
+.animation-editor__control-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #ccc;
+}
+
+.animation-editor__control-value {
+  color: #00ff88;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+}
+
+.animation-editor__slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.animation-editor__slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #00aaff;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 170, 255, 0.8);
+  transition: all 0.2s;
+}
+
+.animation-editor__slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 15px rgba(0, 170, 255, 1);
+}
+
+.animation-editor__slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #00aaff;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 10px rgba(0, 170, 255, 0.8);
+}
+
+.animation-editor__input {
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: white;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+}
+
+.animation-editor__input:focus {
+  outline: none;
+  border-color: #00aaff;
+  box-shadow: 0 0 10px rgba(0, 170, 255, 0.3);
+}
+
+.animation-editor__select {
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.animation-editor__select:focus {
+  outline: none;
+  border-color: #00aaff;
+}
+
+.animation-editor__button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #00aaff, #0088cc);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.animation-editor__button:hover {
+  background: linear-gradient(135deg, #00ccff, #00aaff);
+  box-shadow: 0 4px 15px rgba(0, 170, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.animation-editor__button:active {
+  transform: translateY(0);
+}
+
+.animation-editor__button--test {
+  background: linear-gradient(135deg, #00ff88, #00cc66);
+}
+
+.animation-editor__button--test:hover {
+  background: linear-gradient(135deg, #00ffaa, #00ff88);
+  box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
+}
+
+.animation-editor__button--save {
+  background: linear-gradient(135deg, #ff9500, #ff7700);
+}
+
+.animation-editor__button--save:hover {
+  background: linear-gradient(135deg, #ffaa00, #ff9500);
+  box-shadow: 0 4px 15px rgba(255, 149, 0, 0.4);
+}
+
+.animation-editor__button--export {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+.animation-editor__button--export:hover {
+  background: linear-gradient(135deg, #a569c6, #9b59b6);
+  box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4);
+}
+
+.animation-editor__info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.animation-editor__info-item {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.animation-editor__info-item-label {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.animation-editor__info-item-value {
+  font-size: 13px;
+  color: #00ffff;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+}
+
+.animation-editor__divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  margin: 20px 0;
+}
+
+.animation-editor__no-selection {
+  text-align: center;
+  padding: 40px 20px;
+  color: #888;
+  font-size: 14px;
+}
+
+.animation-editor__no-selection-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+  opacity: 0.5;
+}

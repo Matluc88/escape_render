@@ -1,0 +1,149 @@
+📝 FILE MODIFICATI PER SISTEMA RESET ENIGMI
+================================================
+
+🔧 BACKEND (3 file)
+-------------------
+1. backend/app/services/puzzle_service.py
+   - Aggiunto metodo: reset_puzzles_for_session()
+   - Resetta tutti gli enigmi di una sessione (soft reset)
+
+2. backend/app/api/puzzles.py
+   - Aggiunto endpoint: POST /api/puzzles/session/{session_id}/reset
+   - Gestisce il reset degli enigmi via API
+
+🎨 FRONTEND (1 file)
+-------------------
+3. src/pages/admin/Lobby.jsx
+   - Aggiunto pulsante: "🔄 RESET ENIGMI" (arancione)
+   - Aggiunta funzione: handleResetPuzzles()
+   - Conferma prima del reset
+   - Messaggi di successo/errore
+
+📚 DOCUMENTAZIONE (3 file)
+--------------------------
+4. PUZZLE_RESET_SYSTEM.md
+   - Guida completa funzionalità
+   - Casi d'uso
+   - Dettagli tecnici
+   - Test
+
+5. DEPLOY_PUZZLE_RESET.md
+   - Guida deploy su Raspberry Pi
+   - Istruzioni trasferimento file
+   - Verifica e troubleshooting
+
+6. deploy-puzzle-reset.sh
+   - Script automatico deploy Docker
+   - Rebuild backend + frontend
+   - Verifica stato
+
+7. PUZZLE_RESET_FILES.txt
+   - Questo file (lista modifiche)
+
+================================================
+
+🚀 DEPLOY RAPIDO SU RASPBERRY PI
+================================================
+
+Opzione 1 - Comandi Rapidi (SCP):
+----------------------------------
+cd /Users/matteo/Desktop/ESCAPE
+
+scp escape-room-3d/backend/app/api/puzzles.py pi@raspberry.local:~/escape-room-3d/backend/app/api/
+scp escape-room-3d/backend/app/services/puzzle_service.py pi@raspberry.local:~/escape-room-3d/backend/app/services/
+scp escape-room-3d/src/pages/admin/Lobby.jsx pi@raspberry.local:~/escape-room-3d/src/pages/admin/
+scp escape-room-3d/deploy-puzzle-reset.sh pi@raspberry.local:~/escape-room-3d/
+scp escape-room-3d/*.md pi@raspberry.local:~/escape-room-3d/
+
+# Poi sul Raspberry Pi:
+ssh pi@raspberry.local
+cd ~/escape-room-3d
+chmod +x deploy-puzzle-reset.sh
+./deploy-puzzle-reset.sh
+
+
+Opzione 2 - rsync (Più efficiente):
+------------------------------------
+cd /Users/matteo/Desktop/ESCAPE
+
+rsync -avz --progress escape-room-3d/backend/app/api/puzzles.py pi@raspberry.local:~/escape-room-3d/backend/app/api/
+rsync -avz --progress escape-room-3d/backend/app/services/puzzle_service.py pi@raspberry.local:~/escape-room-3d/backend/app/services/
+rsync -avz --progress escape-room-3d/src/pages/admin/Lobby.jsx pi@raspberry.local:~/escape-room-3d/src/pages/admin/
+rsync -avz --progress escape-room-3d/deploy-puzzle-reset.sh pi@raspberry.local:~/escape-room-3d/
+rsync -avz --progress escape-room-3d/PUZZLE_RESET_SYSTEM.md pi@raspberry.local:~/escape-room-3d/
+rsync -avz --progress escape-room-3d/DEPLOY_PUZZLE_RESET.md pi@raspberry.local:~/escape-room-3d/
+
+# Poi sul Raspberry Pi:
+ssh pi@raspberry.local
+cd ~/escape-room-3d
+chmod +x deploy-puzzle-reset.sh
+./deploy-puzzle-reset.sh
+
+
+Opzione 3 - Script Completo (Copia e incolla):
+-----------------------------------------------
+cd /Users/matteo/Desktop/ESCAPE && \
+scp escape-room-3d/backend/app/api/puzzles.py pi@raspberry.local:~/escape-room-3d/backend/app/api/ && \
+scp escape-room-3d/backend/app/services/puzzle_service.py pi@raspberry.local:~/escape-room-3d/backend/app/services/ && \
+scp escape-room-3d/src/pages/admin/Lobby.jsx pi@raspberry.local:~/escape-room-3d/src/pages/admin/ && \
+scp escape-room-3d/deploy-puzzle-reset.sh pi@raspberry.local:~/escape-room-3d/ && \
+scp escape-room-3d/PUZZLE_RESET_SYSTEM.md pi@raspberry.local:~/escape-room-3d/ && \
+scp escape-room-3d/DEPLOY_PUZZLE_RESET.md pi@raspberry.local:~/escape-room-3d/ && \
+echo "✅ File trasferiti con successo!" && \
+echo "Ora connettiti al Raspberry Pi ed esegui:" && \
+echo "  ssh pi@raspberry.local" && \
+echo "  cd ~/escape-room-3d" && \
+echo "  chmod +x deploy-puzzle-reset.sh" && \
+echo "  ./deploy-puzzle-reset.sh"
+
+================================================
+
+📋 CHECKLIST DEPLOY
+================================================
+Prima del deploy:
+☐ Backup database (opzionale)
+☐ Verifica connessione SSH al Raspberry Pi
+☐ Verifica spazio disco su Raspberry Pi
+
+Trasferimento file:
+☐ Trasferisci file backend
+☐ Trasferisci file frontend
+☐ Trasferisci script e documentazione
+
+Deploy:
+☐ Esegui deploy-puzzle-reset.sh
+☐ Attendi rebuild container (può richiedere 5-10 min)
+☐ Verifica stato container (docker-compose ps)
+
+Test:
+☐ Test API: curl -X POST http://localhost/api/puzzles/session/1/reset
+☐ Test UI: Verifica pulsante in lobby
+☐ Test completo: Risolvi enigmi → Reset → Verifica
+
+================================================
+
+🎯 RISULTATO FINALE
+================================================
+Dopo il deploy, nella lobby admin troverai:
+
+┌─────────────────────────────────────┐
+│  🎮 Lobby - Sessione #1            │
+├─────────────────────────────────────┤
+│                                     │
+│  👥 Giocatori Connessi: 3          │
+│                                     │
+│  ┌───────────┬───────────┬──────┐  │
+│  │ 🚀 VIA!   │ 🔄 RESET  │ 🛑   │  │
+│  │           │   ENIGMI  │ESPELLI│  │
+│  └───────────┴───────────┴──────┘  │
+│                                     │
+└─────────────────────────────────────┘
+
+Il pulsante "🔄 RESET ENIGMI" permette di:
+✅ Resettare tutti i 13 enigmi
+✅ Mantenere i giocatori connessi
+✅ Mantenere la sessione attiva
+✅ Ricominciare da zero senza ricreare tutto
+
+================================================
+Fine - Creato il 17/01/2026

@@ -1,0 +1,100 @@
+import { useState, useEffect, useCallback } from 'react';
+
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+
+/**
+ * Hook per gestire il sistema di Game Completion
+ * Traccia il completamento di tutte le 4 stanze e determina la vittoria
+ * 
+ * @param {number} sessionId - ID della sessione
+ * @param {object} socket - Socket.io instance (opzionale)
+ */
+export function useGameCompletion(sessionId, socket = null) {
+  const [completionState, setCompletionState] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch iniziale dello stato
+  const fetchCompletionState = useCallback(async () => {
+    if (!sessionId) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}/game-completion/state`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('[useGameCompletion] ✅ Data fetched from API:', JSON.stringify(data, null, 2));
+      console.log('[useGameCompletion] 📊 door_led_states.camera:', data.door_led_states?.camera);
+      setCompletionState(data);
+      setError(null);
+    } catch (err) {
+      console.error('[useGameCompletion] Fetch error:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [sessionId]);
+
+  // Fetch iniziale
+  useEffect(() => {
+    fetchCompletionState();
+  }, [fetchCompletionState]);
+
+  // WebSocket listener per aggiornamenti real-time
+  useEffect(() => {
+    if (!socket || !sessionId) return;
+
+    const handleGameCompletionUpdate = (data) => {
+      console.log('[useGameCompletion] 📡 WebSocket update received:', data);
+      console.log('[useGameCompletion] 📡 door_led_states from WebSocket:', data.door_led_states);
+      console.log('[useGameCompletion] 📡 cucina LED from WebSocket:', data.door_led_states?.cucina);
+      
+      // 🔥 FIX: Usa == invece di === per confrontare session_id (può essere stringa o numero)
+      if (data.session_id == sessionId) {
+        console.log('[useGameCompletion] ✅ Updating completionState with WebSocket data');
+        setCompletionState(data);
+      } else {
+        console.log(`[useGameCompletion] ❌ Session ID mismatch: ${data.session_id} (${typeof data.session_id}) !== ${sessionId} (${typeof sessionId})`);
+      }
+    };
+
+    socket.on('game_completion_update', handleGameCompletionUpdate);
+
+    return () => {
+      socket.off('game_completion_update', handleGameCompletionUpdate);
+    };
+  }, [socket, sessionId]);
+
+  // Helper per ottenere il colore LED di una porta specifica
+  const getDoorLEDColor = useCallback((roomName) => {
+    if (!completionState) {
+      return 'red';
+    }
+    const color = completionState.door_led_states[roomName] || 'red';
+    return color;
+  }, [completionState]);
+
+  // Helper per verificare se una stanza è completata
+  const isRoomCompleted = useCallback((roomName) => {
+    if (!completionState) return false;
+    return completionState.rooms_status[roomName]?.completed || false;
+  }, [completionState]);
+
+  return {
+    completionState,
+    loading,
+    error,
+    getDoorLEDColor,
+    isRoomCompleted,
+    gameWon: completionState?.game_won || false,
+    completedRoomsCount: completionState?.completed_rooms || 0,
+    refresh: fetchCompletionState
+  };
+}

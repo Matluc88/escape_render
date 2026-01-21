@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗑️ Pulizia Cache Spawn - Raspberry Pi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+        
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        
+        .button {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .button.success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        .button.danger {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .cache-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .cache-list h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .cache-item {
+            background: white;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .emoji {
+            font-size: 1.3em;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗑️ Pulizia Cache Spawn</h1>
+        <p class="subtitle">Fix coordinate spawn Raspberry Pi - 16/01/2026</p>
+        
+        <div class="info-box">
+            <h3>📋 Cosa fa questo tool?</h3>
+            <p>✓ Rimuove le vecchie coordinate spawn dalla cache del browser</p>
+            <p>✓ Forza il caricamento delle coordinate aggiornate dal database</p>
+            <p>✓ Risolve il problema dello spawn in posizioni sbagliate</p>
+        </div>
+        
+        <div class="info-box">
+            <h3>⚠️ Quando usarlo?</h3>
+            <p>• Dopo aver applicato fix-spawn-raspberry-CORRETTE-2026.sql</p>
+            <p>• Quando i personaggi spawnano fuori dalle stanze</p>
+            <p>• Dopo aggiornamenti delle coordinate nel database</p>
+        </div>
+        
+        <button class="button" onclick="showCachedData()">
+            <span class="emoji">🔍</span>Mostra Dati in Cache
+        </button>
+        
+        <button class="button danger" onclick="clearAllCache()">
+            <span class="emoji">🗑️</span>PULISCI TUTTA LA CACHE SPAWN
+        </button>
+        
+        <button class="button success" onclick="reloadPage()">
+            <span class="emoji">🔄</span>Ricarica Pagina (Hard Reload)
+        </button>
+        
+        <div id="cacheList" class="cache-list"></div>
+        <div id="status" class="status"></div>
+    </div>
+    
+    <script>
+        function showCachedData() {
+            const cacheList = document.getElementById('cacheList');
+            const keys = Object.keys(localStorage);
+            const spawnKeys = keys.filter(key => 
+                key.includes('spawn') || 
+                key.includes('captured') || 
+                key.includes('position')
+            );
+            
+            if (spawnKeys.length === 0) {
+                cacheList.innerHTML = '<h3>✓ Cache Pulita</h3><p>Nessun dato spawn in cache.</p>';
+            } else {
+                let html = '<h3>📦 Dati in Cache (' + spawnKeys.length + '):</h3>';
+                spawnKeys.forEach(key => {
+                    const value = localStorage.getItem(key);
+                    let preview = value;
+                    if (value.length > 80) {
+                        preview = value.substring(0, 80) + '...';
+                    }
+                    html += `<div class="cache-item"><strong>${key}</strong><br><small>${preview}</small></div>`;
+                });
+                cacheList.innerHTML = html;
+            }
+            
+            cacheList.style.display = 'block';
+        }
+        
+        function clearAllCache() {
+            try {
+                // Rimuovi chiavi specifiche spawn
+                const keysToRemove = [
+                    'captured_positions',
+                    'spawn_coordinates',
+                    'spawn_cache',
+                    'room_spawn_data'
+                ];
+                
+                let removed = 0;
+                keysToRemove.forEach(key => {
+                    if (localStorage.getItem(key)) {
+                        localStorage.removeItem(key);
+                        removed++;
+                    }
+                });
+                
+                // Rimuovi anche tutte le chiavi che contengono "spawn", "position", etc.
+                const allKeys = Object.keys(localStorage);
+                allKeys.forEach(key => {
+                    if (key.includes('spawn') || key.includes('position') || key.includes('captured')) {
+                        localStorage.removeItem(key);
+                        removed++;
+                    }
+                });
+                
+                // Mostra successo
+                const status = document.getElementById('status');
+                status.className = 'status success';
+                status.textContent = `✓ Cache pulita con successo! (${removed} chiavi rimosse)`;
+                status.style.display = 'block';
+                
+                // Nascondi cache list
+                document.getElementById('cacheList').style.display = 'none';
+                
+                // Auto-nascondi dopo 3 secondi
+                setTimeout(() => {
+                    status.style.display = 'none';
+                }, 3000);
+                
+            } catch (error) {
+                const status = document.getElementById('status');
+                status.className = 'status error';
+                status.textContent = '✗ Errore: ' + error.message;
+                status.style.display = 'block';
+            }
+        }
+        
+        function reloadPage() {
+            // Clear cache first
+            clearAllCache();
+            
+            // Wait a bit then reload
+            setTimeout(() => {
+                // Hard reload (bypassing cache)
+                window.location.reload(true);
+            }, 500);
+        }
+    </script>
+</body>
+</html>

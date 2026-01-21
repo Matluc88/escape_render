@@ -1,0 +1,469 @@
+# .clinerules - Escape Room 3D Project Standards
+# Generato da Deep Audit - 02/01/2026
+
+## 🎯 OVERVIEW PROGETTO
+Nome: Escape Room 3D
+Tipo: Applicazione Web Real-time IoT + 3D WebGL
+Target: Raspberry Pi 4 (4GB) + Docker
+Stack: React + Three.js | FastAPI + PostgreSQL | MQTT + WebSocket
+
+## 📦 STACK TECNOLOGICO
+
+### Frontend
+- React 19.2.0 + Vite 7.2.2 (ESM)
+- Three.js 0.181.1 + @react-three/fiber 9.4.0 + @react-three/drei 10.7.7
+- State: Zustand 5.0.8
+- Routing: React Router 7.9.6
+- Real-time: Socket.io-client 4.8.1 + MQTT 5.14.1
+- HTTP: Axios 1.13.2
+- Testing: Vitest 4.0.9 + @testing-library/react 16.3.0
+
+### Backend
+- FastAPI 0.109.0 + Uvicorn 0.27.0
+- Database: PostgreSQL 15 + SQLAlchemy 2.0.25 + Alembic 1.13.1
+- Real-time: Socket.io + aiomqtt 2.0.0
+- Auth: python-jose 3.3.0 + passlib 1.7.4
+
+### Infrastructure
+- Docker Compose (multi-container)
+- PostgreSQL 15-alpine
+- Mosquitto MQTT 2
+- Nginx (reverse proxy nel frontend)
+
+## 🏗️ ARCHITETTURA E PATTERN
+
+### Backend: Clean Architecture
+```
+backend/
+├── app/
+│   ├── api/          # FastAPI routers (API endpoints)
+│   ├── models/       # SQLAlchemy ORM models
+│   ├── schemas/      # Pydantic schemas (validation)
+│   ├── services/     # Business logic layer
+│   ├── mqtt/         # MQTT handler
+│   ├── websocket/    # Socket.io handler
+│   ├── database.py   # DB connection & session
+│   ├── config.py     # Settings (pydantic-settings)
+│   └── main.py       # FastAPI app initialization
+└── alembic/          # Database migrations
+```
+
+**Regola**: SEMPRE usare il Service Layer. Non mettere business logic nei router.
+
+### Frontend: Component-Based + Custom Hooks
+```
+src/
+├── components/
+│   ├── 3D/           # Three.js/R3F components
+│   ├── scenes/       # Scene complete (KitchenScene, etc.)
+│   ├── UI/           # UI components + CSS
+│   ├── effects/      # Post-processing effects
+│   └── debug/        # Debug utilities
+├── hooks/            # Custom React hooks (30+)
+├── pages/            # Route pages (React Router)
+├── store/            # Zustand stores
+├── utils/            # Utility functions
+└── shaders/          # Custom GLSL shaders
+```
+
+**Pattern Identificati**:
+- Service Layer Pattern (backend)
+- Custom Hooks Pattern (frontend)
+- Scene-based Architecture (ogni stanza = scena indipendente)
+- Event-Driven Real-time (WebSocket + MQTT)
+- Repository Pattern (implicito nei services)
+
+## 📝 CONVENZIONI NAMING
+
+### Frontend (JavaScript/JSX)
+- **Variabili/Funzioni**: camelCase
+  ```javascript
+  const playerPosition = [0, 0, 0];
+  const handleClick = () => {};
+  ```
+- **Componenti React**: PascalCase
+  ```javascript
+  export default function KitchenScene() {}
+  ```
+- **Custom Hooks**: camelCase con prefisso `use`
+  ```javascript
+  export function useKitchenPuzzle() {}
+  ```
+- **Costanti**: UPPER_SNAKE_CASE
+  ```javascript
+  const API_BASE_URL = '/api';
+  ```
+- **File Componenti**: PascalCase.jsx
+  - `KitchenScene.jsx`, `AnimationEditor.jsx`
+- **File Utilities**: camelCase.js
+  - `cameraPositioning.js`, `api.js`
+- **CSS Modules**: ComponentName.css (associato al componente)
+
+### Backend (Python)
+- **Standard PEP 8**: snake_case per tutto
+  ```python
+  def get_active_session():
+      pass
+  
+  class GameSession(Base):
+      session_pin = Column(String)
+  ```
+- **File**: snake_case.py
+  - `session_service.py`, `game_completion.py`
+- **Classi Models**: PascalCase (SQLAlchemy)
+  ```python
+  class GameCompletion(Base):
+      __tablename__ = "game_completions"
+  ```
+- **Classi Schemas**: PascalCase (Pydantic)
+  ```python
+  class SessionCreate(BaseModel):
+      pass
+  ```
+
+### Database
+- **Tabelle**: snake_case plurale
+  - `game_sessions`, `kitchen_puzzles`, `spawn_positions`
+- **Colonne**: snake_case
+  - `session_pin`, `created_at`, `is_active`
+
+### API Routes
+- **Path**: kebab-case
+  ```
+  /api/game-sessions
+  /api/kitchen-puzzles/{puzzle_id}
+  ```
+
+### Documentazione
+- **Guide/Fix**: UPPER_SNAKE_CASE.md
+  - `KITCHEN_LED_FIX_FINALE.md`, `SPAWN_UPDATE_DEC30.md`
+- **README**: PascalCase o UPPERCASE
+  - `README.md`, `README_DOCKER.md`
+
+## 🚫 REGOLE RIGOROSE (ANTI-REGRESSIONE)
+
+### 1. BACKEND: Dependency Injection
+```python
+# ✅ GIUSTO - Usa Depends per DB session
+@router.get("/sessions")
+def get_sessions(db: Session = Depends(get_db)):
+    service = SessionService(db)
+    return service.get_all()
+
+# ❌ SBAGLIATO - Non creare DB session manualmente nei router
+@router.get("/sessions")
+def get_sessions():
+    db = SessionLocal()  # NO!
+    ...
+```
+
+### 2. FRONTEND: Evita Prop Drilling
+```javascript
+// ✅ GIUSTO - Usa Zustand per stato globale
+import useGameStore from '../store/gameStore';
+
+function Component() {
+  const sessionId = useGameStore(state => state.sessionId);
+}
+
+// ❌ SBAGLIATO - Non passare sessionId attraverso 5 componenti
+<Parent sessionId={id}>
+  <Child1 sessionId={id}>
+    <Child2 sessionId={id}>
+```
+
+### 3. THREE.JS: Usa sempre useFrame per animazioni
+```javascript
+// ✅ GIUSTO
+import { useFrame } from '@react-three/fiber';
+
+function AnimatedObject() {
+  useFrame((state, delta) => {
+    meshRef.current.rotation.y += delta;
+  });
+}
+
+// ❌ SBAGLIATO - Non usare setInterval/setTimeout per animazioni 3D
+```
+
+### 4. MIGRATIONS: MAI modificare migration esistenti
+```bash
+# ✅ GIUSTO - Crea NUOVA migration
+alembic revision --autogenerate -m "add_new_column"
+
+# ❌ SBAGLIATO - Non editare migration già committate
+# Se hai errori, crea migration di rollback
+```
+
+### 5. WEBSOCKET: Broadcast corretto
+```python
+# ✅ GIUSTO - Usa await per operazioni async
+await ws_handler.broadcast_element_update(...)
+
+# ❌ SBAGLIATO - Non dimenticare await
+ws_handler.broadcast_element_update(...)  # NO! Crea race conditions
+```
+
+### 6. ENVIRONMENT: Mai committare .env con secrets
+```bash
+# ✅ .gitignore DEVE includere
+.env
+.env.local
+backend/.env
+
+# ✅ GIUSTO - Usa .env.example come template
+SECRET_KEY=your_secret_here_change_in_production
+```
+
+### 7. COMPONENTS: Single Responsibility
+```javascript
+// ✅ GIUSTO - Un componente = una responsabilità
+function KitchenScene() {
+  const puzzle = useKitchenPuzzle();
+  const animation = usePentolaAnimation();
+  return <KitchenModel puzzle={puzzle} />;
+}
+
+// ❌ SBAGLIATO - Non mettere troppa logica in un componente
+// Estrai logica in custom hooks
+```
+
+### 8. IMPORTS: Order & Organization
+```javascript
+// ✅ GIUSTO - Ordine import
+// 1. React/librerie esterne
+import React, { useState } from 'react';
+import { Canvas } from '@react-three/fiber';
+
+// 2. Componenti interni
+import KitchenModel from '../components/3D/KitchenModel';
+
+// 3. Hooks
+import useKitchenPuzzle from '../hooks/useKitchenPuzzle';
+
+// 4. Utils/Store
+import { api } from '../utils/api';
+
+// 5. CSS
+import './styles.css';
+```
+
+### 9. ERROR HANDLING: Sempre catch errori async
+```javascript
+// ✅ GIUSTO
+try {
+  const data = await api.get('/sessions');
+  setData(data);
+} catch (error) {
+  console.error('Error fetching sessions:', error);
+  // Handle error appropriately
+}
+
+// ❌ SBAGLIATO
+const data = await api.get('/sessions');  // Può crashare l'app
+```
+
+### 10. PERFORMANCE: Memoization per Three.js
+```javascript
+// ✅ GIUSTO - Memoizza oggetti complessi
+const geometry = useMemo(() => new BoxGeometry(1, 1, 1), []);
+
+// ❌ SBAGLIATO - Non creare geometry ad ogni render
+function Box() {
+  const geometry = new BoxGeometry(1, 1, 1);  // Memory leak!
+}
+```
+
+## 🔄 GIT WORKFLOW
+
+### Commit Messages
+Segui Conventional Commits:
+```
+feat: add bedroom puzzle LED system
+fix: resolve kitchen door race condition
+docs: update SPAWN_UPDATE documentation
+refactor: extract animation logic to hook
+perf: optimize Three.js collision detection
+```
+
+### Branch Naming
+```
+feature/bedroom-puzzle-integration
+fix/kitchen-led-door-bug
+hotfix/spawn-race-condition
+docs/animation-editor-guide
+```
+
+## 📄 DOCUMENTAZIONE
+
+### Ogni Feature complessa DEVE avere:
+1. **Guide MD** nella root
+   - Esempio: `KITCHEN_PUZZLE_INTEGRATION.md`
+   - Formato: `FEATURE_NAME_TYPE.md`
+2. **Commenti nei punti critici** del codice
+3. **Sequence files** per animazioni
+   - `public/*.json` (es: `materasso_sequence.json`)
+
+### Test Files
+```javascript
+// Nome: ComponentName.test.jsx
+// Posizione: stesso folder del componente
+src/components/scenes/KitchenScene.test.jsx
+```
+
+## 🎨 STYLING
+
+### CSS Organization
+- **Component-scoped**: `ComponentName.css`
+- **BEM-like naming** quando necessario
+- **Mobile-first** responsive design
+
+```css
+/* KitchenScene.css */
+.kitchen-scene {
+  /* Base styles */
+}
+
+.kitchen-scene__overlay {
+  /* Element */
+}
+
+.kitchen-scene__overlay--active {
+  /* Modifier */
+}
+```
+
+## 🔐 SECURITY CHECKLIST
+
+- [ ] MAI hardcodare credenziali
+- [ ] Usa sempre variabili d'ambiente
+- [ ] SECRET_KEY deve essere random (32+ chars)
+- [ ] CORS_ORIGINS limitato (non wildcard * in prod)
+- [ ] Input validation con Pydantic schemas
+- [ ] SQL injection: usa sempre ORM (mai raw SQL)
+- [ ] WebSocket: valida session_id
+
+## 🐳 DOCKER ENVIRONMENT RULES
+
+### ⚠️ REGOLA CRITICA: SEMPRE usare container DEV per sviluppo
+
+**PRODUZIONE (NON usare in sviluppo!)**:
+- File: `docker-compose.yml`
+- Container: `escape-backend`, `escape-db`, `escape-mqtt`
+- Porte: 8000 (backend), 5432 (db), 1883 (mqtt)
+- Uso: SOLO per deploy su Raspberry Pi
+
+**SVILUPPO (DA USARE SEMPRE)**:
+- File: `backend/docker-compose.dev.yml`
+- Container: `escape-backend-dev`, `escape-db-dev`, `escape-mqtt-dev`
+- Porte: 8001 (backend), 5433 (db), 1884 (mqtt)
+- Comando: `cd backend && docker-compose -f docker-compose.dev.yml up -d`
+
+### 🚀 SCRIPT DEDICATO (RACCOMANDATO)
+```bash
+# Usa lo script per avviare DEV automaticamente
+./start-dev.sh
+
+# Output mostra:
+# ✅ Container DEV avviati
+# 📊 Stato container attivi
+# 🔗 Servizi disponibili con porte corrette
+```
+
+### ✅ CHECKLIST Docker
+Prima di operare sul progetto:
+- [ ] Verifica container attivi: `docker ps`
+- [ ] Assicurati siano container `-dev` (non PROD!)
+- [ ] Se servono container: usa `./start-dev.sh`
+- [ ] Stop container DEV: `cd backend && docker-compose -f docker-compose.dev.yml down`
+
+### ❌ ERRORI COMUNI DA EVITARE
+```bash
+# ❌ SBAGLIATO - Usa container PROD per sviluppo
+docker-compose up -d  # NO! Questo è per produzione
+
+# ❌ SBAGLIATO - Dimentica -f docker-compose.dev.yml
+cd backend && docker-compose up -d  # NO! Manca il file DEV
+
+# ✅ GIUSTO - Usa script dedicato o comando completo
+./start-dev.sh
+# OPPURE
+cd backend && docker-compose -f docker-compose.dev.yml up -d
+```
+
+### 📝 LOGS & DEBUG
+```bash
+# Logs backend DEV
+docker logs -f escape-backend-dev
+
+# Logs database DEV
+docker logs -f escape-db-dev
+
+# Logs MQTT DEV
+docker logs -f escape-mqtt-dev
+
+# Tutti i logs insieme
+docker-compose -f backend/docker-compose.dev.yml logs -f
+```
+
+## 🚀 DEPLOYMENT
+
+### Raspberry Pi Considerations
+- Memory limits nei container (DB_MEMORY_LIMIT, MQTT_MEMORY_LIMIT)
+- Ottimizzazioni PostgreSQL (shm_size: 128mb)
+- Health checks per tutti i servizi
+- Volume persistence per database
+
+### Environment-Specific
+```bash
+# Development
+npm run dev  # Frontend (porta 5173)
+docker compose -f backend/docker-compose.dev.yml up
+
+# Production
+docker compose up --build  # Full stack (porta 80)
+```
+
+## 📊 MONITORING & DEBUG
+
+### Debug Tools disponibili
+- Animation Editor (Tasto 'A')
+- Particle Editor (Scene effects)
+- Collision Visualizer (Debug BVH)
+- Position Picker (3D coordinates)
+- Live Position Debug
+
+### Logging Standards
+```python
+# Backend
+logger.info(f"Processing puzzle update: {puzzle_id}")
+logger.error(f"Database error: {str(e)}", exc_info=True)
+
+# Frontend
+console.log('[KitchenPuzzle] State updated:', newState);
+console.error('[WebSocket] Connection failed:', error);
+```
+
+## 🎯 QUALITY GATES
+
+### Before Commit
+- [ ] Nessun console.log/print dimenticato
+- [ ] Imports inutilizzati rimossi
+- [ ] Codice formattato (Prettier/Black)
+- [ ] Test (quando presenti) passano
+- [ ] Build non produce warning critici
+
+### Before Deploy
+- [ ] .env.production configurato
+- [ ] SECRET_KEY cambiata
+- [ ] Database migrations applicate
+- [ ] Docker containers avviano correttamente
+- [ ] Health checks passano
+
+---
+
+**NOTA**: Queste regole sono state estratte analizzando la codebase esistente.
+Seguirle garantisce consistenza e previene regressioni comuni già risolte nel progetto.
+
+**Ultimo aggiornamento**: 02/01/2026
+**Versione**: 1.0.0

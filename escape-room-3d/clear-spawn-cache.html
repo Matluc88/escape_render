@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pulisci Cache Spawn</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        h1 {
+            color: #00aaff;
+        }
+        .button {
+            background: #00aaff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .button:hover {
+            background: #0088cc;
+        }
+        .button.danger {
+            background: #ff4444;
+        }
+        .button.danger:hover {
+            background: #cc0000;
+        }
+        #output {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            min-height: 100px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .cache-item {
+            background: #333;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            border-left: 3px solid #00aaff;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧹 Gestione Cache Spawn Positions</h1>
+    <p>Questo tool gestisce il localStorage delle posizioni spawn per le stanze dell'escape room.</p>
+    
+    <div>
+        <button class="button" onclick="showCache()">📋 Mostra Cache</button>
+        <button class="button" onclick="showAllLocalStorage()">🗂️ Tutto localStorage</button>
+        <button class="button danger" onclick="clearSpawnCache()">🗑️ Pulisci Cache Spawn</button>
+        <button class="button danger" onclick="clearAllLocalStorage()">⚠️ Pulisci TUTTO localStorage</button>
+    </div>
+    
+    <div id="output">Click su un pulsante per iniziare...</div>
+
+    <script>
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const timestamp = new Date().toLocaleTimeString('it-IT');
+            const prefix = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
+            output.innerHTML += `[${timestamp}] ${prefix} ${message}\n`;
+        }
+
+        function clearOutput() {
+            document.getElementById('output').innerHTML = '';
+        }
+
+        function showCache() {
+            clearOutput();
+            log('=== CACHE SPAWN POSITIONS ===', 'info');
+            
+            const spawnKeys = Object.keys(localStorage).filter(k => k.startsWith('spawn_'));
+            
+            if (spawnKeys.length === 0) {
+                log('Nessun dato spawn in cache.', 'info');
+                return;
+            }
+            
+            spawnKeys.forEach(key => {
+                const roomName = key.replace('spawn_', '');
+                const data = JSON.parse(localStorage.getItem(key));
+                const age = Math.floor((Date.now() - data.timestamp) / 1000);
+                
+                log(`\n🏠 ${roomName.toUpperCase()}:`, 'info');
+                log(`   Position: (${data.data.position.x}, ${data.data.position.y}, ${data.data.position.z})`, 'info');
+                log(`   Yaw: ${data.data.yaw} rad (${(data.data.yaw * 180 / Math.PI).toFixed(1)}°)`, 'info');
+                log(`   Age: ${age}s (${Math.floor(age / 60)}m)`, 'info');
+            });
+            
+            log(`\n📊 Totale: ${spawnKeys.length} spawn in cache`, 'success');
+        }
+
+        function showAllLocalStorage() {
+            clearOutput();
+            log('=== TUTTO IL LOCALSTORAGE ===', 'info');
+            
+            const allKeys = Object.keys(localStorage);
+            
+            if (allKeys.length === 0) {
+                log('localStorage vuoto.', 'info');
+                return;
+            }
+            
+            allKeys.forEach(key => {
+                const value = localStorage.getItem(key);
+                try {
+                    const parsed = JSON.parse(value);
+                    log(`\n🔑 ${key}:`, 'info');
+                    log(JSON.stringify(parsed, null, 2), 'info');
+                } catch (e) {
+                    log(`\n🔑 ${key}: ${value}`, 'info');
+                }
+            });
+            
+            log(`\n📊 Totale: ${allKeys.length} items`, 'success');
+        }
+
+        function clearSpawnCache() {
+            if (!confirm('⚠️ Vuoi davvero eliminare TUTTI i dati spawn dal cache?\n\nQuesto forzerà il ricaricamento da API o fallback.')) {
+                return;
+            }
+            
+            clearOutput();
+            log('Pulizia cache spawn in corso...', 'info');
+            
+            const spawnKeys = Object.keys(localStorage).filter(k => k.startsWith('spawn_'));
+            
+            spawnKeys.forEach(key => {
+                localStorage.removeItem(key);
+                log(`Rimosso: ${key}`, 'success');
+            });
+            
+            log(`\n✅ Pulizia completata! Rimossi ${spawnKeys.length} items.`, 'success');
+            log('\n👉 Ricarica l\'applicazione per applicare le modifiche.', 'warning');
+        }
+
+        function clearAllLocalStorage() {
+            if (!confirm('⚠️⚠️⚠️ ATTENZIONE!\n\nQuesto cancellerà TUTTO il localStorage, inclusi:\n- Cache spawn positions\n- Sessioni\n- Preferenze\n- Altri dati salvati\n\nSei SICURO?')) {
+                return;
+            }
+            
+            clearOutput();
+            log('Pulizia TOTALE localStorage in corso...', 'warning');
+            
+            const count = localStorage.length;
+            localStorage.clear();
+            
+            log(`\n✅ localStorage completamente pulito! Rimossi ${count} items.`, 'success');
+            log('\n👉 Ricarica l\'applicazione per applicare le modifiche.', 'warning');
+        }
+    </script>
+</body>
+</html>

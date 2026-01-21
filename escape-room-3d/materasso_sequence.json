@@ -1,0 +1,57 @@
+{
+  "objectName": "Matress_Cube_236",
+  "objectIds": [
+    "EA4BDE19-A636-4DD9-B32E-C34BA0D37B14",
+    "C9FDBCE8-0F2A-4BF2-B05C-4868567DC22F"
+  ],
+  "description": "Animazione letto a scomparsa: scende dal muro verso il pavimento ruotando 90° su asse Z",
+  "objectPosition": {
+    "x": -1.0153119999999993,
+    "y": -0.10899887084960369,
+    "z": 0.8566409999999998
+  },
+  "sequence": [
+    {
+      "phase": "rotation",
+      "mode": "rotation",
+      "pivotX": -2.05,
+      "pivotY": 0.641,
+      "pivotZ": 0.771,
+      "axis": "z",
+      "angle": 90,
+      "speed": 45,
+      "direction": -1,
+      "duration_estimate": "2.0s"
+    }
+  ],
+  "trigger": {
+    "method": "keyboard",
+    "key": "M",
+    "description": "Premi tasto M per attivare animazione materasso (futuro: MQTT trigger)"
+  },
+  "_notes": [
+    "✅ Sistema multi-object: 236 (letto) + 232 (maniglia/parte aggiuntiva)",
+    "✅ Letto a scomparsa che scende dal muro verso il pavimento",
+    "✅ Tipo animazione: hinged_door (porta con cerniera)",
+    "✅ Pivot cardine: (-2.05, 0.641, 0.771) - pivotLocation: right",
+    "✅ Rotazione 90° su asse Z (Roll) - rotazione verso il basso",
+    "✅ Direzione negativa (oraria)",
+    "✅ Oggetti 'cuciti' insieme - si muovono come un corpo rigido",
+    "✅ Configurazione realistica attiva",
+    "✅ Preset: Rotazione Piano (Mobili)",
+    "✅ Coordinate ESATTE da Animation Editor V2.0 - Export 27/12/2025 22:27:51",
+    "✅ NESSUNA conversione applicata - dati diretti dall'editor!",
+    "Generato da export Animation Editor - 2025-12-27T22:27:51.850Z"
+  ],
+  "_metadata": {
+    "editorMode": "advanced",
+    "realisticConfig": true,
+    "animationType": "hinged_door",
+    "preset": "rotation_piano",
+    "pivotLocation": "right",
+    "state": "closed",
+    "timestamp": "2025-12-27T22:27:51.850Z",
+    "source": "animation_editor_export",
+    "exact_coordinates": true
+  }
+}

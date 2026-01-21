@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifica Sorgente Coordinate Spawn</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 { color: #00ffff; }
+        h2 { color: #ffff00; margin-top: 30px; }
+        .section {
+            background: #2a2a2a;
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .result {
+            background: #000;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #00ff00;
+            white-space: pre-wrap;
+            font-size: 14px;
+        }
+        .error { border-left-color: #ff0000; color: #ff6666; }
+        .success { border-left-color: #00ff00; }
+        .warning { border-left-color: #ffaa00; color: #ffcc66; }
+        .info { border-left-color: #00aaff; color: #66ccff; }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover { background: #00cc00; }
+        .clear-btn { background: #ff4444; color: white; }
+        .clear-btn:hover { background: #cc0000; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Verifica Sorgente Coordinate Spawn - Cucina</h1>
+    <p>Questo tool verifica da dove vengono le coordinate <code>z: 2.12, yaw: -0.8616</code> che vedi in DEV</p>
+
+    <div class="section">
+        <h2>1️⃣ localStorage Cache</h2>
+        <button onclick="checkLocalStorage()">Controlla localStorage</button>
+        <button class="clear-btn" onclick="clearSpawnCache()">Pulisci Cache Spawn</button>
+        <div id="localStorage-result"></div>
+    </div>
+
+    <div class="section">
+        <h2>2️⃣ API Backend Locale</h2>
+        <button onclick="checkAPI()">Test API Locale (port 8000)</button>
+        <button onclick="checkAPI(5001)">Test API Locale (port 5001)</button>
+        <div id="api-result"></div>
+    </div>
+
+    <div class="section">
+        <h2>3️⃣ Confronto Valori</h2>
+        <div id="comparison-result"></div>
+    </div>
+
+    <div class="section">
+        <h2>4️⃣ ISTRUZIONI PER RISOLUZIONE</h2>
+        <div class="result info">
+Se trovi i valori vecchi (z: 2.12, yaw: -0.8616):
+
+1. Clicca "Pulisci Cache Spawn" qui sopra
+2. Nel browser dev, apri DevTools (F12)
+3. Vai su Application → Local Storage
+4. Trova la chiave "spawn_cucina" ed eliminala
+5. Ricarica la pagina con Ctrl+Shift+R (hard reload)
+6. Verifica che ora vedi le coordinate corrette dal database
+        </div>
+    </div>
+
+    <script>
+        // COORDINATE DI RIFERIMENTO
+        const EXPECTED_COORDS = {
+            docker: {
+                position: { x: -0.98, y: 0, z: 2.03 },
+                yaw: 2.28,
+                source: "Database Docker (CORRETTE)"
+            },
+            dev_old: {
+                position: { x: -0.98, y: 0, z: 2.12 },
+                yaw: -0.8616,
+                source: "Valori VECCHI (da trovare)"
+            }
+        };
+
+        function checkLocalStorage() {
+            const resultDiv = document.getElementById('localStorage-result');
+            let html = '<div class="result">';
+            
+            html += '📦 CONTENUTO localStorage:\n\n';
+            
+            const spawnKeys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('spawn_')) {
+                    spawnKeys.push(key);
+                }
+            }
+            
+            if (spawnKeys.length === 0) {
+                html += '❌ Nessuna cache spawn trovata in localStorage\n';
+                html += 'Questo significa che stai usando il FALLBACK hardcoded\n';
+            } else {
+                html += `✅ Trovate ${spawnKeys.length} cache spawn:\n\n`;
+                spawnKeys.forEach(key => {
+                    const value = localStorage.getItem(key);
+                    try {
+                        const parsed = JSON.parse(value);
+                        const age = Math.floor((Date.now() - parsed.timestamp) / 1000);
+                        html += `🔑 ${key}:\n`;
+                        html += `   Age: ${age}s\n`;
+                        html += `   Data: ${JSON.stringify(parsed.data, null, 2)}\n\n`;
+                        
+                        // Check se sono valori vecchi
+                        if (key === 'spawn_cucina' && parsed.data) {
+                            const z = parsed.data.position?.z;
+                            const yaw = parsed.data.yaw;
+                            
+                            if (z === 2.12 && Math.abs(yaw - (-0.8616)) < 0.001) {
+                                html += `   ⚠️ TROVATI VALORI VECCHI! Pulisci la cache!\n\n`;
+                            } else if (z === 2.03 && Math.abs(yaw - 2.28) < 0.01) {
+                                html += `   ✅ Valori corretti da Docker\n\n`;
+                            }
+                        }
+                    } catch (e) {
+                        html += `   ❌ Errore parsing: ${e.message}\n\n`;
+                    }
+                });
+            }
+            
+            html += '</div>';
+            resultDiv.innerHTML = html;
+            
+            compareValues();
+        }
+
+        async function checkAPI(port = 8000) {
+            const resultDiv = document.getElementById('api-result');
+            const url = `http://localhost:${port}/api/rooms/cucina/spawn`;
+            
+            resultDiv.innerHTML = '<div class="result info">⏳ Controllando API...</div>';
+            
+            try {
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                let html = '<div class="result success">';
+                html += `✅ API ATTIVA su porta ${port}!\n\n`;
+                html += `📍 Coordinate restituite:\n`;
+                html += JSON.stringify(data, null, 2) + '\n\n';
+                
+                // Check valori
+                const z = data.position?.z;
+                const yaw = data.yaw;
+                
+                if (z === 2.12 && Math.abs(yaw - (-0.8616)) < 0.001) {
+                    html += `⚠️ L'API sta restituendo i VALORI VECCHI!\n`;
+                    html += `Il database locale ha dati vecchi!\n`;
+                } else if (z === 2.03 && Math.abs(yaw - 2.28) < 0.01) {
+                    html += `✅ L'API restituisce valori CORRETTI (Docker)\n`;
+                }
+                
+                html += '</div>';
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                let html = '<div class="result error">';
+                html += `❌ API NON disponibile su porta ${port}\n`;
+                html += `Errore: ${error.message}\n\n`;
+                html += `Questo significa che stai usando il FALLBACK hardcoded\n`;
+                html += '</div>';
+                resultDiv.innerHTML = html;
+            }
+            
+            compareValues();
+        }
+
+        function clearSpawnCache() {
+            const keys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('spawn_')) {
+                    keys.push(key);
+                }
+            }
+            
+            keys.forEach(k => localStorage.removeItem(k));
+            
+            const resultDiv = document.getElementById('localStorage-result');
+            resultDiv.innerHTML = `<div class="result success">✅ Cancellate ${keys.length} cache spawn!\n\nOra ricarica la pagina con Ctrl+Shift+R</div>`;
+        }
+
+        function compareValues() {
+            const compDiv = document.getElementById('comparison-result');
+            let html = '<div class="result info">';
+            
+            html += '📊 RIEPILOGO COORDINATE:\n\n';
+            html += '🎯 CORRETTE (Docker):\n';
+            html += '   z: 2.03\n';
+            html += '   yaw: 2.28 (130.63°)\n\n';
+            
+            html += '⚠️ VECCHIE (da eliminare):\n';
+            html += '   z: 2.12\n';
+            html += '   yaw: -0.8616 (-49.37°)\n\n';
+            
+            html += '---\n\n';
+            html += 'Se vedi z: 2.12 in DEV, la sorgente è:\n';
+            html += '1. localStorage cache (più probabile)\n';
+            html += '2. API backend locale con database vecchio\n';
+            html += '3. Fallback hardcoded (ma abbiamo verificato che è corretto)\n';
+            
+            html += '</div>';
+            compDiv.innerHTML = html;
+        }
+
+        // Auto-check all'avvio
+        window.onload = () => {
+            checkLocalStorage();
+            compareValues();
+        };
+    </script>
+</body>
+</html>

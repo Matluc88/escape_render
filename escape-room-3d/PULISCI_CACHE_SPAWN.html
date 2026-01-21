@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧹 PULISCI CACHE SPAWN</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .warning {
+            background: rgba(255, 193, 7, 0.2);
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: rgba(76, 175, 80, 0.2);
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            display: none;
+        }
+        button {
+            width: 100%;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #45a049;
+            transform: scale(1.02);
+        }
+        button.danger {
+            background: #f44336;
+        }
+        button.danger:hover {
+            background: #da190b;
+        }
+        .info {
+            background: rgba(33, 150, 243, 0.2);
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        pre {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 PULISCI CACHE SPAWN</h1>
+        
+        <div class="warning">
+            <h3>⚠️ PROBLEMA IDENTIFICATO</h3>
+            <p><strong>La cache localStorage ha coordinate VECCHIE!</strong></p>
+            <p>La cache ha un TTL di 1 ora e contiene le coordinate obsolete prima del fix.</p>
+        </div>
+
+        <div class="info">
+            <h3>📊 Cache Attuale</h3>
+            <div id="cacheStatus">Caricamento...</div>
+        </div>
+
+        <button onclick="pulisciCacheCucina()">
+            🧹 Pulisci SOLO Cache Cucina
+        </button>
+
+        <button class="danger" onclick="pulisciTutteLeCache()">
+            🔥 Pulisci TUTTE le Cache Spawn
+        </button>
+
+        <div class="success" id="successMsg">
+            <h3>✅ Cache Pulita!</h3>
+            <p id="successDetails"></p>
+            <p><strong>ADESSO:</strong></p>
+            <ol>
+                <li>Ricarica la pagina del gioco con <code>Ctrl+Shift+R</code></li>
+                <li>Entra nella cucina</li>
+                <li>Dovresti spawnare al CENTRO della cucina!</li>
+            </ol>
+        </div>
+
+        <div class="info">
+            <h3>📝 Coordinate Attese</h3>
+            <pre>
+NUOVE COORDINATE (post-fix):
+  Position: x=-1.5, y=0, z=1.2
+  Yaw: 0.5 radianti (~29°)
+  
+VECCHIE COORDINATE (cache):
+  Position: x=-0.9, y=0, z=2.07
+  Yaw: 2.55 radianti (~146°)
+            </pre>
+        </div>
+    </div>
+
+    <script>
+        // Mostra cache attuale
+        function mostraCacheAttuale() {
+            const status = document.getElementById('cacheStatus');
+            const keys = Object.keys(localStorage).filter(k => k.startsWith('spawn_'));
+            
+            if (keys.length === 0) {
+                status.innerHTML = '<p>✅ Nessuna cache presente</p>';
+                return;
+            }
+
+            let html = '<h4>Cache trovate:</h4><ul>';
+            keys.forEach(key => {
+                const cached = JSON.parse(localStorage.getItem(key));
+                const room = key.replace('spawn_', '');
+                const age = ((Date.now() - cached.timestamp) / 1000).toFixed(0);
+                const data = cached.data;
+                
+                html += `<li><strong>${room}</strong> (età: ${age}s)<br>`;
+                html += `Position: x=${data.position.x}, z=${data.position.z}<br>`;
+                html += `Yaw: ${data.yaw}</li>`;
+            });
+            html += '</ul>';
+            status.innerHTML = html;
+        }
+
+        // Pulisci solo cucina
+        function pulisciCacheCucina() {
+            localStorage.removeItem('spawn_cucina');
+            document.getElementById('successMsg').style.display = 'block';
+            document.getElementById('successDetails').textContent = 
+                '✅ Cache "spawn_cucina" rimossa con successo!';
+            mostraCacheAttuale();
+        }
+
+        // Pulisci tutte
+        function pulisciTutteLeCache() {
+            const keys = Object.keys(localStorage).filter(k => k.startsWith('spawn_'));
+            keys.forEach(k => localStorage.removeItem(k));
+            
+            document.getElementById('successMsg').style.display = 'block';
+            document.getElementById('successDetails').textContent = 
+                `✅ ${keys.length} cache rimosse: ${keys.join(', ')}`;
+            mostraCacheAttuale();
+        }
+
+        // Mostra all'avvio
+        mostraCacheAttuale();
+    </script>
+</body>
+</html>

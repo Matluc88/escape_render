@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🗑️ Clear Spawn Cache - DIAGNOSTIC MODE</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+            max-width: 700px;
+            border: 3px solid #00aaff;
+        }
+        h1 {
+            text-align: center;
+            color: #00aaff;
+            font-size: 32px;
+            margin: 0 0 20px 0;
+            text-shadow: 0 0 20px rgba(0, 170, 255, 0.8);
+        }
+        .warning {
+            background: rgba(255, 100, 0, 0.2);
+            border-left: 4px solid #ff6400;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .info {
+            background: rgba(0, 170, 255, 0.2);
+            border-left: 4px solid #00aaff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        button {
+            background: linear-gradient(135deg, #ff4500 0%, #ff6347 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+            box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4);
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 69, 0, 0.6);
+        }
+        .result {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            display: none;
+        }
+        .log {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            border-left: 3px solid #00aaff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗑️ CLEAR SPAWN CACHE</h1>
+        <h2 style="text-align: center; color: #ffaa00; margin-top: 0;">DIAGNOSTIC MODE</h2>
+        
+        <div class="warning">
+            <strong>⚠️ ATTENZIONE:</strong> Questa pagina invalida la cache spawn nel localStorage.
+            <br><br>
+            <strong>Perché è necessario?</strong>
+            <ul style="margin: 10px 0;">
+                <li>La cache può contenere coordinate VECCHIE (interpretate come WORLD invece di LOCAL)</li>
+                <li>Il fix al runtime converte LOCAL→WORLD, ma se la cache ha coordinate già convertite → doppia conversione!</li>
+                <li>Invalidando la cache, il sistema ricarica dal DB con il nuovo contratto</li>
+            </ul>
+        </div>
+        
+        <div class="info">
+            <strong>📋 PROCEDURA:</strong>
+            <ol style="margin: 10px 0; padding-left: 20px;">
+                <li>Clicca "Clear Cache" sotto</li>
+                <li>Ricarica la scena soggiorno</li>
+                <li>Verifica i log di conversione LOCAL→WORLD</li>
+                <li>Controlla che la posizione finale sia corretta</li>
+            </ol>
+        </div>
+        
+        <button onclick="clearSpawnCache()">🗑️ CLEAR SPAWN CACHE</button>
+        
+        <div id="result" class="result">
+            <strong>✅ Cache invalidata!</strong>
+            <div id="log"></div>
+        </div>
+    </div>
+    
+    <script>
+        function clearSpawnCache() {
+            const rooms = ['soggiorno', 'cucina', 'bagno', 'camera', 'esterno'];
+            let cleared = 0;
+            const logContainer = document.getElementById('log');
+            logContainer.innerHTML = '';
+            
+            rooms.forEach(room => {
+                const key = `spawn_${room}`;
+                const existed = localStorage.getItem(key) !== null;
+                
+                if (existed) {
+                    const cached = JSON.parse(localStorage.getItem(key));
+                    const age = Math.floor((Date.now() - cached.timestamp) / 1000);
+                    
+                    logContainer.innerHTML += `
+                        <div class="log">
+                            <strong>${room}:</strong> Rimossa (age: ${age}s)<br>
+                            <code>${JSON.stringify(cached.data.position)}</code>
+                        </div>
+                    `;
+                    
+                    localStorage.removeItem(key);
+                    cleared++;
+                } else {
+                    logContainer.innerHTML += `
+                        <div class="log">
+                            <strong>${room}:</strong> Nessuna cache presente
+                        </div>
+                    `;
+                }
+            });
+            
+            document.getElementById('result').style.display = 'block';
+            
+            console.log(`[SpawnCache] 🗑️ Cleared ${cleared} spawn caches`);
+            
+            if (cleared > 0) {
+                setTimeout(() => {
+                    alert(`✅ Cache spawn invalidata!\n\n${cleared} stanze pulite.\n\nOra ricarica la scena per testare il nuovo contratto LOCAL→WORLD.`);
+                }, 500);
+            } else {
+                alert('ℹ️ Nessuna cache spawn da invalidare.');
+            }
+        }
+        
+        // Auto-clear al caricamento pagina
+        console.log('[SpawnCache] 🔍 Pagina diagnostic caricata - ready to clear');
+    </script>
+</body>
+</html>

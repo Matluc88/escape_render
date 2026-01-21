@@ -1,0 +1,54 @@
+{
+  "sequence": [
+    {
+      "objectName": "PORTA_FINESTRA_BAGNO(8DC60897-B076-4D5E-B9E9-CF007F4D0565)",
+      "mode": "rotation",
+      "pivotX": 2.686,
+      "pivotY": 0.652,
+      "pivotZ": 4.055,
+      "axis": "y",
+      "angle": 30,
+      "speed": 45,
+      "direction": 1
+    },
+    {
+      "objectName": "VETRO_PORTA_FINESTRA_BAGNO(85EEAEFB-4D36-4CBE-9482-25218ED49A17)",
+      "mode": "rotation",
+      "pivotX": 2.686,
+      "pivotY": 0.652,
+      "pivotZ": 4.055,
+      "axis": "y",
+      "angle": 30,
+      "speed": 45,
+      "direction": 1,
+      "handleUUIDs": [
+        "B570A3EE-B02E-4660-B048-396C6099E228",
+        "91ED1413-7981-462E-84D4-5F050F2C827C"
+      ]
+    },
+    {
+      "objectName": "PORTA_FINESTRA_BAGNO(51BE9618-335C-4C8E-8826-E684865F11E6)",
+      "mode": "rotation",
+      "pivotX": 2.686,
+      "pivotY": 0.652,
+      "pivotZ": 4.055,
+      "axis": "y",
+      "angle": 30,
+      "speed": 45,
+      "direction": 1
+    },
+    {
+      "objectName": "PORTA_FINESTRA_BAGNO(B0F3188F-57A9-4443-B86F-9F5AD98586BE)",
+      "mode": "rotation",
+      "pivotX": 2.686,
+      "pivotY": 0.652,
+      "pivotZ": 4.055,
+      "axis": "y",
+      "angle": 30,
+      "speed": 45,
+      "direction": 1
+    }
+  ],
+  "_notes": "Porta-finestra bagno multi-oggetto con 4 elementi sincronizzati. ASSE Y per rotazione verticale (come porta normale). Coordinate pivot aggiornate da Animation Editor V2.0 (2.686, 0.652, 4.055). Angolo apertura 30°.",
+  "_timestamp": "2026-01-16T18:58:00.000Z"
+}

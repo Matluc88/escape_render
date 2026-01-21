@@ -1,0 +1,16 @@
+{
+  "objectName": "VETRO_PORTA_FINESTRA_LETTO(B1E6A326-9FEF-48E1-9368-60BC0465B81D)",
+  "mode": "rotation",
+  "pivotX": 0.1194372218017572,
+  "pivotY": 0.5961466979980482,
+  "pivotZ": -0.663,
+  "axis": "y",
+  "angle": 30,
+  "speed": 45,
+  "direction": 1,
+  "handleUUIDs": [
+    "B570A3EE-B02E-4660-B048-396C6099E228",
+    "91ED1413-7981-462E-84D4-5F050F2C827C"
+  ],
+  "_notes": "Porta-finestra camera con pivot manuale. ASSE Y CORRETTO per rotazione verticale sui cardini (era Z errato)."
+}

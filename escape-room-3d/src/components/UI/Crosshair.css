@@ -1,0 +1,37 @@
+/* Crosshair - Fixed center screen reticle - Simple and friendly design */
+.crosshair {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+  pointer-events: none;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+/* Active state - when targeting an interactive object (green + larger) */
+.crosshair-active {
+  color: rgba(0, 255, 136, 0.95);
+  animation: crosshair-pulse 1s ease-in-out infinite;
+}
+
+/* Pulse animation for active state - grows slightly */
+@keyframes crosshair-pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 0.85;
+  }
+}
+
+/* Responsive: Slightly smaller on mobile but still visible */
+@media (max-width: 768px) {
+  .crosshair svg {
+    width: 36px;
+    height: 36px;
+  }
+}

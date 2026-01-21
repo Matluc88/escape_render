@@ -1,0 +1,13 @@
+{
+  "objectName": "PORTA_CUCINA(4677853D-8C06-4363-BBE7-FACF26F193E9)",
+  "mode": "rotation",
+  "pivotX": -0.650,
+  "pivotY": 0.543,
+  "pivotZ": 0.251,
+  "axis": "z",
+  "angle": 90,
+  "speed": 45,
+  "direction": 1,
+  "handleUUIDs": [],
+  "_notes": "Porta cucina con pivot sinistro. ASSE Z per rotazione in profondità."
+}

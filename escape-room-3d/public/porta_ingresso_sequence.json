@@ -1,0 +1,15 @@
+{
+  "objectName": "PORTA_INGRESSO(BE4CFAD9-5A47-4C4C-AE3F-433A4A7694F3)",
+  "mode": "rotation",
+  "autoPivot": "right",
+  "angle": 90,
+  "axis": "z",
+  "direction": -1,
+  "duration": 1.5,
+  "easing": "easeInOutCubic",
+  "handleUUIDs": [
+    "C79AFA0F-3538-48BE-9380-3D385F83BF71",
+    "2AE21696-5B61-4DBB-B9A6-D60D43EEDED8"
+  ],
+  "notes": "Porta d'ingresso con pivot automatico calcolato dalla bbox (lato destro). Asse Z per apertura laterale."
+}

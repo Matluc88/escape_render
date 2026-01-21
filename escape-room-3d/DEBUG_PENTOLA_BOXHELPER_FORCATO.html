@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DEBUG PENTOLA - BOXHELPER FORZATO</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+<h1>🔍 DEBUG PENTOLA - BOXHELPER FORZATO</h1>
+<p><strong>Questo script aggiungerà un BOX ROSSO ENORME sempre visibile sulla pentola!</strong></p>
+
+<pre style="background: #f5f5f5; padding: 20px; border-radius: 5px; overflow-x: auto;">
+<code>
+// DEBUG PENTOLA - BOXHELPER GIGANTE FORZATO
+console.clear();
+console.log('🔍 DEBUG PENTOLA - AGGIUNTA BOXHELPER GIGANTE');
+console.log('');
+
+const scene = window.__DEBUG?.scene;
+if (!scene) {
+  console.error('❌ Scene non trovata');
+  throw new Error('Scene not found');
+}
+
+// Trova pentola
+let pentola = null;
+scene.traverse(n => {
+  if(n.name && n.name.includes('FC640F14-10EB-486E-8AED-5773C59DA9E0')) {
+    pentola = n;
+  }
+});
+
+if (!pentola) {
+  console.error('❌ PENTOLA NON TROVATA!');
+  throw new Error('Pentola not found');
+}
+
+console.log('✅ Pentola trovata:', pentola.name);
+
+// Posizione world
+const worldPos = new THREE.Vector3();
+pentola.getWorldPosition(worldPos);
+console.log('🌍 Posizione world pentola:', worldPos);
+
+// AGGIUNGI BOXHELPER GIGANTE ROSSO
+const box = new THREE.BoxHelper(pentola, 0xff0000); // ROSSO
+box.material.linewidth = 10; // Linee spesse
+box.renderOrder = 999; // Renderizza sempre sopra
+box.material.depthTest = false; // Ignora depth test
+box.material.depthWrite = false;
+scene.add(box);
+console.log('✅ BoxHelper rosso aggiunto alla scena');
+
+// AGGIUNGI SFERA VERDE ALLA POSIZIONE WORLD
+const sphereGeom = new THREE.SphereGeometry(0.5, 16, 16);
+const sphereMat = new THREE.MeshBasicMaterial({ 
+  color: 0x00ff00,
+  depthTest: false,
+  depthWrite: false
+});
+const sphere = new THREE.Mesh(sphereGeom, sphereMat);
+sphere.position.copy(worldPos);
+sphere.renderOrder = 1000;
+scene.add(sphere);
+console.log('✅ Sfera verde aggiunta alla posizione world della pentola');
+
+// AGGIUNGI LINEA DALLA CAMERA ALLA PENTOLA
+const camera = window.__DEBUG?.camera;
+if (camera) {
+  const cameraPos = new THREE.Vector3();
+  camera.getWorldPosition(cameraPos);
+  
+  const points = [cameraPos, worldPos];
+  const lineGeom = new THREE.BufferGeometry().setFromPoints(points);
+  const lineMat = new THREE.LineBasicMaterial({ 
+    color: 0xffff00,
+    linewidth: 5,
+    depthTest: false
+  });
+  const line = new THREE.Line(lineGeom, lineMat);
+  line.renderOrder = 1001;
+  scene.add(line);
+  console.log('✅ Linea gialla aggiunta da camera a pentola');
+  
+  // Distanza
+  const dist = cameraPos.distanceTo(worldPos);
+  console.log('📏 Distanza camera-pentola:', dist.toFixed(2), 'm');
+}
+
+console.log('');
+console.log('═══════════════════════════════════');
+console.log('✅ FATTO!');
+console.log('═══════════════════════════════════');
+console.log('');
+console.log('👀 ORA DOVRESTI VEDERE:');
+console.log('   🔴 Box rosso sulla pentola');
+console.log('   🟢 Sfera verde sulla posizione world');
+console.log('   🟡 Linea gialla dalla camera alla pentola');
+console.log('');
+console.log('❓ SE NON VEDI NULLA:');
+console.log('   → La pentola è FUORI dal frustum della camera');
+console.log('   → Muoviti nella scena per cercarla');
+console.log('   → Guarda SOTTO e DIETRO di te');
+</code>
+</pre>
+
+<h2>🎯 Cosa Fa</h2>
+<ul>
+    <li>🔴 <strong>Box Rosso:</strong> Contorno box della pentola</li>
+    <li>🟢 <strong>Sfera Verde:</strong> Posizione world esatta</li>
+    <li>🟡 <strong>Linea Gialla:</strong> Collegamento camera → pentola</li>
+</ul>
+
+<p><strong>IMPORTANTE:</strong> Tutti questi oggetti usano <code>depthTest: false</code>, quindi saranno SEMPRE visibili, anche attraverso i muri!</p>
+
+<h2>🔧 Prossimi Passi</h2>
+<ol>
+    <li><strong>Copia lo script sopra</strong></li>
+    <li><strong>Incollalo nella Console</strong> (F12)</li>
+    <li><strong>Guarda la scena</strong> - dovresti vedere oggetti colorati</li>
+    <li><strong>Se NON vedi nulla:</strong> muoviti e guarda intorno (sotto/dietro)</li>
+</ol>
+
+</body>
+</html>

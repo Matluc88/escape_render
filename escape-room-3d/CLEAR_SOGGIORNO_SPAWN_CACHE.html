@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧹 Clear Soggiorno Spawn Cache</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      color: #333;
+      text-align: center;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 1.1em;
+    }
+    
+    .info-box {
+      background: #f0f4ff;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+    
+    .info-box h3 {
+      color: #667eea;
+      margin-bottom: 8px;
+      font-size: 1.2em;
+    }
+    
+    .info-box p {
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    
+    .cache-status {
+      background: #fff;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .cache-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .cache-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .cache-label {
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .cache-value {
+      color: #666;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+    
+    .cache-age {
+      color: #999;
+      font-size: 0.85em;
+      font-style: italic;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-top: 25px;
+    }
+    
+    button {
+      flex: 1;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .btn-clear {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-clear:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-clear-all {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+    }
+    
+    .btn-clear-all:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(245, 87, 108, 0.4);
+    }
+    
+    .btn-refresh {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    .btn-refresh:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(76, 175, 80, 0.4);
+    }
+    
+    .log {
+      background: #2d2d2d;
+      color: #00ff00;
+      padding: 20px;
+      border-radius: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      margin-top: 20px;
+      max-height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    
+    .empty-cache {
+      text-align: center;
+      color: #999;
+      padding: 20px;
+      font-style: italic;
+    }
+    
+    .success {
+      color: #4CAF50 !important;
+      font-weight: bold;
+    }
+    
+    .warning {
+      color: #ff9800 !important;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .container {
+      animation: fadeIn 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧹 Clear Spawn Cache</h1>
+    <p class="subtitle">Invalidazione Cache Soggiorno</p>
+    
+    <div class="info-box">
+      <h3>📍 Problema Identificato</h3>
+      <p><strong>Spawn soggiorno:</strong> <code>(x: 0.54, z: 1.51)</code></p>
+      <p>✅ FPSController funziona correttamente (spawn atomico OK)</p>
+      <p>❌ Coordinate DB puntano fuori dal soggiorno</p>
+      <p>⚠️ Cache localStorage serve dati vecchi (TTL: 1 ora)</p>
+    </div>
+    
+    <div class="cache-status" id="cacheStatus">
+      <h3 style="margin-bottom: 15px; color: #333;">📦 Cache Status</h3>
+      <div id="cacheContent">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+    
+    <div class="button-group">
+      <button class="btn-clear" onclick="clearSoggiornoCache()">
+        🗑️ Clear Soggiorno
+      </button>
+      <button class="btn-clear-all" onclick="clearAllSpawnCache()">
+        💣 Clear All Spawns
+      </button>
+      <button class="btn-refresh" onclick="refreshCacheStatus()">
+        🔄 Refresh
+      </button>
+    </div>
+    
+    <div class="log" id="log"></div>
+  </div>
+
+  <script>
+    function log(message, type = 'info') {
+      const logEl = document.getElementById('log');
+      const timestamp = new Date().toLocaleTimeString('it-IT');
+      const prefix = type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+      const className = type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+      logEl.innerHTML += `<span class="${className}">[${timestamp}] ${prefix} ${message}</span>\n`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function formatAge(timestamp) {
+      const age = Date.now() - timestamp;
+      const seconds = Math.floor(age / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      
+      if (hours > 0) return `${hours}h ${minutes % 60}m fa`;
+      if (minutes > 0) return `${minutes}m ${seconds % 60}s fa`;
+      return `${seconds}s fa`;
+    }
+
+    function refreshCacheStatus() {
+      const cacheContent = document.getElementById('cacheContent');
+      const keys = Object.keys(localStorage);
+      const spawnKeys = keys.filter(k => k.startsWith('spawn_'));
+      
+      if (spawnKeys.length === 0) {
+        cacheContent.innerHTML = '<div class="empty-cache">Nessuna cache spawn presente</div>';
+        log('Nessuna cache trovata', 'info');
+        return;
+      }
+      
+      cacheContent.innerHTML = '';
+      spawnKeys.forEach(key => {
+        const cached = JSON.parse(localStorage.getItem(key));
+        const roomName = key.replace('spawn_', '');
+        const age = formatAge(cached.timestamp);
+        const pos = cached.data?.position || {};
+        
+        const isSoggiorno = roomName === 'soggiorno';
+        const highlightStyle = isSoggiorno ? 'border-left-color: #f5576c; background: #fff5f5;' : '';
+        
+        const itemHtml = `
+          <div class="cache-item" style="${highlightStyle}">
+            <div>
+              <div class="cache-label">${isSoggiorno ? '🎯 ' : ''}${roomName.toUpperCase()}</div>
+              <div class="cache-value">x: ${pos.x?.toFixed(2) || 'N/A'}, z: ${pos.z?.toFixed(2) || 'N/A'}</div>
+              <div class="cache-age">${age}</div>
+            </div>
+          </div>
+        `;
+        cacheContent.innerHTML += itemHtml;
+      });
+      
+      log(`Cache refresh: ${spawnKeys.length} spawn trovati`, 'info');
+    }
+
+    function clearSoggiornoCache() {
+      const key = 'spawn_soggiorno';
+      const cached = localStorage.getItem(key);
+      
+      if (!cached) {
+        log('⚠️ Cache soggiorno non trovata (già pulita?)', 'warning');
+        refreshCacheStatus();
+        return;
+      }
+      
+      const data = JSON.parse(cached);
+      log(`🗑️ Rimozione cache soggiorno: (${data.data.position.x}, ${data.data.position.z})`, 'info');
+      
+      localStorage.removeItem(key);
+      log('✅ Cache soggiorno rimossa con successo!', 'success');
+      log('ℹ️ Prossimo accesso fetcherà dal backend', 'info');
+      
+      refreshCacheStatus();
+    }
+
+    function clearAllSpawnCache() {
+      const keys = Object.keys(localStorage);
+      const spawnKeys = keys.filter(k => k.startsWith('spawn_'));
+      
+      if (spawnKeys.length === 0) {
+        log('⚠️ Nessuna cache spawn da pulire', 'warning');
+        return;
+      }
+      
+      log(`💣 Rimozione ${spawnKeys.length} cache spawn...`, 'info');
+      spawnKeys.forEach(k => {
+        localStorage.removeItem(k);
+        log(`  - Rimosso: ${k}`, 'info');
+      });
+      
+      log(`✅ Tutte le cache spawn rimosse (${spawnKeys.length} items)`, 'success');
+      refreshCacheStatus();
+    }
+
+    // Initial load
+    window.addEventListener('DOMContentLoaded', () => {
+      log('🚀 Clear Spawn Cache Tool inizializzato', 'info');
+      refreshCacheStatus();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,324 @@
+# 🎨 Particle Editor - Guida Completa
+
+Editor visuale in tempo reale per configurare effetti particellari (HotAirEffect) nell'applicazione 3D.
+
+## 📋 COMPONENTI
+
+### 1. ParticleEditor.jsx
+UI Panel con controlli per tutti i parametri delle particelle:
+- Selezione sorgente (oggetto 3D)
+- Selezione target (punto 3D)
+- Sliders per numero, dimensione, opacità, velocità, turbolenza, distanza
+- Color pickers per colori warm/hot
+- Export/Import JSON
+- Reset configurazione
+
+### 2. ParticleEditor.css
+Styling completo del panel con:
+- Design glassmorphism
+- Animazioni smooth
+- Responsive design
+- Custom scrollbar
+
+### 3. useParticleEditor.js
+Hook personalizzato che gestisce:
+- Stato editor (aperto/chiuso)
+- Modalità selezione (sorgente/target)
+- Configurazione particelle
+- Gestione tasti (P per toggle, ESC per annullare)
+- Export/Import configurazioni
+
+### 4. HotAirEffectLive.jsx
+Wrapper di HotAirEffect che:
+- Aggiorna uniforms shader in real-time (NO remount!)
+- Trova automaticamente il material delle particelle
+- Calcola direzione da sorgente a target
+- Converte parametri da editor a HotAirEffect
+
+## 🚀 COME USARE
+
+### Passo 1: Attivare l'Editor
+
+Premi il tasto **X** (Particle Editor) per aprire il panel.
+
+### Passo 2: Selezionare la Sorgente
+
+1. Click sul pulsante **"📍 Seleziona Sorgente"**
+2. Click su un oggetto 3D nella scena (es: griglia, ventola)
+3. L'oggetto diventa la sorgente delle particelle
+
+### Passo 3: Impostare il Target
+
+1. Click sul pulsante **"🎯 Imposta Target"**
+2. Click su un punto qualsiasi nella scena
+3. Le particelle si muoveranno verso quel punto
+
+### Passo 4: Regolare i Parametri
+
+Usa gli sliders per modificare:
+
+- **Numero Particelle**: 100-1000 (più particelle = effetto più denso)
+- **Dimensione**: 50-500px (grandezza visiva)
+- **Opacità**: 0-100% (trasparenza)
+- **Velocità**: 0.1-2.0 (velocità movimento)
+- **Turbolenza**: 0-1.0 (caos nel movimento)
+- **Distanza Max**: 1-10m (raggio di visualizzazione)
+- **Distorsione**: 0-100% (effetto distorsione aria calda)
+
+**I cambiamenti si applicano IMMEDIATAMENTE senza riavviare!**
+
+### Passo 5: Personalizzare Colori
+
+- **Colore Caldo (Base)**: Colore iniziale particelle (default: rosso #FF0000)
+- **Colore Caldo (Peak)**: Colore finale particelle (default: giallo #FFFF00)
+
+Usa i color picker o inserisci valori HEX.
+
+### Passo 6: Salvare la Configurazione
+
+- **📋 Export JSON**: Scarica config in file JSON
+- **📂 Import JSON**: Carica config da file
+- **🔄 Reset**: Ripristina valori di default
+
+## 🔧 INTEGRAZIONE IN BEDROOMSCENE
+
+```jsx
+import { useState } from 'react'
+import { Canvas } from '@react-three/fiber'
+import ParticleEditor from '../components/UI/ParticleEditor'
+import useParticleEditor from '../hooks/useParticleEditor'
+import HotAirEffectLive from '../components/3D/HotAirEffectLive'
+
+function BedroomScene() {
+  const particleEditor = useParticleEditor()
+
+  // Handler per click su oggetti
+  const handleObjectClick = (event, object) => {
+    if (particleEditor.selectingMode === 'source') {
+      particleEditor.handleObjectSelected(object)
+    } else if (particleEditor.selectingMode === 'target') {
+      const worldPos = event.point // Posizione world del click
+      particleEditor.handleTargetSelected(worldPos)
+    }
+  }
+
+  return (
+    <>
+      {/* Canvas 3D */}
+      <Canvas>
+        <CasaModel onObjectClick={handleObjectClick} />
+        
+        {/* Effetto particelle LIVE */}
+        <HotAirEffectLive
+          config={particleEditor.particleConfig}
+          sourceObject={particleEditor.selectedObject}
+          targetPosition={particleEditor.targetPosition}
+        />
+      </Canvas>
+
+      {/* UI Editor */}
+      {particleEditor.editorOpen && (
+        <ParticleEditor
+          config={particleEditor.particleConfig}
+          onConfigChange={particleEditor.updateConfig}
+          onClose={particleEditor.closeEditor}
+          selectedObject={particleEditor.selectedObject}
+          onSelectSource={particleEditor.startSelectingSource}
+          onSelectTarget={particleEditor.startSelectingTarget}
+          selectingMode={particleEditor.selectingMode !== null}
+        />
+      )}
+    </>
+  )
+}
+```
+
+### Gestire Click su Oggetti
+
+Nel componente `CasaModel.jsx`:
+
+```jsx
+<mesh
+  onClick={(e) => {
+    e.stopPropagation()
+    if (onObjectClick) {
+      onObjectClick(e, e.object)
+    }
+  }}
+>
+  {/* ... */}
+</mesh>
+```
+
+## 📄 FORMATO JSON EXPORT
+
+```json
+{
+  "sourceObject": "GRIGLIA_VENTOLA_LETTO",
+  "sourceUUID": "04B1AD94-22FD-4C99-BDBE-DF1BA5FC33EA",
+  "targetPosition": {
+    "x": -0.17,
+    "y": 1.6,
+    "z": 1.4
+  },
+  "enabled": true,
+  "particleCount": 800,
+  "particleSize": 300,
+  "particleOpacity": 1.0,
+  "speed": 0.4,
+  "turbulence": 0.3,
+  "maxDistance": 6.0,
+  "warmColor": "#FF0000",
+  "hotColor": "#FFFF00",
+  "distortionIntensity": 0.8,
+  "transmission": 1.0,
+  "thickness": 0.4,
+  "timestamp": "2025-12-28T01:30:00.000Z",
+  "_notes": "Generated by ParticleEditor v1.0"
+}
+```
+
+## 🎮 CONTROLLI
+
+| Tasto | Azione |
+|-------|--------|
+| **X** | Toggle Particle Editor |
+| **ESC** | Annulla modalità selezione |
+| **Click** | Seleziona sorgente/target (se modalità attiva) |
+
+## 💡 TIPS & TRICKS
+
+### Problema: Particelle non visibili
+1. ✅ Verifica che `enabled: true` nel config
+2. ✅ Aumenta dimensione particelle (300+px)
+3. ✅ Aumenta opacità al 100%
+4. ✅ Controlla che sorgente e target siano impostati
+
+### Problema: Particelle si muovono male
+1. ✅ Regola velocità (0.3-0.5 è ottimale)
+2. ✅ Riduci turbolenza se troppo caotico
+3. ✅ Verifica direzione target (deve puntare dove vuoi)
+
+### Performance
+- **500 particelle**: Ottimo per mobile
+- **800 particelle**: Buono per desktop
+- **1000+ particelle**: Solo hardware potenti
+
+### Effetto Realistico
+```json
+{
+  "particleCount": 600,
+  "particleSize": 180,
+  "particleOpacity": 0.8,
+  "speed": 0.35,
+  "turbulence": 0.25,
+  "maxDistance": 4.0,
+  "warmColor": "#FF4400",
+  "hotColor": "#FFAA00"
+}
+```
+
+### Effetto Intenso
+```json
+{
+  "particleCount": 900,
+  "particleSize": 250,
+  "particleOpacity": 1.0,
+  "speed": 0.5,
+  "turbulence": 0.4,
+  "maxDistance": 7.0,
+  "warmColor": "#FF0000",
+  "hotColor": "#FFFF00"
+}
+```
+
+### Effetto Sottile
+```json
+{
+  "particleCount": 300,
+  "particleSize": 120,
+  "particleOpacity": 0.6,
+  "speed": 0.2,
+  "turbulence": 0.15,
+  "maxDistance": 3.0,
+  "warmColor": "#FF6666",
+  "hotColor": "#FFCC66"
+}
+```
+
+## 🐛 TROUBLESHOOTING
+
+### Editor non si apre con tasto P
+- Controlla che il focus non sia su un input/textarea
+- Verifica che `useParticleEditor` sia correttamente importato
+- Controlla console per errori
+
+### Modifiche non si applicano in real-time
+- Verifica che `HotAirEffectLive` sia usato (non `HotAirEffect` diretto)
+- Controlla che `onConfigChange` sia collegato
+- Verifica console per log di update uniforms
+
+### Click non funziona
+- Verifica che `onObjectClick` sia passato a `CasaModel`
+- Controlla che mesh abbia `onClick` handler
+- Usa `event.stopPropagation()` per evitare propagazione
+
+### Particelle scompaiono dopo poco
+- Il problema originale era il remount infinito
+- Con `HotAirEffectLive` questo è RISOLTO
+- Se persiste, controlla che `enabled: true` in config
+
+## 🎯 BEST PRACTICES
+
+1. **Usa HotAirEffectLive** - Mai HotAirEffect diretto nell'editor
+2. **Export configurazioni** - Salva quelle che funzionano bene
+3. **Testa su dispositivi reali** - L'effetto può variare su mobile
+4. **Usa valori ragionevoli** - Non esagerare con numero particelle
+5. **Direzione importante** - Target deve essere realistico
+
+## 📊 ARCHITETTURA
+
+```
+BedroomScene
+├── useParticleEditor() [Hook]
+│   ├── Stato editor (open/close)
+│   ├── Modalità selezione
+│   ├── Config particelle
+│   └── Gestione tasti
+│
+├── <ParticleEditor/> [UI]
+│   ├── Sliders parametri
+│   ├── Color pickers
+│   ├── Export/Import
+│   └── Callbacks
+│
+└── <HotAirEffectLive/> [3D]
+    ├── Trova material shader
+    ├── Update uniforms live
+    ├── Calcola direzione
+    └── <HotAirEffect/> (wrapped)
+```
+
+## ✅ VANTAGGI
+
+1. **Zero Remount** - Particelle restano sempre visibili
+2. **Preview Real-Time** - Vedi modifiche istantaneamente
+3. **Configurazioni Salvabili** - Export/import JSON
+4. **UI Intuitiva** - Slider visuali + feedback immediato
+5. **Sistema Robusto** - Gestione errori + fallback
+6. **Riutilizzabile** - Funziona per qualsiasi effetto particellare
+
+## 🚀 PROSSIMI PASSI
+
+1. Apri BedroomScene
+2. Premi **X** per aprire editor
+3. Seleziona griglia ventilazione come sorgente
+4. Imposta spawn player come target
+5. Regola parametri fino a risultato desiderato
+6. Export JSON e usa in produzione!
+
+---
+
+**Creato da:** Particle Editor v1.0  
+**Data:** 28 Dicembre 2025  
+**Autore:** AI Assistant

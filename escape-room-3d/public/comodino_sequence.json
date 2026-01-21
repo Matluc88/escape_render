@@ -1,0 +1,53 @@
+{
+  "objectName": "Comodino_Samuelson",
+  "objectIds": [
+    "9EC68E8D-5D4A-4CC2-AA0B-B64FEFC940C3",
+    "506AD06A-2C99-4062-BD08-1261C616FEDB",
+    "F8B2F30A-DAE5-4815-BCBE-5CC5883CFB21",
+    "CF7CACC7-CA5A-4642-B7D6-691C675BCE6A"
+  ],
+  "description": "Sequenza animazione comodino: 1) Rotazione 45°, 2) Spostamento verso destinazione finale",
+  "sequence": [
+    {
+      "phase": "rotation",
+      "mode": "rotation",
+      "pivotX": -1.5917912823791507,
+      "pivotY": 0.765,
+      "pivotZ": 0.07503913232421894,
+      "axis": "y",
+      "angle": 45,
+      "speed": 45,
+      "direction": 1,
+      "duration_estimate": "1.0s"
+    },
+    {
+      "phase": "position",
+      "mode": "position",
+      "startX": -1.0153120000000007,
+      "startY": 0,
+      "startZ": 0.8566409999999999,
+      "endX": -1.8612485643866214,
+      "endY": 0.765,
+      "endZ": -0.27573720351095532,
+      "speed": 1.5,
+      "distance": 1.006,
+      "duration_estimate": "0.67s"
+    }
+  ],
+  "trigger": {
+    "method": "keyboard",
+    "key": "K",
+    "description": "Premi tasto K per attivare sequenza"
+  },
+  "_notes": [
+    "✅ AGGIORNAMENTO 16/01/2026 - Coordinate corrette da Animation Editor V2:",
+    "1. FASE 1 - ROTATION: pivot aggiornato con pivotY=0.765 (era forzato a 0)",
+    "2. FASE 2 - POSITION: destinazione corretta (-1.361, -0.139, 0.469)",
+    "3. Velocità aumentata a 26.0 u/s per movimento più fluido",
+    "4. Asse Z confermato per rotazione",
+    "5. Coordinate pivot e destinazione catturate con Animation Editor Position Picker",
+    "Sequenza completa: rotation (45°) → position (nuova destinazione) - automatica",
+    "Generato da Animation Editor V2.0 con coordinate esatte dall'utente"
+  ],
+  "_timestamp": "2026-01-16T15:36:00.000Z"
+}

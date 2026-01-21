@@ -1,0 +1,23 @@
+{
+  "objectName": "Pianta(9AC0D035-3A94-414C-B813-221BEB0717EC)",
+  "mode": "position",
+  "startX": -1.0137219026804227,
+  "startY": -0.022718320693664237,
+  "startZ": 0.8088929524562714,
+  "endX": -1.7398066584480008,
+  "endY": 0.32,
+  "endZ": -0.7324539690573786,
+  "speed": 24.5,
+  "_notes": "Animazione Pianta soggiorno - Tasto G - One-shot movement - Aggiornato 2026-01-16 con nuove coordinate dall'Animation Editor",
+  "_timestamp": "2026-01-16T16:29:49.231Z",
+  "_animation": {
+    "type": "movable",
+    "state": "origin",
+    "delta": {
+      "x": -0.726084755767578,
+      "y": 0.30000000000000027,
+      "z": -1.54134692151365,
+      "distance": 1.7300142788479145
+    }
+  }
+}

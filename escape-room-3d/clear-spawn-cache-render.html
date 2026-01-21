@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗑️ Clear Spawn Cache - Render</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0 0 20px 0;
+            font-size: 2em;
+        }
+        .emoji {
+            font-size: 4em;
+            margin: 20px 0;
+        }
+        button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        .success {
+            background: #4ade80;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+        .info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+        code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 5px;
+            color: #4ade80;
+        }
+        .step {
+            text-align: left;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3px solid #4ade80;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗑️ Clear Spawn Cache</h1>
+        <div class="emoji">🚀</div>
+        
+        <div class="info">
+            <strong>⚠️ ATTENZIONE</strong><br>
+            Questo tool cancella TUTTA la cache delle coordinate spawn di Render.<br>
+            Le nuove coordinate verranno scaricate dal database al prossimo caricamento.
+        </div>
+
+        <div class="step">
+            <strong>📍 Database Render:</strong><br>
+            Cucina: x=-0.9, z=2.12, yaw=2.45<br>
+            Camera: x=-0.21, z=1.46, yaw=0.82<br>
+            Bagno: x=1.18, z=2.59, yaw=3.75<br>
+            Soggiorno: x=0.53, z=1.52, yaw=5.17
+        </div>
+
+        <button onclick="clearCache()">🗑️ CANCELLA CACHE</button>
+        <button onclick="window.location.reload()">🔄 RICARICA PAGINA</button>
+
+        <div class="success" id="success">
+            ✅ Cache cancellata con successo!<br>
+            <small>Ricarica la pagina per scaricare le coordinate aggiornate.</small>
+        </div>
+
+        <div class="info" style="margin-top: 30px;">
+            <strong>📝 Come usare:</strong><br>
+            1️⃣ Clicca "CANCELLA CACHE"<br>
+            2️⃣ Clicca "RICARICA PAGINA"<br>
+            3️⃣ Vai alla stanza e verifica le coordinate<br>
+            <br>
+            <strong>🔍 Verifica in console:</strong><br>
+            <code>[CameraPositioning] ✅ Loaded spawn from DATABASE</code>
+        </div>
+
+        <div class="step" style="margin-top: 20px;">
+            <strong>🔗 Link Test (Session 26):</strong><br>
+            <a href="https://escape-room-3d.onrender.com/play/26/cucina?name=P1" style="color: #4ade80;">Cucina</a> | 
+            <a href="https://escape-room-3d.onrender.com/play/26/camera?name=P2" style="color: #4ade80;">Camera</a> | 
+            <a href="https://escape-room-3d.onrender.com/play/26/bagno?name=P3" style="color: #4ade80;">Bagno</a> | 
+            <a href="https://escape-room-3d.onrender.com/play/26/soggiorno?name=P4" style="color: #4ade80;">Soggiorno</a>
+        </div>
+    </div>
+
+    <script>
+        function clearCache() {
+            // Cancella tutti i dati di spawn dal localStorage
+            const keysToDelete = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('spawn_')) {
+                    keysToDelete.push(key);
+                }
+            }
+
+            keysToDelete.forEach(key => {
+                localStorage.removeItem(key);
+                console.log('🗑️ Removed:', key);
+            });
+
+            // Cancella anche sessionStorage
+            const sessionKeysToDelete = [];
+            for (let i = 0; i < sessionStorage.length; i++) {
+                const key = sessionStorage.key(i);
+                if (key && key.startsWith('spawn_')) {
+                    sessionKeysToDelete.push(key);
+                }
+            }
+
+            sessionKeysToDelete.forEach(key => {
+                sessionStorage.removeItem(key);
+                console.log('🗑️ Removed from session:', key);
+            });
+
+            // Mostra messaggio di successo
+            document.getElementById('success').style.display = 'block';
+            
+            console.log('✅ Cache cleared! Total keys removed:', keysToDelete.length + sessionKeysToDelete.length);
+            console.log('📊 Remaining localStorage keys:', localStorage.length);
+            console.log('📊 Remaining sessionStorage keys:', sessionStorage.length);
+        }
+
+        // Log info all'avvio
+        console.log('🔍 Current spawn cache keys:');
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('spawn_')) {
+                const data = localStorage.getItem(key);
+                console.log(`  ${key}:`, JSON.parse(data));
+            }
+        }
+    </script>
+</body>
+</html>

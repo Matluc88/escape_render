@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧹 Clear Storage Completo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        button {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.3em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 2px solid #17a2b8;
+            color: #0c5460;
+        }
+        .storage-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .storage-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .storage-item:last-child {
+            border-bottom: none;
+        }
+        .key {
+            font-weight: bold;
+            color: #495057;
+        }
+        .value {
+            color: #6c757d;
+            font-family: monospace;
+            max-width: 400px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Clear Storage Completo</h1>
+        <p class="subtitle">Pulisce TUTTO il localStorage per risolvere problemi di coordinate</p>
+
+        <div class="warning">
+            ⚠️ Questo cancellerà TUTTE le cache salvate nel browser per questo sito!
+        </div>
+
+        <button onclick="showCurrentStorage()">📊 Mostra Storage Attuale</button>
+        <button onclick="clearEverything()">🗑️ CANCELLA TUTTO</button>
+        <button onclick="testAPI()">🧪 Test API Coordinate</button>
+
+        <div id="result"></div>
+        <div id="storage-list" class="storage-info" style="display: none;"></div>
+    </div>
+
+    <script>
+        function showResult(message, type = 'info') {
+            const result = document.getElementById('result');
+            result.className = type;
+            result.innerHTML = message;
+            result.style.display = 'block';
+        }
+
+        function showCurrentStorage() {
+            const storageList = document.getElementById('storage-list');
+            const keys = Object.keys(localStorage);
+            
+            if (keys.length === 0) {
+                showResult('📭 LocalStorage è VUOTO!', 'info');
+                storageList.style.display = 'none';
+                return;
+            }
+
+            let html = '<h3>📦 Items in LocalStorage:</h3>';
+            keys.forEach(key => {
+                const value = localStorage.getItem(key);
+                let displayValue = value;
+                
+                try {
+                    const parsed = JSON.parse(value);
+                    displayValue = JSON.stringify(parsed, null, 2);
+                } catch (e) {
+                    // Non è JSON, mostra come stringa
+                }
+                
+                html += `
+                    <div class="storage-item">
+                        <span class="key">${key}</span>
+                        <span class="value">${displayValue.substring(0, 100)}${displayValue.length > 100 ? '...' : ''}</span>
+                    </div>
+                `;
+            });
+            
+            storageList.innerHTML = html;
+            storageList.style.display = 'block';
+            showResult(`Trovati ${keys.length} items in localStorage`, 'info');
+        }
+
+        function clearEverything() {
+            // Salva numero items prima
+            const beforeCount = localStorage.length;
+            
+            // Cancella localStorage
+            localStorage.clear();
+            
+            // Cancella sessionStorage
+            sessionStorage.clear();
+            
+            // Cancella cache browser se possibile
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                });
+            }
+            
+            // Aggiorna UI
+            document.getElementById('storage-list').style.display = 'none';
+            
+            showResult(`
+                <h2>✅ TUTTO CANCELLATO!</h2>
+                <p><strong>📊 Rimossi ${beforeCount} items da localStorage</strong></p>
+                <p>✅ sessionStorage pulito</p>
+                <p>✅ Cache browser pulita</p>
+                <hr>
+                <p><strong>🔄 ADESSO:</strong></p>
+                <ol style="text-align: left;">
+                    <li>Premi <kbd>CMD+SHIFT+R</kbd> (o CTRL+SHIFT+R)</li>
+                    <li>Vai su http://localhost/play/session-xxx/cucina</li>
+                    <li>Verifica le coordinate!</li>
+                </ol>
+            `, 'success');
+        }
+
+        async function testAPI() {
+            try {
+                showResult('🔄 Testing API...', 'info');
+                
+                const response = await fetch('http://localhost/api/rooms/cucina/spawn');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                showResult(`
+                    <h2>✅ API Funziona!</h2>
+                    <pre style="text-align: left; background: #f8f9fa; padding: 15px; border-radius: 5px;">
+${JSON.stringify(data, null, 2)}
+                    </pre>
+                    <p><strong>Valori corretti:</strong></p>
+                    <ul style="text-align: left;">
+                        <li>Z: ${data.position.z} ${data.position.z === 2.12 ? '✅' : '❌'}</li>
+                        <li>Yaw: ${data.yaw} ${data.yaw === -0.8392 ? '✅' : '❌'}</li>
+                    </ul>
+                `, data.position.z === 2.12 && data.yaw === -0.8392 ? 'success' : 'info');
+                
+            } catch (error) {
+                showResult(`
+                    <h2>❌ Errore API</h2>
+                    <p>${error.message}</p>
+                    <p>Assicurati che Docker sia attivo!</p>
+                `, 'info');
+            }
+        }
+
+        // Mostra storage all'avvio
+        window.onload = () => {
+            showCurrentStorage();
+        };
+    </script>
+</body>
+</html>

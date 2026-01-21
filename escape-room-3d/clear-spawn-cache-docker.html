@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧹 Svuota Cache Spawn - Docker</title>
+    <style>
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 32px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .cache-item {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .cache-item.cleared {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .emoji {
+            font-size: 48px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        #cacheList {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="emoji">🧹</span>
+        <h1>Svuota Cache Spawn</h1>
+        <p class="subtitle">Tool per rimuovere cache localStorage Docker</p>
+        
+        <div class="info-box">
+            <strong>⚠️ IMPORTANTE:</strong> Questo tool svuota SOLO la cache spawn di <code>localhost</code> (Docker).<br>
+            La cache di <code>localhost:5173</code> (dev) non verrà toccata.
+        </div>
+
+        <div id="cacheList"></div>
+        
+        <button onclick="clearCache()">🗑️ Svuota Cache Spawn</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Mostra cache esistenti
+        function showCurrentCache() {
+            const cacheList = document.getElementById('cacheList');
+            const keys = Object.keys(localStorage);
+            const spawnKeys = keys.filter(k => k.startsWith('spawn_'));
+            
+            if (spawnKeys.length === 0) {
+                cacheList.innerHTML = '<div class="cache-item cleared">✅ Nessuna cache spawn presente</div>';
+                return;
+            }
+            
+            let html = '<strong>📦 Cache presenti:</strong><br>';
+            spawnKeys.forEach(key => {
+                const data = JSON.parse(localStorage.getItem(key));
+                const age = Math.floor((Date.now() - data.timestamp) / 1000);
+                const roomName = key.replace('spawn_', '');
+                
+                html += `<div class="cache-item">
+                    🔑 <strong>${roomName}</strong><br>
+                    📍 Position: (${data.data.position.x}, ${data.data.position.y}, ${data.data.position.z})<br>
+                    🧭 Yaw: ${data.data.yaw} rad<br>
+                    ⏰ Age: ${age}s (${Math.floor(age/60)}m ${age%60}s)
+                </div>`;
+            });
+            
+            cacheList.innerHTML = html;
+        }
+        
+        function clearCache() {
+            const resultDiv = document.getElementById('result');
+            const keys = Object.keys(localStorage);
+            const spawnKeys = keys.filter(k => k.startsWith('spawn_'));
+            
+            if (spawnKeys.length === 0) {
+                resultDiv.innerHTML = '<div class="result warning">⚠️ Nessuna cache da eliminare!</div>';
+                return;
+            }
+            
+            // Rimuovi tutte le cache spawn
+            spawnKeys.forEach(k => localStorage.removeItem(k));
+            
+            resultDiv.innerHTML = `
+                <div class="result success">
+                    ✅ <strong>Cache svuotata con successo!</strong><br>
+                    🗑️ Rimossi ${spawnKeys.length} elementi:<br>
+                    ${spawnKeys.map(k => `• ${k.replace('spawn_', '')}`).join('<br>')}
+                    <br><br>
+                    <strong>🔄 Ora ricarica la pagina Docker:</strong><br>
+                    <code>http://localhost/play/test-session/cucina?name=Admin</code>
+                </div>
+            `;
+            
+            // Aggiorna lista
+            showCurrentCache();
+        }
+        
+        // Mostra cache all'avvio
+        showCurrentCache();
+    </script>
+</body>
+</html>

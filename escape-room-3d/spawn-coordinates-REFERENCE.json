@@ -1,0 +1,46 @@
+[
+  {
+    "room": "soggiorno",
+    "name": "🛋️ Soggiorno",
+    "position": {
+      "x": 0.54,
+      "y": 0,
+      "z": 1.52
+    },
+    "yaw": 5.21,
+    "yaw_degrees": 299
+  },
+  {
+    "room": "cucina",
+    "name": "🍳 Cucina",
+    "position": {
+      "x": -0.9,
+      "y": 0,
+      "z": 2.07
+    },
+    "yaw": 2.55,
+    "yaw_degrees": 146
+  },
+  {
+    "room": "bagno",
+    "name": "🚿 Bagno",
+    "position": {
+      "x": 1.27,
+      "y": 0,
+      "z": 2.62
+    },
+    "yaw": 3.65,
+    "yaw_degrees": 209
+  },
+  {
+    "room": "camera",
+    "name": "🛏️ Camera",
+    "position": {
+      "x": -0.18,
+      "y": 0,
+      "z": 1.5
+    },
+    "yaw": 0.61,
+    "yaw_degrees": 35
+  }
+]

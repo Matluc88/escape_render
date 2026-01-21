@@ -1,0 +1,77 @@
+version: "3.9"
+
+# 🔧 CONFIGURAZIONE SVILUPPO LOCALE
+# Porte DIVERSE da produzione per evitare conflitti
+# Backend: 8001 (invece di 3000)
+# DB: 5433 (invece di 5432)
+# MQTT: 1884/9002 (invece di 1883/9001)
+
+services:
+  web:
+    build: .
+    container_name: escape-backend-dev
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql://escape_user:escape_pass@db:5432/escape_db
+      - MQTT_HOST=mqtt
+      - MQTT_PORT=1883
+      - API_HOST=0.0.0.0
+      - CORS_ORIGINS=http://localhost:5174,http://localhost:5173,http://localhost:3000
+    depends_on:
+      db:
+        condition: service_healthy
+      mqtt:
+        condition: service_started
+    ports:
+      - "8001:3000"  # 🔧 PORTA SVILUPPO: 8001 (esterna) → 3000 (interna)
+    networks:
+      - escape-dev-network
+    volumes:
+      - ./app:/app/app:ro
+
+  db:
+    image: postgres:15-alpine
+    container_name: escape-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: escape_user
+      POSTGRES_PASSWORD: escape_pass
+      POSTGRES_DB: escape_db
+    volumes:
+      - escape_unified_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"  # 🔧 PORTA SVILUPPO: 5433 (esterna) → 5432 (interna)
+    networks:
+      - escape-dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U escape_user -d escape_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: escape-mqtt-dev
+    restart: unless-stopped
+    volumes:
+      - ./mosquitto/config:/mosquitto/config:ro
+      - mosquitto_dev_data:/mosquitto/data
+      - mosquitto_dev_log:/mosquitto/log
+    ports:
+      - "1884:1883"  # 🔧 PORTA SVILUPPO: 1884 (esterna) → 1883 (interna)
+      - "9002:9001"  # 🔧 PORTA SVILUPPO: 9002 (esterna) → 9001 (interna)
+    networks:
+      - escape-dev-network
+
+networks:
+  escape-dev-network:
+    driver: bridge
+
+volumes:
+  escape_unified_postgres_data:
+    external: true
+  mosquitto_dev_data:
+    driver: local
+  mosquitto_dev_log:
+    driver: local

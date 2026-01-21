@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🔍 DEBUG Kitchen Positions</title>
+    <style>
+        body { 
+            font-family: monospace; 
+            padding: 20px; 
+            background: #1e1e1e; 
+            color: #d4d4d4;
+        }
+        h1 { color: #4ec9b0; }
+        .object { 
+            margin: 10px 0; 
+            padding: 10px; 
+            background: #252526; 
+            border-left: 3px solid #007acc;
+        }
+        .name { color: #dcdcaa; font-weight: bold; }
+        .pos { color: #ce9178; }
+        .highlight { background: #264f78; border-left-color: #4ec9b0; }
+        button {
+            background: #0e639c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover { background: #1177bb; }
+    </style>
+</head>
+<body>
+    <h1>🔍 DEBUG: Posizioni Oggetti Cucina</h1>
+    <p>Questo script stampa TUTTE le posizioni degli oggetti nella scena.</p>
+    
+    <button onclick="findKitchenObjects()">🔍 TROVA OGGETTI CUCINA</button>
+    <button onclick="findFornelli()">🔥 CERCA FORNELLI/PIANO COTTURA</button>
+    <button onclick="clearResults()">🗑️ PULISCI</button>
+    
+    <div id="results"></div>
+
+    <script>
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        function findKitchenObjects() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<h2>📦 Tutti gli oggetti nella scena:</h2>';
+            
+            if (!window.scene) {
+                results.innerHTML += '<p style="color: red;">❌ window.scene non disponibile!</p>';
+                return;
+            }
+
+            let count = 0;
+            const objects = [];
+
+            window.scene.traverse((obj) => {
+                if (obj.isMesh || obj.isObject3D) {
+                    const worldPos = obj.getWorldPosition(new THREE.Vector3());
+                    objects.push({
+                        name: obj.name || 'unnamed',
+                        uuid: obj.uuid,
+                        type: obj.type,
+                        position: {
+                            local: { x: obj.position.x, y: obj.position.y, z: obj.position.z },
+                            world: { x: worldPos.x, y: worldPos.y, z: worldPos.z }
+                        },
+                        isMesh: obj.isMesh,
+                        parent: obj.parent?.name || 'no parent'
+                    });
+                    count++;
+                }
+            });
+
+            // Ordina per nome
+            objects.sort((a, b) => a.name.localeCompare(b.name));
+
+            results.innerHTML += `<p>✅ Trovati <strong>${count}</strong> oggetti</p>`;
+            
+            objects.forEach(obj => {
+                const div = document.createElement('div');
+                div.className = 'object';
+                div.innerHTML = `
+                    <div class="name">${obj.name}</div>
+                    <div>UUID: ${obj.uuid}</div>
+                    <div>Type: ${obj.type} ${obj.isMesh ? '(Mesh)' : ''}</div>
+                    <div>Parent: ${obj.parent}</div>
+                    <div class="pos">Local: (${obj.position.local.x.toFixed(2)}, ${obj.position.local.y.toFixed(2)}, ${obj.position.local.z.toFixed(2)})</div>
+                    <div class="pos">World: (${obj.position.world.x.toFixed(2)}, ${obj.position.world.y.toFixed(2)}, ${obj.position.world.z.toFixed(2)})</div>
+                `;
+                results.appendChild(div);
+            });
+        }
+
+        function findFornelli() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<h2>🔥 Ricerca Fornelli / Piano Cottura:</h2>';
+            
+            if (!window.scene) {
+                results.innerHTML += '<p style="color: red;">❌ window.scene non disponibile!</p>';
+                return;
+            }
+
+            const keywords = [
+                'fornelli', 'fornello', 'fuoco', 
+                'piano', 'cottura', 'cucina',
+                'corps', 'stove', 'burner', 'cooktop',
+                'range', 'hob', 'plaque'
+            ];
+
+            const candidates = [];
+
+            window.scene.traverse((obj) => {
+                const name = (obj.name || '').toLowerCase();
+                const hasKeyword = keywords.some(kw => name.includes(kw));
+                
+                if (hasKeyword && (obj.isMesh || obj.isObject3D)) {
+                    const worldPos = obj.getWorldPosition(new THREE.Vector3());
+                    candidates.push({
+                        name: obj.name,
+                        uuid: obj.uuid,
+                        type: obj.type,
+                        position: {
+                            local: { x: obj.position.x, y: obj.position.y, z: obj.position.z },
+                            world: { x: worldPos.x, y: worldPos.y, z: worldPos.z }
+                        },
+                        isMesh: obj.isMesh,
+                        parent: obj.parent?.name || 'no parent'
+                    });
+                }
+            });
+
+            if (candidates.length === 0) {
+                results.innerHTML += '<p style="color: orange;">⚠️ Nessun oggetto trovato con keywords: ' + keywords.join(', ') + '</p>';
+                results.innerHTML += '<p>💡 Usa il pulsante "TROVA OGGETTI CUCINA" per vedere TUTTI gli oggetti e cercare manualmente.</p>';
+                return;
+            }
+
+            results.innerHTML += `<p>✅ Trovati <strong>${candidates.length}</strong> candidati:</p>`;
+            
+            candidates.forEach(obj => {
+                const div = document.createElement('div');
+                div.className = 'object highlight';
+                div.innerHTML = `
+                    <div class="name">🔥 ${obj.name}</div>
+                    <div>UUID: ${obj.uuid}</div>
+                    <div>Type: ${obj.type} ${obj.isMesh ? '(Mesh)' : ''}</div>
+                    <div>Parent: ${obj.parent}</div>
+                    <div class="pos">Local: (${obj.position.local.x.toFixed(2)}, ${obj.position.local.y.toFixed(2)}, ${obj.position.local.z.toFixed(2)})</div>
+                    <div class="pos">World: (${obj.position.world.x.toFixed(2)}, ${obj.position.world.y.toFixed(2)}, ${obj.position.world.z.toFixed(2)})</div>
+                `;
+                results.appendChild(div);
+            });
+        }
+
+        // Auto-run on load
+        console.log('🔍 DEBUG Kitchen Positions loaded!');
+        console.log('📍 Centro cucina: (0, 0, 0)');
+        console.log('🍳 Pentola attuale: (-1.04, -0.10, -1.41)');
+        console.log('📷 Camera: (-1.50, 1.40, 1.20)');
+    </script>
+</body>
+</html>

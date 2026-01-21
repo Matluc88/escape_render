@@ -1,0 +1,145 @@
+import axios from 'axios'
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
+
+const apiClient = axios.create({
+  baseURL: BACKEND_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+export const createSession = async () => {
+  try {
+    // Crea sessione semplice con PIN - senza room_id
+    // Backend: POST /api/sessions
+    const response = await apiClient.post('/sessions')
+    return response.data
+  } catch (error) {
+    console.error('Error creating session:', error)
+    throw error
+  }
+}
+
+export const getSession = async (sessionId) => {
+  try {
+    const response = await apiClient.get(`/sessions/${sessionId}`)
+    return response.data
+  } catch (error) {
+    console.error('Error getting session:', error)
+    throw error
+  }
+}
+
+/**
+ * Fetch spawn position for a room from backend API
+ * Includes localStorage cache with 1 hour TTL
+ * With retry logic and exponential backoff for reliability
+ * @param {string} roomName - Name of the room (e.g., 'cucina', 'bagno')
+ * @param {number} retryCount - Current retry attempt (internal use)
+ * @returns {Promise<{position: {x, y, z}, yaw: number} | null>}
+ */
+export const fetchSpawnPosition = async (roomName, retryCount = 0) => {
+  const CACHE_KEY = `spawn_${roomName}`
+  const CACHE_TTL = 60 * 60 * 1000 // 1 hour in milliseconds
+  const MAX_RETRIES = 3
+  const INITIAL_DELAY = 100 // ms - wait for backend to be ready
+  const RETRY_DELAYS = [500, 1000, 2000] // Exponential backoff: 0.5s, 1s, 2s
+  
+  try {
+    // 🚫 CACHE DISABLED FOR DIAGNOSTIC TEST
+    const cached = localStorage.getItem(CACHE_KEY)
+    if (cached) {
+      const { data, timestamp } = JSON.parse(cached)
+      const age = Date.now() - timestamp
+      
+      console.log(`[API] 🔍 DIAGNOSTIC: Cache exists but SKIPPING (age: ${(age / 1000).toFixed(0)}s)`)
+      // SKIP CACHE: Always fetch from backend for clean test
+      // if (age < CACHE_TTL) {
+      //   console.log(`[API] ✅ Using cached spawn for ${roomName} (age: ${(age / 1000).toFixed(0)}s)`)
+      //   return data
+      // }
+    }
+    
+    // Initial delay on first attempt to let backend initialize
+    if (retryCount === 0) {
+      await new Promise(resolve => setTimeout(resolve, INITIAL_DELAY))
+    }
+    
+    // Fetch from API
+    console.log(`[API] 🌐 Fetching spawn from backend: /spawn/${roomName}${retryCount > 0 ? ` (retry ${retryCount}/${MAX_RETRIES})` : ''}`)
+    const response = await apiClient.get(`/spawn/${roomName}`)
+    const spawnData = response.data
+    
+    // Cache response
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+      data: spawnData,
+      timestamp: Date.now()
+    }))
+    
+    console.log(`[API] ✅ Fetched and cached spawn for ${roomName}:`, spawnData)
+    return spawnData
+    
+  } catch (error) {
+    // Retry logic with exponential backoff
+    if (retryCount < MAX_RETRIES) {
+      const delay = RETRY_DELAYS[retryCount]
+      console.warn(`[API] ⚠️ Error fetching spawn for ${roomName}: ${error.message}`)
+      console.log(`[API] 🔄 Retrying in ${delay}ms... (attempt ${retryCount + 1}/${MAX_RETRIES})`)
+      
+      await new Promise(resolve => setTimeout(resolve, delay))
+      return fetchSpawnPosition(roomName, retryCount + 1)
+    }
+    
+    // All retries exhausted
+    console.error(`[API] ❌ Failed to fetch spawn for ${roomName} after ${MAX_RETRIES} retries:`, error.message)
+    return null
+  }
+}
+
+/**
+ * Update spawn position for a room (POST to backend)
+ * @param {string} roomName - Name of the room
+ * @param {object} spawnData - {position: {x, y, z}, yaw: number}
+ * @returns {Promise<object | null>}
+ */
+export const updateSpawnPosition = async (roomName, spawnData) => {
+  const CACHE_KEY = `spawn_${roomName}`
+  
+  try {
+    console.log(`[API] 💾 Updating spawn for ${roomName}:`, spawnData)
+    const response = await apiClient.post(`/rooms/${roomName}/spawn`, spawnData)
+    
+    // Update cache with new data from backend
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+      data: response.data,
+      timestamp: Date.now()
+    }))
+    
+    console.log(`[API] ✅ Spawn updated for ${roomName} and cached`)
+    return response.data
+  } catch (error) {
+    console.error(`[API] ❌ Error updating spawn for ${roomName}:`, error.message)
+    
+    // 🔧 FIX: Backend offline → Save to localStorage anyway!
+    console.log(`[API] 💾 Backend offline, saving to localStorage only`)
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+      data: spawnData,
+      timestamp: Date.now()
+    }))
+    
+    return spawnData
+  }
+}
+
+/**
+ * Clear all spawn position caches
+ */
+export const clearSpawnCache = () => {
+  const keys = Object.keys(localStorage)
+  const spawnKeys = keys.filter(k => k.startsWith('spawn_'))
+  spawnKeys.forEach(k => localStorage.removeItem(k))
+  console.log(`[API] 🧹 Cleared ${spawnKeys.length} spawn caches`)
+}
+
+export default apiClient

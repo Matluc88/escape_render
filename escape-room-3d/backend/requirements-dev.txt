@@ -1,0 +1,25 @@
+# Backend Development & Testing Dependencies
+# Per sistema AIR-GAPPED - installare con Internet, poi offline
+
+# Testing Framework
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+pytest-docker==2.0.1  # Test con Docker containers
+
+# HTTP Client for API Testing
+httpx==0.25.2  # FastAPI test client
+
+# Test Data Generation
+faker==20.1.0
+
+# Code Quality
+black==23.12.1  # Code formatter
+flake8==7.0.0   # Linter
+mypy==1.7.1     # Type checker
+
+# Database Testing
+pytest-postgresql==5.0.0  # In-memory PostgreSQL for tests
+
+# Debugging
+ipdb==0.13.13

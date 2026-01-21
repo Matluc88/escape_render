@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧹 Pulizia Cache Spawn - 16 Gen 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+            border-radius: 8px;
+        }
+        
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .cache-list {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .cache-item {
+            padding: 8px;
+            border-bottom: 1px solid #ffc107;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #856404;
+        }
+        
+        .cache-item:last-child {
+            border-bottom: none;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn.success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        .btn.danger {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+        
+        .emoji {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        
+        .coordinates {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .coord-title {
+            color: #2196f3;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="emoji">🧹</div>
+        <h1>Pulizia Cache Spawn</h1>
+        <p class="subtitle">16 Gennaio 2026 - Coordinate Definitive</p>
+        
+        <div class="info-box">
+            <h3>📍 Perché serve questa pulizia?</h3>
+            <p>
+                Il frontend memorizza le coordinate spawn in <strong>localStorage</strong> con un TTL di 1 ora.
+                Se le coordinate sono state aggiornate nel database, la cache deve essere pulita per caricare i nuovi valori.
+            </p>
+        </div>
+        
+        <div class="coordinates">
+            <div class="coord-title">✅ Coordinate Definitive Attese:</div>
+            <div>🏠 Soggiorno: X: 0.54, Z: 1.51, Yaw: 5.39 (309°)</div>
+            <div>🛏️ Camera: X: -0.56, Z: 1.31, Yaw: 0.46 (26°)</div>
+            <div>🚿 Bagno: X: 1.31, Z: 2.77, Yaw: 3.53 (202°)</div>
+            <div>🍳 Cucina: X: -0.94, Z: 2.14, Yaw: 2.48 (142°)</div>
+        </div>
+        
+        <div id="cacheList" class="cache-list"></div>
+        
+        <button class="btn danger" onclick="clearSpawnCache()">🧹 Pulisci Cache Spawn</button>
+        <button class="btn success" onclick="clearAllCache()">🗑️ Pulisci TUTTA la Cache</button>
+        
+        <div id="status"></div>
+        
+        <div class="info-box" style="margin-top: 30px;">
+            <h3>🔄 Procedura Completa:</h3>
+            <p>
+                1. Clicca "Pulisci Cache Spawn"<br>
+                2. Ricarica la pagina del gioco (F5 o Ctrl+R)<br>
+                3. Il frontend caricherà le nuove coordinate dal database<br>
+                4. Verifica la posizione spawn nella console browser
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Mostra cache attuale all'avvio
+        displayCurrentCache();
+        
+        function displayCurrentCache() {
+            const cacheList = document.getElementById('cacheList');
+            const keys = Object.keys(localStorage);
+            const spawnKeys = keys.filter(k => k.startsWith('spawn_'));
+            
+            if (spawnKeys.length === 0) {
+                cacheList.innerHTML = '<div style="color: #28a745; font-weight: bold;">✅ Nessuna cache spawn trovata</div>';
+                return;
+            }
+            
+            cacheList.innerHTML = '<div style="font-weight: bold; margin-bottom: 10px; color: #856404;">⚠️ Cache Spawn Trovate:</div>';
+            
+            spawnKeys.forEach(key => {
+                const data = JSON.parse(localStorage.getItem(key));
+                const age = Math.floor((Date.now() - data.timestamp) / 1000 / 60); // minuti
+                const div = document.createElement('div');
+                div.className = 'cache-item';
+                div.innerHTML = `
+                    ${key} <span style="color: #6c757d;">(${age} minuti fa)</span><br>
+                    <span style="font-size: 0.8em;">
+                        Pos: x=${data.data.position.x}, z=${data.data.position.z}, Yaw: ${data.data.yaw.toFixed(2)}
+                    </span>
+                `;
+                cacheList.appendChild(div);
+            });
+        }
+        
+        function clearSpawnCache() {
+            const keys = Object.keys(localStorage);
+            const spawnKeys = keys.filter(k => k.startsWith('spawn_'));
+            
+            spawnKeys.forEach(k => localStorage.removeItem(k));
+            
+            const status = document.getElementById('status');
+            status.className = 'status success';
+            status.innerHTML = `
+                ✅ Cache pulita con successo!<br>
+                <small>Rimosse ${spawnKeys.length} voci di cache spawn</small><br>
+                <small>Ora ricarica la pagina del gioco (F5)</small>
+            `;
+            
+            console.log(`🧹 [Cache] Pulite ${spawnKeys.length} cache spawn:`, spawnKeys);
+            
+            // Aggiorna visualizzazione
+            displayCurrentCache();
+        }
+        
+        function clearAllCache() {
+            const beforeCount = localStorage.length;
+            localStorage.clear();
+            
+            const status = document.getElementById('status');
+            status.className = 'status success';
+            status.innerHTML = `
+                🗑️ TUTTA la cache è stata pulita!<br>
+                <small>Rimosse ${beforeCount} voci totali</small><br>
+                <small>Ora ricarica la pagina del gioco (F5)</small>
+            `;
+            
+            console.log(`🗑️ [Cache] Pulito TUTTO il localStorage (${beforeCount} voci)`);
+            
+            // Aggiorna visualizzazione
+            displayCurrentCache();
+        }
+        
+        // Log per debugging
+        console.log('🧹 [Cache Cleaner] Pagina caricata');
+        console.log('📦 [Cache Cleaner] localStorage keys:', Object.keys(localStorage));
+    </script>
+</body>
+</html>

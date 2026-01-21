@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Svuota Cache Browser - Escape Room 3D</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .step {
+            background: #e7f3ff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .danger {
+            background: #dc3545;
+        }
+        .danger:hover {
+            background: #c82333;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Svuota Cache Browser</h1>
+        
+        <div class="warning">
+            <strong>⚠️ PROBLEMA:</strong> Il browser sta caricando vecchie versioni dei file JavaScript anche dopo il rebuild del container.
+        </div>
+
+        <div class="step">
+            <h3>📋 Metodo 1: Hard Refresh (RACCOMANDATO)</h3>
+            <p><strong>Su Chrome/Edge/Firefox:</strong></p>
+            <ul>
+                <li><strong>Mac:</strong> <code>Cmd + Shift + R</code></li>
+                <li><strong>Windows/Linux:</strong> <code>Ctrl + Shift + R</code></li>
+            </ul>
+            <p>Oppure:</p>
+            <ol>
+                <li>Apri gli Strumenti Sviluppatore (F12)</li>
+                <li>Click destro sul pulsante Ricarica</li>
+                <li>Seleziona "Svuota la cache e ricarica"</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>🔒 Metodo 2: Modalità Incognito</h3>
+            <p>Apri l'applicazione in una finestra di navigazione in incognito:</p>
+            <ul>
+                <li><strong>Mac:</strong> <code>Cmd + Shift + N</code> (Chrome) o <code>Cmd + Shift + P</code> (Firefox)</li>
+                <li><strong>Windows/Linux:</strong> <code>Ctrl + Shift + N</code> (Chrome) o <code>Ctrl + Shift + P</code> (Firefox)</li>
+            </ul>
+            <p>Poi vai su: <a href="http://localhost/" target="_blank">http://localhost/</a></p>
+        </div>
+
+        <div class="step">
+            <h3>🧹 Metodo 3: Pulisci Cache Completa</h3>
+            <p><strong>Chrome/Edge:</strong></p>
+            <ol>
+                <li>Premi <code>Ctrl + Shift + Delete</code> (o <code>Cmd + Shift + Delete</code> su Mac)</li>
+                <li>Seleziona "Immagini e file memorizzati nella cache"</li>
+                <li>Intervallo di tempo: "Tutto"</li>
+                <li>Click su "Cancella dati"</li>
+            </ol>
+            <button onclick="clearCacheAndReload()" class="danger">🗑️ Cancella Cache e Ricarica</button>
+        </div>
+
+        <div class="step">
+            <h3>⚙️ Metodo 4: Disabilita Cache (per sviluppatori)</h3>
+            <ol>
+                <li>Apri DevTools (F12)</li>
+                <li>Vai su "Network" (Rete)</li>
+                <li>Spunta "Disable cache" (Disabilita cache)</li>
+                <li>Tieni DevTools aperti e ricarica la pagina</li>
+            </ol>
+        </div>
+
+        <div class="success">
+            <strong>✅ VERIFICA:</strong> Dopo aver pulito la cache, l'errore JavaScript "ReferenceError: color is not defined" dovrebbe scomparire.
+        </div>
+
+        <hr>
+
+        <h2>🛠️ Informazioni Tecniche</h2>
+        <p><strong>File corretto:</strong> <code>src/hooks/useMqttEsterno.js</code></p>
+        <p><strong>Modifica applicata:</strong> Variabile <code>color</code> rinominata in <code>ledColor</code></p>
+        <p><strong>Container ricostruito:</strong> <code>escape-room-3d-frontend</code></p>
+        <p><strong>File JavaScript compilato:</strong> <code>index-BSbF__Ue.js</code></p>
+
+        <button onclick="window.location.href='http://localhost/'">🚀 Vai all'Applicazione</button>
+        <button onclick="window.location.reload(true)" class="danger">🔄 Hard Reload</button>
+    </div>
+
+    <script>
+        function clearCacheAndReload() {
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    names.forEach(function(name) {
+                        caches.delete(name);
+                    });
+                });
+            }
+            
+            // Clear sessionStorage and localStorage
+            sessionStorage.clear();
+            localStorage.clear();
+            
+            alert('Cache pulita! La pagina verrà ricaricata...');
+            
+            // Force reload
+            window.location.href = 'http://localhost/?t=' + Date.now();
+        }
+
+        // Log per debug
+        console.log('%c🔧 CACHE CLEARER LOADED', 'background: #4CAF50; color: white; font-size: 16px; padding: 5px;');
+        console.log('Se vedi ancora l errore "color is not defined", prova:');
+        console.log('1. Hard refresh: Cmd+Shift+R (Mac) o Ctrl+Shift+R (Windows)');
+        console.log('2. Modalità incognito');
+        console.log('3. Cancella cache manualmente dalle impostazioni del browser');
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+🐳 AVVIO RAPIDO DOCKER - Escape Room 3D
+==========================================
+
+⚠️  PERCORSO CORRETTO:
+
+cd /Users/matteo/Desktop/ESCAPE/escape-room-3d
+./docker.sh start
+
+📝 NOTA: Il progetto è in Desktop/ESCAPE/escape-room-3d
+         NON solo in escape-room-3d
+
+🎯 COMANDI PRINCIPALI:
+
+./docker.sh start      # Avvia tutto
+./docker.sh stop       # Ferma tutto
+./docker.sh logs       # Vedi log
+./docker.sh status     # Stato servizi
+./docker.sh help       # Tutti i comandi
+
+📚 DOCUMENTAZIONE:
+
+- GUIDA_AVVIO_DOCKER.md - Guida completa
+- README_DOCKER_ITALIANO.md - Documentazione
+- docker.sh help - Lista comandi
+
+🌐 DOPO L'AVVIO:
+
+Apri il browser: http://localhost
+
+✅ Il setup Docker è COMPLETO e PRONTO!

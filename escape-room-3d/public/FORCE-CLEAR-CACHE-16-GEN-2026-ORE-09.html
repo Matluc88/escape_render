@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>🔥 PULIZIA CACHE TOTALE - 16 GEN 2026 ORE 09:14</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 800px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .status {
+            font-size: 1.5em;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .instructions {
+            text-align: left;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .instructions li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        button {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.3em;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        button:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+        .success {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        .error {
+            color: #ff4444;
+            font-weight: bold;
+        }
+        .timestamp {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-top: 20px;
+        }
+        .warning {
+            background: rgba(255, 152, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 PULIZIA CACHE TOTALE 🔥</h1>
+        <div class="timestamp">⏰ 16 Gennaio 2026 - ore 09:14</div>
+        
+        <div class="warning">
+            <h2>⚠️ PROBLEMA CRITICO RILEVATO</h2>
+            <p>Coordinate spawn sbagliate anche per la cucina dopo rebuild Docker.</p>
+            <p><strong>Bundle attivo:</strong> index-B9nKnqLk.js (NUOVO - corretto)</p>
+            <p><strong>Causa probabile:</strong> Cache browser molto aggressiva</p>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 PROCEDURA DI PULIZIA:</h3>
+            <ol>
+                <li><strong>PASSO 1:</strong> Clicca il pulsante "PULISCI TUTTO" qui sotto</li>
+                <li><strong>PASSO 2:</strong> Premi <code>Cmd + Shift + R</code> (Mac) o <code>Ctrl + Shift + R</code> (Windows/Linux)</li>
+                <li><strong>PASSO 3:</strong> Apri DevTools (F12) → scheda Application → sezione Storage → "Clear site data"</li>
+                <li><strong>PASSO 4:</strong> Chiudi COMPLETAMENTE il browser e riaprilo</li>
+                <li><strong>PASSO 5:</strong> Vai su <a href="/play/999/cucina" style="color: #00ff00;">http://localhost/play/999/cucina</a></li>
+            </ol>
+        </div>
+
+        <div class="status" id="status">
+            ⏳ In attesa di pulizia...
+        </div>
+
+        <button onclick="clearEverything()">🔥 PULISCI TUTTO 🔥</button>
+        <button onclick="testCoordinates()">🧪 TEST COORDINATE</button>
+        <button onclick="goToKitchen()">🍳 VAI ALLA CUCINA</button>
+
+        <div class="instructions" style="margin-top: 30px;">
+            <h3>📊 COORDINATE CORRETTE:</h3>
+            <ul>
+                <li>🍳 <strong>Cucina:</strong> x=-0.94, z=2.14, yaw=2.48 (142°)</li>
+                <li>🛋️ <strong>Soggiorno:</strong> x=0.54, z=1.51, yaw=5.39 (309°)</li>
+                <li>🚽 <strong>Bagno:</strong> x=1.31, z=2.77, yaw=3.53 (202°)</li>
+                <li>🛏️ <strong>Camera:</strong> x=-0.56, z=1.31, yaw=0.46 (26°)</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function clearEverything() {
+            const status = document.getElementById('status');
+            let cleared = [];
+
+            try {
+                // 1. LocalStorage
+                const localStorageKeys = Object.keys(localStorage);
+                localStorageKeys.forEach(key => {
+                    localStorage.removeItem(key);
+                    cleared.push(`localStorage: ${key}`);
+                });
+
+                // 2. SessionStorage
+                const sessionStorageKeys = Object.keys(sessionStorage);
+                sessionStorageKeys.forEach(key => {
+                    sessionStorage.removeItem(key);
+                    cleared.push(`sessionStorage: ${key}`);
+                });
+
+                // 3. IndexedDB
+                if (window.indexedDB) {
+                    indexedDB.databases().then(dbs => {
+                        dbs.forEach(db => {
+                            indexedDB.deleteDatabase(db.name);
+                            cleared.push(`IndexedDB: ${db.name}`);
+                        });
+                    });
+                }
+
+                // 4. Service Workers
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(registrations => {
+                        registrations.forEach(registration => {
+                            registration.unregister();
+                            cleared.push(`Service Worker: ${registration.scope}`);
+                        });
+                    });
+                }
+
+                // 5. Cache API
+                if ('caches' in window) {
+                    caches.keys().then(names => {
+                        names.forEach(name => {
+                            caches.delete(name);
+                            cleared.push(`Cache: ${name}`);
+                        });
+                    });
+                }
+
+                status.innerHTML = `
+                    <div class="success">
+                        ✅ CACHE PULITA CON SUCCESSO!<br>
+                        ${cleared.length} elementi rimossi<br><br>
+                        <strong>ORA PREMI Cmd+Shift+R (Mac) o Ctrl+Shift+R (Windows)</strong><br>
+                        <small>Timestamp: ${new Date().toLocaleString('it-IT')}</small>
+                    </div>
+                `;
+                
+                console.log('🔥 CACHE CLEARED:', cleared);
+                
+            } catch (error) {
+                status.innerHTML = `
+                    <div class="error">
+                        ❌ ERRORE: ${error.message}<br>
+                        Prova con DevTools manualmente
+                    </div>
+                `;
+                console.error('Clear cache error:', error);
+            }
+        }
+
+        function testCoordinates() {
+            const status = document.getElementById('status');
+            status.innerHTML = '🧪 Testing coordinate API...';
+            
+            Promise.all([
+                fetch('/api/rooms/spawn/kitchen').then(r => r.json()),
+                fetch('/api/rooms/spawn/livingroom').then(r => r.json()),
+                fetch('/api/rooms/spawn/bathroom').then(r => r.json()),
+                fetch('/api/rooms/spawn/bedroom').then(r => r.json())
+            ])
+            .then(([kitchen, living, bath, bed]) => {
+                const results = `
+                    🍳 Cucina: x=${kitchen.position.x}, z=${kitchen.position.z}, yaw=${kitchen.yaw.toFixed(2)}<br>
+                    🛋️ Soggiorno: x=${living.position.x}, z=${living.position.z}, yaw=${living.yaw.toFixed(2)}<br>
+                    🚽 Bagno: x=${bath.position.x}, z=${bath.position.z}, yaw=${bath.yaw.toFixed(2)}<br>
+                    🛏️ Camera: x=${bed.position.x}, z=${bed.position.z}, yaw=${bed.yaw.toFixed(2)}<br>
+                `;
+                
+                const isCorrect = 
+                    kitchen.position.x === -0.94 && 
+                    kitchen.position.z === 2.14 &&
+                    living.position.x === 0.54 &&
+                    living.position.z === 1.51;
+                    
+                status.innerHTML = `
+                    <div class="${isCorrect ? 'success' : 'error'}">
+                        ${isCorrect ? '✅ COORDINATE API CORRETTE!' : '❌ COORDINATE API SBAGLIATE!'}
+                        <br><br>${results}
+                    </div>
+                `;
+            })
+            .catch(error => {
+                status.innerHTML = `<div class="error">❌ Errore API: ${error.message}</div>`;
+            });
+        }
+
+        function goToKitchen() {
+            clearEverything();
+            setTimeout(() => {
+                window.location.href = '/play/999/cucina?nocache=' + Date.now();
+            }, 1000);
+        }
+
+        // Auto-test all'avvio
+        window.addEventListener('load', () => {
+            console.log('🔥 FORCE CLEAR CACHE PAGE LOADED - 16 GEN 2026 ORE 09:14');
+            console.log('📦 Bundle atteso: index-B9nKnqLk.js');
+            console.log('⚠️ Se le coordinate sono ancora sbagliate, è SOLO cache browser!');
+            testCoordinates();
+        });
+    </script>
+</body>
+</html>

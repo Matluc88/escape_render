@@ -1,0 +1,195 @@
+# ====================================================
+# Escape Room 3D - Production Makefile
+# ====================================================
+
+.PHONY: help deploy start stop restart logs status backup restore clean update health
+
+# Determina comando docker compose
+DOCKER_COMPOSE := $(shell if docker compose version >/dev/null 2>&1; then echo "docker compose"; else echo "docker-compose"; fi)
+ENV_FILE := .env.production
+
+# Colori per output
+RED := \033[0;31m
+GREEN := \033[0;32m
+YELLOW := \033[1;33m
+BLUE := \033[0;34m
+NC := \033[0m
+
+help: ## Mostra questo messaggio di aiuto
+	@echo ""
+	@echo "$(BLUE)╔════════════════════════════════════════════════╗$(NC)"
+	@echo "$(BLUE)║   Escape Room 3D - Production Commands        ║$(NC)"
+	@echo "$(BLUE)╚════════════════════════════════════════════════╝$(NC)"
+	@echo ""
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "$(GREEN)%-15s$(NC) %s\n", $$1, $$2}'
+	@echo ""
+
+deploy: ## Deploy completo in produzione
+	@echo "$(BLUE)🚀 Deploying in produzione...$(NC)"
+	@./deploy-production.sh
+
+start: ## Avvia tutti i servizi
+	@echo "$(BLUE)▶️  Avvio servizi...$(NC)"
+	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) up -d
+	@echo "$(GREEN)✓ Servizi avviati$(NC)"
+
+stop: ## Ferma tutti i servizi
+	@echo "$(YELLOW)⏸  Fermando servizi...$(NC)"
+	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) stop
+	@echo "$(GREEN)✓ Servizi fermati$(NC)"
+
+down: ## Ferma e rimuove i container
+	@echo "$(YELLOW)⬇️  Fermando e rimuovendo container...$(NC)"
+	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) down
+	@echo "$(GREEN)✓ Container rimossi$(NC)"
+
+restart: ## Riavvia tutti i servizi
+	@echo "$(BLUE)🔄 Riavvio servizi...$(NC)"
+	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) restart
+	@echo "$(GREEN)✓ Servizi riavviati$(NC)"
+
+logs: ## Mostra logs di tutti i servizi
+	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) logs -f
+
+logs-frontend: ## Mostra logs frontend
+	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) logs -f frontend
+
+logs-backend: ## Mostra logs backend
+	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) logs -f backend
+
+logs-db: ## Mostra logs database
+	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) logs -f db
+
+logs-mqtt: ## Mostra logs MQTT
+	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) logs -f mqtt
+
+status: ## Mostra stato dei servizi
+	@echo "$(BLUE)📊 Stato servizi:$(NC)"
+	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) ps
+	@echo ""
+	@echo "$(BLUE)💾 Uso risorse:$(NC)"
+	@docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}"
+
+health: ## Verifica health check
+	@echo "$(BLUE)🏥 Health check...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Frontend:$(NC)"
+	@curl -s http://localhost/health && echo " $(GREEN)✓$(NC)" || echo " $(RED)✗$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Backend:$(NC)"
+	@curl -s http://localhost/api/health && echo " $(GREEN)✓$(NC)" || echo " $(RED)✗$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Database:$(NC)"
+	@docker exec escape-db pg_isready -U escape_user && echo "$(GREEN)✓ Database ready$(NC)" || echo "$(RED)✗ Database not ready$(NC)"
+	@echo ""
+
+backup: ## Crea backup del database e configurazioni
+	@./backup.sh
+
+restore: ## Ripristina da backup (usa: make restore BACKUP=<timestamp>)
+	@if [ -z "$(BACKUP)" ]; then \
+		echo "$(RED)❌ Specifica il backup: make restore BACKUP=<timestamp>$(NC)"; \
+		echo "$(BLUE)Backup disponibili:$(NC)"; \
+		ls -1 ./backups/*.tar.gz 2>/dev/null | sed 's/.*\///' | sed 's/.tar.gz//' || echo "  Nessun backup trovato"; \
+		exit 1; \
+	fi
+	@./restore.sh $(BACKUP)
+
+build: ## Build delle immagini senza cache
+	@echo "$(BLUE)🔨 Building immagini...$(NC)"
+	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) build --no-cache
+
+rebuild: build start ## Rebuild completo e riavvio
+
+pull: ## Pull immagini base aggiornate
+	@echo "$(BLUE)📥 Pull immagini aggiornate...$(NC)"
+	@docker pull postgres:15-alpine
+	@docker pull eclipse-mosquitto:2
+	@docker pull nginx:1.25-alpine
+	@docker pull python:3.11-slim
+	@docker pull node:18-alpine
+	@echo "$(GREEN)✓ Immagini aggiornate$(NC)"
+
+update: pull build restart ## Aggiorna tutto e riavvia
+	@echo "$(GREEN)✓ Update completato$(NC)"
+
+clean: ## Pulizia container, immagini e volumi non usati
+	@echo "$(YELLOW)🧹 Pulizia...$(NC)"
+	@docker system prune -f
+	@echo "$(GREEN)✓ Pulizia completata$(NC)"
+
+clean-all: ## Pulizia completa (ATTENZIONE: rimuove anche i volumi!)
+	@echo "$(RED)⚠️  ATTENZIONE: Questa operazione rimuoverà TUTTI i dati!$(NC)"
+	@read -p "Continuare? (digita 'YES' per confermare): " confirm; \
+	if [ "$$confirm" = "YES" ]; then \
+		$(DOCKER_COMPOSE) --env-file $(ENV_FILE) down -v; \
+		docker system prune -a -f --volumes; \
+		echo "$(GREEN)✓ Pulizia completa eseguita$(NC)"; \
+	else \
+		echo "$(BLUE)Operazione annullata$(NC)"; \
+	fi
+
+shell-frontend: ## Shell nel container frontend
+	@docker exec -it escape-frontend sh
+
+shell-backend: ## Shell nel container backend
+	@docker exec -it escape-backend bash
+
+shell-db: ## Accesso al database PostgreSQL
+	@docker exec -it escape-db psql -U escape_user -d escape_db
+
+shell-mqtt: ## Shell nel container MQTT
+	@docker exec -it escape-mqtt sh
+
+config: ## Mostra configurazione docker-compose
+	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) config
+
+validate: ## Valida configurazione
+	@echo "$(BLUE)✓ Validazione configurazione...$(NC)"
+	@$(DOCKER_COMPOSE) --env-file $(ENV_FILE) config > /dev/null && echo "$(GREEN)✓ docker-compose.yml valido$(NC)" || echo "$(RED)✗ Errore in docker-compose.yml$(NC)"
+	@if [ -f $(ENV_FILE) ]; then \
+		echo "$(GREEN)✓ $(ENV_FILE) trovato$(NC)"; \
+		if grep -q "CHANGE_ME" $(ENV_FILE); then \
+			echo "$(YELLOW)⚠ Alcune password devono essere cambiate in $(ENV_FILE)$(NC)"; \
+		else \
+			echo "$(GREEN)✓ Configurazione ambiente OK$(NC)"; \
+		fi \
+	else \
+		echo "$(RED)✗ $(ENV_FILE) non trovato$(NC)"; \
+	fi
+
+stats: ## Mostra statistiche uso risorse
+	@docker stats
+
+top: ## Mostra processi in esecuzione nei container
+	@echo "$(BLUE)📊 Processi container:$(NC)"
+	@for container in $$(docker ps --format '{{.Names}}' | grep escape-); do \
+		echo ""; \
+		echo "$(YELLOW)$$container:$(NC)"; \
+		docker top $$container; \
+	done
+
+disk: ## Mostra uso disco Docker
+	@echo "$(BLUE)💾 Uso disco Docker:$(NC)"
+	@docker system df -v
+
+network: ## Mostra info rete Docker
+	@echo "$(BLUE)🌐 Rete Docker:$(NC)"
+	@docker network inspect escape-network
+
+volumes: ## Mostra volumi Docker
+	@echo "$(BLUE)📦 Volumi Docker:$(NC)"
+	@docker volume ls | grep escape
+
+inspect-frontend: ## Inspect container frontend
+	@docker inspect escape-frontend
+
+inspect-backend: ## Inspect container backend
+	@docker inspect escape-backend
+
+inspect-db: ## Inspect container database
+	@docker inspect escape-db
+
+# Quick commands
+dev: start logs ## Avvia e mostra logs
+prod: deploy ## Alias per deploy

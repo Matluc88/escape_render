@@ -1,0 +1,377 @@
+/**
+ * Hook for managing Bedroom Puzzle State
+ * 
+ * Handles:
+ * - Fetching initial state from backend
+ * - WebSocket real-time updates
+ * - Puzzle completion triggers
+ * - LED state management
+ */
+
+import { useState, useEffect, useCallback, useRef } from 'react'
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
+
+export function useBedroomPuzzle(sessionId, socket) {
+  // Puzzle states - inizialmente null, caricate dal backend
+  const [puzzleStates, setPuzzleStates] = useState(null)
+  
+  // LED states - inizialmente null, caricate dal backend
+  const [ledStates, setLedStates] = useState(null)
+  
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
+  
+  // Guard to prevent double initialization
+  const initializedRef = useRef(false)
+  
+  /**
+   * Fetch initial puzzle state from backend
+   */
+  const fetchInitialState = useCallback(async () => {
+    if (!sessionId) return
+    
+    try {
+      setIsLoading(true)
+      const response = await fetch(
+        `${BACKEND_URL}/sessions/${sessionId}/bedroom-puzzles/state`
+      )
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+      
+      const data = await response.json()
+      
+      // Update states from backend
+      setPuzzleStates({
+        comodino: data.states.comodino.status,
+        materasso: data.states.materasso.status,
+        poltrona: data.states.poltrona.status,
+        ventola: data.states.ventola.status,
+        porta: data.states.porta.status
+      })
+      
+      setLedStates({
+        porta: data.led_states.porta,
+        materasso: data.led_states.materasso,
+        poltrona: data.led_states.poltrona,
+        ventola: data.led_states.ventola
+      })
+      
+      console.log('✅ [useBedroomPuzzle] Initial state loaded:', data)
+      setError(null)
+    } catch (err) {
+      console.error('❌ [useBedroomPuzzle] Error fetching initial state:', err)
+      setError(err.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [sessionId])
+  
+  /**
+   * Initialize: Fetch state once on mount
+   */
+  useEffect(() => {
+    if (initializedRef.current) {
+      console.log('🔒 [useBedroomPuzzle] Already initialized, skipping')
+      return
+    }
+    
+    initializedRef.current = true
+    fetchInitialState()
+  }, [fetchInitialState])
+  
+  /**
+   * WebSocket listener for real-time updates
+   */
+  useEffect(() => {
+    if (!socket) {
+      console.log('⚠️  [useBedroomPuzzle] Socket not available, waiting...')
+      return
+    }
+    
+    const handlePuzzleUpdate = (data) => {
+      console.log('📡 [useBedroomPuzzle] WebSocket update received:', data)
+      
+      // Only update if it's for our session
+      if (data.session_id !== parseInt(sessionId)) {
+        console.log('⚠️  [useBedroomPuzzle] Update for different session, ignoring')
+        return
+      }
+      
+      // Update puzzle states
+      setPuzzleStates({
+        comodino: data.states.comodino.status,
+        materasso: data.states.materasso.status,
+        poltrona: data.states.poltrona.status,
+        ventola: data.states.ventola.status,
+        porta: data.states.porta.status
+      })
+      
+      // Update LED states
+      setLedStates({
+        porta: data.led_states.porta,
+        materasso: data.led_states.materasso,
+        poltrona: data.led_states.poltrona,
+        ventola: data.led_states.ventola
+      })
+      
+      console.log('✅ [useBedroomPuzzle] States updated from WebSocket')
+    }
+    
+    // Register listener immediately if already connected
+    if (socket.connected) {
+      console.log('✅ [useBedroomPuzzle] Socket già connesso - registro listener subito')
+      socket.on('puzzle_state_update', handlePuzzleUpdate)
+    }
+    
+    // Also register for future connections
+    const onConnect = () => {
+      console.log('🔌 [useBedroomPuzzle] Socket connesso - registro listener')
+      socket.on('puzzle_state_update', handlePuzzleUpdate)
+    }
+    
+    socket.on('connect', onConnect)
+    
+    return () => {
+      console.log('🧹 [useBedroomPuzzle] Cleanup - rimuovo listener')
+      socket.off('puzzle_state_update', handlePuzzleUpdate)
+      socket.off('connect', onConnect)
+    }
+  }, [socket, sessionId])
+  
+  /**
+   * Complete comodino puzzle (TASTO K)
+   */
+  const completeComodino = useCallback(async () => {
+    try {
+      console.log('🪑 [useBedroomPuzzle] Completing comodino puzzle...')
+      const response = await fetch(
+        `${BACKEND_URL}/sessions/${sessionId}/bedroom-puzzles/comodino/complete`,
+        { method: 'POST' }
+      )
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      
+      const data = await response.json()
+      console.log('✅ [useBedroomPuzzle] Comodino completed:', data)
+      
+      // 🚀 UPDATE IMMEDIATO - non aspettare WebSocket
+      setPuzzleStates({
+        comodino: data.states.comodino.status,
+        materasso: data.states.materasso.status,
+        poltrona: data.states.poltrona.status,
+        ventola: data.states.ventola.status,
+        porta: data.states.porta.status
+      })
+      
+      setLedStates({
+        porta: data.led_states.porta,
+        materasso: data.led_states.materasso,
+        poltrona: data.led_states.poltrona,
+        ventola: data.led_states.ventola
+      })
+      
+      console.log('🎨 [useBedroomPuzzle] LED updated immediately from API response')
+    } catch (err) {
+      console.error('❌ [useBedroomPuzzle] Error completing comodino:', err)
+    }
+  }, [sessionId])
+  
+  /**
+   * Complete materasso puzzle (TASTO M)
+   */
+  const completeMaterasso = useCallback(async () => {
+    // Guard: Only if materasso is active
+    if (!puzzleStates || puzzleStates.materasso !== 'active') {
+      console.log('⚠️  [useBedroomPuzzle] Materasso not active, ignoring completion')
+      return
+    }
+    
+    try {
+      console.log('🛏️ [useBedroomPuzzle] Completing materasso puzzle...')
+      const response = await fetch(
+        `${BACKEND_URL}/sessions/${sessionId}/bedroom-puzzles/materasso/complete`,
+        { method: 'POST' }
+      )
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      
+      const data = await response.json()
+      console.log('✅ [useBedroomPuzzle] Materasso completed:', data)
+      
+      // 🚀 UPDATE IMMEDIATO - non aspettare WebSocket
+      setPuzzleStates({
+        comodino: data.states.comodino.status,
+        materasso: data.states.materasso.status,
+        poltrona: data.states.poltrona.status,
+        ventola: data.states.ventola.status,
+        porta: data.states.porta.status
+      })
+      
+      setLedStates({
+        porta: data.led_states.porta,
+        materasso: data.led_states.materasso,
+        poltrona: data.led_states.poltrona,
+        ventola: data.led_states.ventola
+      })
+      
+      console.log('🎨 [useBedroomPuzzle] LED updated immediately from API response')
+    } catch (err) {
+      console.error('❌ [useBedroomPuzzle] Error completing materasso:', err)
+    }
+  }, [sessionId, puzzleStates])
+  
+  /**
+   * Complete poltrona puzzle (TASTO L)
+   */
+  const completePoltrona = useCallback(async () => {
+    // ✅ RIMOSSO guard client-side - il backend ha già FSM protection
+    // (Fix race condition: WebSocket non ha ancora notificato 'active')
+    
+    try {
+      console.log('🪑 [useBedroomPuzzle] Completing poltrona puzzle...')
+      const response = await fetch(
+        `${BACKEND_URL}/sessions/${sessionId}/bedroom-puzzles/poltrona/complete`,
+        { method: 'POST' }
+      )
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      
+      const data = await response.json()
+      console.log('✅ [useBedroomPuzzle] Poltrona completed:', data)
+      
+      // 🚀 UPDATE IMMEDIATO - non aspettare WebSocket
+      setPuzzleStates({
+        comodino: data.states.comodino.status,
+        materasso: data.states.materasso.status,
+        poltrona: data.states.poltrona.status,
+        ventola: data.states.ventola.status,
+        porta: data.states.porta.status
+      })
+      
+      setLedStates({
+        porta: data.led_states.porta,
+        materasso: data.led_states.materasso,
+        poltrona: data.led_states.poltrona,
+        ventola: data.led_states.ventola
+      })
+      
+      console.log('🎨 [useBedroomPuzzle] LED updated immediately from API response')
+    } catch (err) {
+      console.error('❌ [useBedroomPuzzle] Error completing poltrona:', err)
+    }
+  }, [sessionId, puzzleStates])
+  
+  /**
+   * Complete ventola puzzle (TASTO J)
+   */
+  const completeVentola = useCallback(async () => {
+    // ✅ RIMOSSO guard client-side - il backend ha già FSM protection
+    // (Fix race condition: WebSocket non ha ancora notificato 'active')
+    
+    try {
+      console.log('🌬️ [useBedroomPuzzle] Completing ventola puzzle...')
+      const response = await fetch(
+        `${BACKEND_URL}/sessions/${sessionId}/bedroom-puzzles/ventola/complete`,
+        { method: 'POST' }
+      )
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      
+      const data = await response.json()
+      console.log('✅ [useBedroomPuzzle] Ventola completed → PORTA UNLOCKED!', data)
+      
+      // 🚀 UPDATE IMMEDIATO - non aspettare WebSocket
+      setPuzzleStates({
+        comodino: data.states.comodino.status,
+        materasso: data.states.materasso.status,
+        poltrona: data.states.poltrona.status,
+        ventola: data.states.ventola.status,
+        porta: data.states.porta.status
+      })
+      
+      setLedStates({
+        porta: data.led_states.porta,
+        materasso: data.led_states.materasso,
+        poltrona: data.led_states.poltrona,
+        ventola: data.led_states.ventola
+      })
+      
+      console.log('🎨 [useBedroomPuzzle] LED updated immediately from API response')
+    } catch (err) {
+      console.error('❌ [useBedroomPuzzle] Error completing ventola:', err)
+    }
+  }, [sessionId, puzzleStates])
+  
+  /**
+   * Reset puzzles (admin only)
+   */
+  const resetPuzzles = useCallback(async (level = 'full') => {
+    try {
+      console.log(`🔄 [useBedroomPuzzle] Resetting puzzles (${level})...`)
+      const response = await fetch(
+        `${BACKEND_URL}/sessions/${sessionId}/bedroom-puzzles/reset`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ level })
+        }
+      )
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      
+      const data = await response.json()
+      console.log('✅ [useBedroomPuzzle] Puzzles reset:', data)
+      
+      // 🚀 UPDATE IMMEDIATO - non aspettare WebSocket
+      setPuzzleStates({
+        comodino: data.states.comodino.status,
+        materasso: data.states.materasso.status,
+        poltrona: data.states.poltrona.status,
+        ventola: data.states.ventola.status,
+        porta: data.states.porta.status
+      })
+      
+      setLedStates({
+        porta: data.led_states.porta,
+        materasso: data.led_states.materasso,
+        poltrona: data.led_states.poltrona,
+        ventola: data.led_states.ventola
+      })
+      
+      console.log('🎨 [useBedroomPuzzle] LED updated immediately from API response')
+    } catch (err) {
+      console.error('❌ [useBedroomPuzzle] Error resetting puzzles:', err)
+    }
+  }, [sessionId])
+  
+  return {
+    // States
+    puzzleStates,
+    ledStates,
+    isLoading,
+    error,
+    
+    // Actions
+    completeComodino,
+    completeMaterasso,
+    completePoltrona,
+    completeVentola,
+    resetPuzzles,
+    
+    // Utility
+    refreshState: fetchInitialState
+  }
+}

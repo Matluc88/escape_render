@@ -1,0 +1,17 @@
+# Archivi compressi e backup
+*.tar.gz
+*.zip
+*.bak
+*.old
+
+# File di sistema
+.DS_Store
+Thumbs.db
+
+# Backup directories
+backups/
+*.sql
+
+# File temporanei
+*.tmp
+*.temp

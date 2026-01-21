@@ -1,0 +1,33 @@
+{
+  "sequence": [
+    {
+      "objectName": "ANTA_DOCCIA(8757EC12-8FFC-44E5-A699-89C491F80102)",
+      "pivotX": 2.538,
+      "pivotY": 0.73,
+      "pivotZ": 3.066669594301972,
+      "axis": "y",
+      "angle": 45,
+      "speed": 45
+    },
+    {
+      "objectName": "MANIGLIA_ANTA_DOCCIA(C58A35D0-728B-43DF-B7D7-7004734BDE25)",
+      "pivotX": 2.538,
+      "pivotY": 0.73,
+      "pivotZ": 3.066669594301972,
+      "axis": "y",
+      "angle": 45,
+      "speed": 45
+    },
+    {
+      "objectName": "MANIGLIA ANTA DOCCIA(3C2B9546-E2CC-48AB-9A88-3D571D21E77B)",
+      "pivotX": 2.538,
+      "pivotY": 0.73,
+      "pivotZ": 3.066669594301972,
+      "axis": "y",
+      "angle": 45,
+      "speed": 45
+    }
+  ],
+  "_notes": "Anta doccia + 2 maniglie sincronizzate. Tasto L. ASSE Y. Angolo apertura 45° (stato iniziale). Coordinate pivot aggiornate da Animation Editor V2.0",
+  "_timestamp": "2026-01-16T18:41:00.000Z"
+}
