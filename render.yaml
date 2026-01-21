@@ -4,7 +4,7 @@ services:
     name: escape-room-frontend
     runtime: static
     rootDir: escape-room-3d
-    buildCommand: git lfs install && git lfs pull && npm install && npm run build
+    buildCommand: npm install && npm run build
     staticPublishPath: ./dist
     envVars:
       - key: VITE_WS_URL

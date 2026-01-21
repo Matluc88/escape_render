@@ -45,7 +45,7 @@ Se preferisci NON eliminare i servizi:
 2. **Root Directory**: Cambia a → `escape-room-3d`
 3. **Build Command**: 
    ```bash
-   git lfs install && git lfs pull && npm install && npm run build
+   npm install && npm run build
    ```
 4. **Publish Directory**: `dist`
 5. Click **"Save Changes"**
@@ -65,7 +65,7 @@ Root Directory: escape-room-3d/backend
 ### Frontend  
 ```
 Root Directory: escape-room-3d
-Build Command: git lfs install && git lfs pull && npm install && npm run build
+Build Command: npm install && npm run build
 Publish Directory: dist
 ```
 
@@ -82,7 +82,7 @@ Publish Directory: dist
 
 ### Frontend dovrebbe avere:
 - ✅ Root Directory: `escape-room-3d`
-- ✅ Build Command: `git lfs install && git lfs pull && npm install && npm run build`
+- ✅ Build Command: `npm install && npm run build`
 - ✅ Publish Directory: `dist`
 
 ---

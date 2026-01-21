@@ -87,7 +87,7 @@ Se preferisci creare i servizi uno alla volta:
 3. Configurazione:
    - **Name**: `escape-room-frontend`
    - **Root Directory**: `escape-room-3d`
-   - **Build Command**: `git lfs install && git lfs pull && npm install && npm run build`
+   - **Build Command**: `npm install && npm run build`
    - **Publish Directory**: `dist`
 4. Environment Variables:
    ```
