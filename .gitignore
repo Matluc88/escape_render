@@ -15,3 +15,11 @@ backups/
 # File temporanei
 *.tmp
 *.temp
+
+# Modelli 3D grandi (da gestire separatamente)
+*.glb
+escape-room-3d/dist/
+
+# File deploy e archivi
+escape-room-deploy*.tar.gz
+escape-frontend*.tar.gz
