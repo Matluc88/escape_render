@@ -35,7 +35,9 @@ export function useMqttEsterno() {
   // Configurazione MQTT
   // Usa window.location.hostname per adattarsi automaticamente
   // localhost in dev, IP Raspberry in produzione
-  const MQTT_URL = `ws://${window.location.hostname}:9001`
+  // ✅ FIX: Auto-detect protocol (wss:// for HTTPS, ws:// for HTTP)
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+  const MQTT_URL = `${protocol}//${window.location.hostname}:9001`
   
   const TOPICS = {
     IR_SENSOR: 'escape/esterno/ir-sensor/stato',
