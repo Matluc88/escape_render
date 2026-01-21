@@ -5,7 +5,7 @@ import { io } from 'socket.io-client'
 // In produzione (Docker) usa percorso relativo, nginx proxya /socket.io/
 // In dev locale usa http://localhost:3000 se VITE_WS_URL non è impostato
 const WS_URL = import.meta.env.VITE_WS_URL || (import.meta.env.DEV ? 'http://localhost:3000' : '')
-const API_URL = import.meta.env.VITE_BACKEND_URL || '/api'
+const API_URL = import.meta.env.VITE_BACKEND_URL || ''
 
 function JoinGame() {
   const navigate = useNavigate()
@@ -124,7 +124,7 @@ function JoinGame() {
 
     try {
       // Chiama backend per ottenere session associata al PIN
-      const response = await fetch(`${API_URL}/sessions/by-pin/${pinToValidate}`)
+      const response = await fetch(`${API_URL}/api/sessions/by-pin/${pinToValidate}`)
       
       if (!response.ok) {
         // Gestisci diversi tipi di errore
