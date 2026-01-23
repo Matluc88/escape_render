@@ -596,6 +596,31 @@ async def toggleGateState(sid, data):
 
 
 @sio.event
+async def syncAnimation(sid, data):
+    """
+    🎬 NUOVO: Sincronizza animazioni oggetti tra tutti i giocatori
+    Usato per TV, divano, pianta, comodino, pentola, anta, ecc.
+    """
+    session_id = data.get('sessionId')
+    room = data.get('room')
+    object_name = data.get('objectName')
+    animation_state = data.get('animationState')
+    player_name = data.get('playerName', 'Unknown')
+    additional_data = data.get('additionalData', {})  # Dati extra opzionali
+    
+    logger.info(f"🎬 Animation sync: {object_name} in {room} → {animation_state} (by {player_name})")
+    
+    # Broadcast a tutti nella sessione (usa session_id per broadcast globale nella stanza)
+    await sio.emit('animationStateChanged', {
+        'room': room,
+        'objectName': object_name,
+        'animationState': animation_state,
+        'triggeredBy': player_name,
+        'additionalData': additional_data
+    }, room=f"session_{session_id}")
+
+
+@sio.event
 async def requestInteractionLock(sid, data):
     """Richiesta di lock per interazione (es. cancello) - previene concorrenza"""
     session_id = data.get('sessionId')
@@ -923,4 +948,3 @@ class WebSocketHandler:
 
 
 ws_handler = WebSocketHandler()
-

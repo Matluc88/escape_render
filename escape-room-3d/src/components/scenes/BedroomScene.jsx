@@ -592,6 +592,166 @@ export default function BedroomScene({ onObjectClick, onLookAtChange, mobileInpu
   // 🎮 WebSocket e Bedroom Puzzle System
   const { socket } = useWebSocket(sessionId, 'camera', 'DevPlayer')
   const bedroomPuzzle = useBedroomPuzzle(sessionId, socket)
+
+  // 🔄 LISTENER WebSocket per sincronizzazione player-to-player
+  useEffect(() => {
+    if (!socket) return
+
+    const handleAnimationSync = (data) => {
+      // Filtra solo eventi per questa room
+      if (data.room !== 'camera') return
+
+      console.log('[BedroomScene] 🔄 Ricevuto sync da altro player:', data)
+
+      // COMODINO - Sequenza K
+      if (data.objectName === 'comodino') {
+        if (data.animationState === 'rotation') {
+          // Avvia fase rotation
+          if (comodinoSequenceData && !comodinoSequencePhase) {
+            const rotationPhase = comodinoSequenceData.sequence[0]
+            setComodinoSequenceConfig(rotationPhase)
+            setComodinoSequencePhase('rotation')
+            console.log('[BedroomScene] 🔄 Sync: Avviata fase rotation comodino')
+          }
+        } else if (data.animationState === 'position') {
+          // Avvia fase position
+          if (comodinoSequenceData && comodinoSequencePhase === 'rotation') {
+            const positionPhase = comodinoSequenceData.sequence[1]
+            setComodinoSequenceConfig(positionPhase)
+            setComodinoSequencePhase('position')
+            console.log('[BedroomScene] 🔄 Sync: Avviata fase position comodino')
+          }
+        }
+      }
+
+      // MATERASSO - Tasto M
+      if (data.objectName === 'materasso' && data.animationState === 'rotation') {
+        if (materassoSequenceData && !materassoSequencePhase) {
+          const rotationConfig = materassoSequenceData.sequence[0]
+          setMaterassoSequenceConfig(rotationConfig)
+          setMaterassoSequencePhase('rotation')
+          console.log('[BedroomScene] 🔄 Sync: Avviata animazione materasso')
+        }
+      }
+
+      // POLTRONA - Tasto L (BookCase + Lampada)
+      if (data.objectName === 'poltrona') {
+        if (data.animationState === 'bookcase_visible') {
+          setBookcaseVisible(true)
+          console.log('[BedroomScene] 🔄 Sync: BookCase VISIBILE')
+        } else if (data.animationState === 'humano_visible') {
+          setBookcaseVisible(false)
+          console.log('[BedroomScene] 🔄 Sync: Humano VISIBILE')
+        }
+      }
+
+      if (data.objectName === 'lampada') {
+        setLampadaAccesa(data.animationState === 'on')
+        console.log('[BedroomScene] 🔄 Sync: Lampada', data.animationState === 'on' ? 'ACCESA' : 'SPENTA')
+      }
+
+      // PORTA FINESTRA - Tasto J
+      if (data.objectName === 'porta_finestra') {
+        setPortaFinestraOpen(data.animationState === 'open')
+        console.log('[BedroomScene] 🔄 Sync: Porta-Finestra', data.animationState === 'open' ? 'APERTA' : 'CHIUSA')
+      }
+
+      // ARIA CALDA - Sincronizzata con porta
+      if (data.objectName === 'aria_calda') {
+        setHotAirActive(data.animationState === 'active')
+        console.log('[BedroomScene] 🔄 Sync: Aria Calda', data.animationState === 'active' ? 'ATTIVA' : 'INATTIVA')
+      }
+
+      // PORTA LETTO - Tasti O/I
+      if (data.objectName === 'porta_letto') {
+        setPortaLettoAperta(data.animationState === 'open')
+        console.log('[BedroomScene] 🔄 Sync: Porta Letto', data.animationState === 'open' ? 'APERTA' : 'CHIUSA')
+      }
+    }
+
+    socket.on('animationStateChanged', handleAnimationSync)
+    return () => socket.off('animationStateChanged', handleAnimationSync)
+  }, [socket, comodinoSequenceData, comodinoSequencePhase, materassoSequenceData, materassoSequencePhase])
+  
+  // 🔄 LISTENER WebSocket per sincronizzazione player-to-player
+  useEffect(() => {
+    if (!socket) return
+    
+    const handleAnimationSync = (data) => {
+      // Filtra solo eventi per questa room
+      if (data.room !== 'camera') return
+      
+      console.log('[BedroomScene] 🔄 Ricevuto sync da altro player:', data)
+      
+      // COMODINO - Sequenza K
+      if (data.objectName === 'comodino') {
+        if (data.animationState === 'rotation') {
+          // Avvia fase rotation
+          if (comodinoSequenceData && !comodinoSequencePhase) {
+            const rotationPhase = comodinoSequenceData.sequence[0]
+            setComodinoSequenceConfig(rotationPhase)
+            setComodinoSequencePhase('rotation')
+            console.log('[BedroomScene] 🔄 Sync: Avviata fase rotation comodino')
+          }
+        } else if (data.animationState === 'position') {
+          // Avvia fase position
+          if (comodinoSequenceData && comodinoSequencePhase === 'rotation') {
+            const positionPhase = comodinoSequenceData.sequence[1]
+            setComodinoSequenceConfig(positionPhase)
+            setComodinoSequencePhase('position')
+            console.log('[BedroomScene] 🔄 Sync: Avviata fase position comodino')
+          }
+        }
+      }
+      
+      // MATERASSO - Tasto M
+      if (data.objectName === 'materasso' && data.animationState === 'rotation') {
+        if (materassoSequenceData && !materassoSequencePhase) {
+          const rotationConfig = materassoSequenceData.sequence[0]
+          setMaterassoSequenceConfig(rotationConfig)
+          setMaterassoSequencePhase('rotation')
+          console.log('[BedroomScene] 🔄 Sync: Avviata animazione materasso')
+        }
+      }
+      
+      // POLTRONA - Tasto L (BookCase + Lampada)
+      if (data.objectName === 'poltrona') {
+        if (data.animationState === 'bookcase_visible') {
+          setBookcaseVisible(true)
+          console.log('[BedroomScene] 🔄 Sync: BookCase VISIBILE')
+        } else if (data.animationState === 'humano_visible') {
+          setBookcaseVisible(false)
+          console.log('[BedroomScene] 🔄 Sync: Humano VISIBILE')
+        }
+      }
+      
+      if (data.objectName === 'lampada') {
+        setLampadaAccesa(data.animationState === 'on')
+        console.log('[BedroomScene] 🔄 Sync: Lampada', data.animationState === 'on' ? 'ACCESA' : 'SPENTA')
+      }
+      
+      // PORTA FINESTRA - Tasto J
+      if (data.objectName === 'porta_finestra') {
+        setPortaFinestraOpen(data.animationState === 'open')
+        console.log('[BedroomScene] 🔄 Sync: Porta-Finestra', data.animationState === 'open' ? 'APERTA' : 'CHIUSA')
+      }
+      
+      // ARIA CALDA - Sincronizzata con porta
+      if (data.objectName === 'aria_calda') {
+        setHotAirActive(data.animationState === 'active')
+        console.log('[BedroomScene] 🔄 Sync: Aria Calda', data.animationState === 'active' ? 'ATTIVA' : 'INATTIVA')
+      }
+      
+      // PORTA LETTO - Tasti O/I
+      if (data.objectName === 'porta_letto') {
+        setPortaLettoAperta(data.animationState === 'open')
+        console.log('[BedroomScene] 🔄 Sync: Porta Letto', data.animationState === 'open' ? 'APERTA' : 'CHIUSA')
+      }
+    }
+    
+    socket.on('animationStateChanged', handleAnimationSync)
+    return () => socket.off('animationStateChanged', handleAnimationSync)
+  }, [socket, comodinoSequenceData, comodinoSequencePhase, materassoSequenceData, materassoSequencePhase])
   
   // 🏆 Game Completion System (gestisce LED porte globali)
   const gameCompletion = useGameCompletion(sessionId, socket)
@@ -971,6 +1131,19 @@ export default function BedroomScene({ onObjectClick, onLookAtChange, mobileInpu
       setTimeout(() => {
         setComodinoSequenceConfig(positionPhase)
         setComodinoSequencePhase('position')
+        
+        // 🔄 EMIT: Sincronizza passaggio a fase position
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'camera',
+            objectName: 'comodino',
+            animationState: 'position',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[BedroomScene] 📤 EMIT: Comodino position avviata')
+        }
       }, 100) // Piccolo delay per evitare overlap
     } else if (phase === 'position') {
       // Sequenza completata!
@@ -1137,6 +1310,19 @@ export default function BedroomScene({ onObjectClick, onLookAtChange, mobileInpu
         setComodinoSequenceConfig(rotationPhase)
         setComodinoSequencePhase('rotation')
         
+        // 🔄 EMIT: Sincronizza con altri player
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'camera',
+            objectName: 'comodino',
+            animationState: 'rotation',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[BedroomScene] 📤 EMIT: Comodino rotation avviata')
+        }
+        
         return
       }
       
@@ -1163,6 +1349,19 @@ export default function BedroomScene({ onObjectClick, onLookAtChange, mobileInpu
         setMaterassoSequenceConfig(rotationConfig)
         setMaterassoSequencePhase('rotation')
         
+        // 🔄 EMIT: Sincronizza con altri player
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'camera',
+            objectName: 'materasso',
+            animationState: 'rotation',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[BedroomScene] 📤 EMIT: Materasso rotation avviata')
+        }
+        
         return
       }
       
@@ -1182,16 +1381,41 @@ export default function BedroomScene({ onObjectClick, onLookAtChange, mobileInpu
       if (key === 'l') {
         event.preventDefault()
         event.stopPropagation()
-        setBookcaseVisible(prev => {
-          const newState = !prev
-          console.log('[BedroomScene] 📚 Tasto L - Toggle BookCase/Humano:', newState ? 'BookCase VISIBILE' : 'Humano VISIBILE')
-          return newState
-        })
-        setLampadaAccesa(prev => {
-          const newState = !prev
-          console.log('[BedroomScene] 💡 Tasto L - Toggle Lampada:', newState ? 'ACCESA' : 'SPENTA')
-          return newState
-        })
+        
+        const newBookcaseState = !bookcaseVisible
+        const newLampadaState = !lampadaAccesa
+        
+        setBookcaseVisible(newBookcaseState)
+        console.log('[BedroomScene] 📚 Tasto L - Toggle BookCase/Humano:', newBookcaseState ? 'BookCase VISIBILE' : 'Humano VISIBILE')
+        
+        setLampadaAccesa(newLampadaState)
+        console.log('[BedroomScene] 💡 Tasto L - Toggle Lampada:', newLampadaState ? 'ACCESA' : 'SPENTA')
+        
+        // 🔄 EMIT: Sincronizza BookCase/Humano
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'camera',
+            objectName: 'poltrona',
+            animationState: newBookcaseState ? 'bookcase_visible' : 'humano_visible',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[BedroomScene] 📤 EMIT: Poltrona/BookCase', newBookcaseState ? 'VISIBILE' : 'INVISIBILE')
+        }
+        
+        // 🔄 EMIT: Sincronizza Lampada
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'camera',
+            objectName: 'lampada',
+            animationState: newLampadaState ? 'on' : 'off',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[BedroomScene] 📤 EMIT: Lampada', newLampadaState ? 'ACCESA' : 'SPENTA')
+        }
         
         // 🎯 NUOVO: Completa poltrona puzzle
         bedroomPuzzle.completePoltrona()
@@ -1225,9 +1449,35 @@ export default function BedroomScene({ onObjectClick, onLookAtChange, mobileInpu
         setPortaFinestraOpen(false)
         console.log('[BedroomScene] 🚪 Tasto J - Porta-Finestra: CHIUSA')
         
+        // 🔄 EMIT: Sincronizza porta-finestra
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'camera',
+            objectName: 'porta_finestra',
+            animationState: 'closed',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[BedroomScene] 📤 EMIT: Porta-finestra CHIUSA')
+        }
+        
         // AZIONE 2: ATTIVA aria calda (SYNC con porta)
         setHotAirActive(true)
         console.log('[BedroomScene] 🌡️ Tasto J - Aria Calda: ATTIVA')
+        
+        // 🔄 EMIT: Sincronizza aria calda
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'camera',
+            objectName: 'aria_calda',
+            animationState: 'active',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[BedroomScene] 📤 EMIT: Aria calda ATTIVA')
+        }
         
         // AZIONE 3: Completa ventola puzzle
         bedroomPuzzle.completeVentola()
@@ -1255,6 +1505,20 @@ export default function BedroomScene({ onObjectClick, onLookAtChange, mobileInpu
         event.stopPropagation()
         setPortaLettoAperta(true)
         console.log('[BedroomScene] 🚪 Tasto O - Porta Letto: APERTA')
+        
+        // 🔄 EMIT: Sincronizza porta letto
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'camera',
+            objectName: 'porta_letto',
+            animationState: 'open',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[BedroomScene] 📤 EMIT: Porta letto APERTA')
+        }
+        
         return
       }
       
@@ -1264,6 +1528,20 @@ export default function BedroomScene({ onObjectClick, onLookAtChange, mobileInpu
         event.stopPropagation()
         setPortaLettoAperta(false)
         console.log('[BedroomScene] 🚪 Tasto I - Porta Letto: CHIUSA')
+        
+        // 🔄 EMIT: Sincronizza porta letto
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'camera',
+            objectName: 'porta_letto',
+            animationState: 'closed',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[BedroomScene] 📤 EMIT: Porta letto CHIUSA')
+        }
+        
         return
       }
       

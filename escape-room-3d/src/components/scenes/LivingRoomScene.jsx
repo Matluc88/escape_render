@@ -925,6 +925,65 @@ export default function LivingRoomScene({ onObjectClick, onLookAtChange, mobileI
     }
   }, [livingRoomPuzzle.ledStates?.condizionatore])
   
+  // 📥 LISTENER WebSocket - Sincronizzazione TV/Divano da altri giocatori
+  useEffect(() => {
+    if (!socket) return
+    
+    const handleAnimationSync = (data) => {
+      // Filtra solo eventi per questo room
+      if (data.room !== 'soggiorno') return
+      
+      // 🎭 TV/Divano sync
+      if (data.objectName === 'tv_divano') {
+        console.log('[LivingRoomScene] 📥 Sync TV/Divano ricevuto da:', data.triggeredBy, '→', data.animationState)
+        
+        // Aggiorna stato React locale
+        setLivingRoomAnimState(data.animationState)
+        setTvAccesa(data.additionalData?.tvOn || false)
+        
+        // Avvia animazione se necessario
+        if (data.animationState === 'opening' || data.animationState === 'closing') {
+          setIsLivingRoomAnimPlaying(true)
+        }
+        
+        console.log('[LivingRoomScene] ✅ TV/Divano aggiornati da sync remoto')
+      }
+      
+      // 🌱 Pianta sync
+      if (data.objectName === 'pianta') {
+        console.log('[LivingRoomScene] 📥 Sync Pianta ricevuto da:', data.triggeredBy, '→', data.animationState)
+        
+        // Aggiorna stato React locale
+        setPlantAnimState(data.animationState)
+        
+        // Avvia animazione se necessario
+        if (data.animationState === 'opening') {
+          setIsPlantAnimPlaying(true)
+        }
+        
+        console.log('[LivingRoomScene] ✅ Pianta aggiornata da sync remoto')
+      }
+      
+      // 🚪 Porte sync
+      if (data.objectName === 'porte') {
+        console.log('[LivingRoomScene] 📥 Sync Porte ricevuto da:', data.triggeredBy, '→ angolo:', data.additionalData?.angle)
+        
+        // Aggiorna angolo porte
+        const newAngle = data.additionalData?.angle
+        if (newAngle !== undefined) {
+          setPorteSoggiornoAngolo(newAngle)
+          console.log('[LivingRoomScene] ✅ Porte aggiornate da sync remoto:', newAngle + '°')
+        }
+      }
+    }
+    
+    socket.on('animationStateChanged', handleAnimationSync)
+    
+    return () => {
+      socket.off('animationStateChanged', handleAnimationSync)
+    }
+  }, [socket])
+  
   // 🎭 AUTO-TRIGGER ANIMAZIONE - MAG1 WebSocket listener (rileva transizione "locked/active" → "completed")
   useEffect(() => {
     const currentTvStatus = livingRoomPuzzle.tvStatus
@@ -1135,8 +1194,22 @@ export default function LivingRoomScene({ onObjectClick, onLookAtChange, mobileI
         
         if (plantAnimState === 'closed') {
           console.log('[LivingRoomScene] 🌱 Tasto G - Animazione pianta START')
-          setPlantAnimState('opening')
+          const newState = 'opening'
+          setPlantAnimState(newState)
           setIsPlantAnimPlaying(true)
+          
+          // 📤 SYNC WebSocket - Emetti evento per sincronizzare altri giocatori
+          if (socket && sessionId) {
+            socket.emit('syncAnimation', {
+              sessionId,
+              room: 'soggiorno',
+              objectName: 'pianta',
+              animationState: newState,
+              playerName: 'DevPlayer',
+              additionalData: {}
+            })
+            console.log('[LivingRoomScene] 📤 Sync emit: pianta → opening')
+          }
         }
         return
       }
@@ -1154,7 +1227,8 @@ export default function LivingRoomScene({ onObjectClick, onLookAtChange, mobileI
         if (livingRoomAnimState === 'closed') {
           // Apri: ruota a 22° + ACCENDI TV
           console.log('[LivingRoomScene] 🎭 Tasto M - Apertura (0° → 22°) + TV ON')
-          setLivingRoomAnimState('opening')
+          const newState = 'opening'
+          setLivingRoomAnimState(newState)
           setIsLivingRoomAnimPlaying(true)
           
           // 📺 ACCENDI TV con animazione realistica
@@ -1170,13 +1244,40 @@ export default function LivingRoomScene({ onObjectClick, onLookAtChange, mobileI
           // 📺 MOSTRA MESSAGGIO COMPLETAMENTO
           setMessaggioCompletamento(true)
           setTimeout(() => setMessaggioCompletamento(false), 4000) // 4 secondi
+          
+          // 📤 SYNC WebSocket - Emetti evento per sincronizzare altri giocatori
+          if (socket && sessionId) {
+            socket.emit('syncAnimation', {
+              sessionId,
+              room: 'soggiorno',
+              objectName: 'tv_divano',
+              animationState: newState,
+              playerName: 'DevPlayer',
+              additionalData: { tvOn: true }
+            })
+            console.log('[LivingRoomScene] 📤 Sync emit: tv_divano → opening')
+          }
         } else if (livingRoomAnimState === 'open') {
           // Chiudi: torna a 0° + SPEGNI TV
           console.log('[LivingRoomScene] 🎭 Tasto M - Chiusura (22° → 0°) + TV OFF')
-          setLivingRoomAnimState('closing')
+          const newState = 'closing'
+          setLivingRoomAnimState(newState)
           setIsLivingRoomAnimPlaying(true)
           // 📺 SPEGNI TV
           setTvAccesa(false)
+          
+          // 📤 SYNC WebSocket - Emetti evento per sincronizzare altri giocatori
+          if (socket && sessionId) {
+            socket.emit('syncAnimation', {
+              sessionId,
+              room: 'soggiorno',
+              objectName: 'tv_divano',
+              animationState: newState,
+              playerName: 'DevPlayer',
+              additionalData: { tvOn: false }
+            })
+            console.log('[LivingRoomScene] 📤 Sync emit: tv_divano → closing')
+          }
         }
         return
       }
@@ -1194,8 +1295,22 @@ export default function LivingRoomScene({ onObjectClick, onLookAtChange, mobileI
       if (key === 'o') {
         event.preventDefault()
         event.stopPropagation()
-        setPorteSoggiornoAngolo(30)
+        const newAngle = 30
+        setPorteSoggiornoAngolo(newAngle)
         console.log('[LivingRoomScene] 🚪 Tasto O - Porte Soggiorno: 30° (APERTA)')
+        
+        // 📤 SYNC WebSocket - Emetti evento per sincronizzare altri giocatori
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'soggiorno',
+            objectName: 'porte',
+            animationState: 'angle_change',
+            playerName: 'DevPlayer',
+            additionalData: { angle: newAngle }
+          })
+          console.log('[LivingRoomScene] 📤 Sync emit: porte → 30°')
+        }
         return
       }
       
@@ -1203,7 +1318,8 @@ export default function LivingRoomScene({ onObjectClick, onLookAtChange, mobileI
       if (key === 'i') {
         event.preventDefault()
         event.stopPropagation()
-        setPorteSoggiornoAngolo(0)
+        const newAngle = 0
+        setPorteSoggiornoAngolo(newAngle)
         console.log('[LivingRoomScene] 🚪 Tasto I - Porte Soggiorno: 0° (CHIUSA)')
         
         // 🎯 Se enigma 2 è completato → completa puzzle condizionatore
@@ -1214,6 +1330,19 @@ export default function LivingRoomScene({ onObjectClick, onLookAtChange, mobileI
           }).catch(err => {
             console.error('[LivingRoomScene] ❌ Errore API completeCondizionatore:', err)
           })
+        }
+        
+        // 📤 SYNC WebSocket - Emetti evento per sincronizzare altri giocatori
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'soggiorno',
+            objectName: 'porte',
+            animationState: 'angle_change',
+            playerName: 'DevPlayer',
+            additionalData: { angle: newAngle }
+          })
+          console.log('[LivingRoomScene] 📤 Sync emit: porte → 0°')
         }
         return
       }
@@ -1227,6 +1356,20 @@ export default function LivingRoomScene({ onObjectClick, onLookAtChange, mobileI
           // Se è chiusa (0°) → va a 90°
           const nuovoAngolo = prev === 30 ? 60 : 90
           console.log(`[LivingRoomScene] 🚪 Tasto L - Porte Soggiorno: ${prev}° → ${nuovoAngolo}°`)
+          
+          // 📤 SYNC WebSocket - Emetti evento per sincronizzare altri giocatori
+          if (socket && sessionId) {
+            socket.emit('syncAnimation', {
+              sessionId,
+              room: 'soggiorno',
+              objectName: 'porte',
+              animationState: 'angle_change',
+              playerName: 'DevPlayer',
+              additionalData: { angle: nuovoAngolo }
+            })
+            console.log(`[LivingRoomScene] 📤 Sync emit: porte → ${nuovoAngolo}°`)
+          }
+          
           return nuovoAngolo
         })
         return

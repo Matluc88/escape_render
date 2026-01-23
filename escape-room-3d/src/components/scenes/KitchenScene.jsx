@@ -587,6 +587,61 @@ export default function KitchenScene({ onObjectClick, onLookAtChange, mobileInpu
     }
   }, [socket])
   
+  // 📥 LISTENER WebSocket - Sincronizzazione Player-to-Player
+  useEffect(() => {
+    if (!socket) return
+    
+    const handleAnimationSync = (data) => {
+      // Filtra solo eventi per questo room
+      if (data.room !== 'cucina') return
+      
+      console.log('[KitchenScene] 📥 Sync ricevuto da:', data.triggeredBy, '→', data.objectName, data.animationState)
+      
+      // 🍳 Pentola sync
+      if (data.objectName === 'pentola') {
+        if (data.animationState === 'sui_fornelli') {
+          setPentolaSuiFornelli(true)
+          console.log('[KitchenScene] ✅ Pentola sincronizzata: SUI FORNELLI')
+        } else if (data.animationState === 'posto_originale') {
+          setPentolaSuiFornelli(false)
+          console.log('[KitchenScene] ✅ Pentola sincronizzata: POSTO ORIGINALE')
+        }
+      }
+      
+      // 🚪 Anta mobile sync
+      if (data.objectName === 'anta_mobile') {
+        setAnimatedDoorOpen(data.animationState === 'open')
+        console.log('[KitchenScene] ✅ Anta mobile sincronizzata:', data.animationState)
+      }
+      
+      // 🧊 Frigo sync
+      if (data.objectName === 'frigo') {
+        setFridgeDoorOpen(data.animationState === 'open')
+        console.log('[KitchenScene] ✅ Frigo sincronizzato:', data.animationState)
+      }
+      
+      // 🚪 Porta cucina sync
+      if (data.objectName === 'porta') {
+        setPortaCucinaOpen(data.animationState === 'open')
+        console.log('[KitchenScene] ✅ Porta cucina sincronizzata:', data.animationState)
+      }
+      
+      // 🌿 Serra sync
+      if (data.objectName === 'serra') {
+        setNeonSerraAcceso(data.animationState === 'accesa')
+        console.log('[KitchenScene] ✅ Serra sincronizzata:', data.animationState)
+      }
+    }
+    
+    socket.on('animationStateChanged', handleAnimationSync)
+    console.log('[KitchenScene] ✅ Listener player-to-player registrato')
+    
+    return () => {
+      socket.off('animationStateChanged', handleAnimationSync)
+      console.log('[KitchenScene] 🔌 Listener player-to-player rimosso')
+    }
+  }, [socket])
+  
   // 🔄 AUTO-RESET al caricamento scena
   useEffect(() => {
     if (resetPuzzles) {
@@ -831,6 +886,19 @@ export default function KitchenScene({ onObjectClick, onLookAtChange, mobileInpu
         event.stopPropagation()
         setNeonSerraAcceso(true)
         console.log('[KitchenScene] 🌿 Serra ACCESA ✅ (luce verde + particelle)')
+        
+        // 📤 SYNC WebSocket
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'cucina',
+            objectName: 'serra',
+            animationState: 'accesa',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[KitchenScene] 📤 Sync emit: serra → accesa')
+        }
         return
       }
       if (key === 'x') {
@@ -838,6 +906,19 @@ export default function KitchenScene({ onObjectClick, onLookAtChange, mobileInpu
         event.stopPropagation()
         setNeonSerraAcceso(false)
         console.log('[KitchenScene] ⚫ Serra SPENTA')
+        
+        // 📤 SYNC WebSocket
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'cucina',
+            objectName: 'serra',
+            animationState: 'spenta',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[KitchenScene] 📤 Sync emit: serra → spenta')
+        }
         return
       }
       
@@ -858,42 +939,146 @@ export default function KitchenScene({ onObjectClick, onLookAtChange, mobileInpu
       if (event.key === '5') {
         console.log('[KitchenScene] ⚡ Tasto 5 - Pentola AI FORNELLI')
         setPentolaSuiFornelli(true)
+        
+        // 📤 SYNC WebSocket
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'cucina',
+            objectName: 'pentola',
+            animationState: 'sui_fornelli',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[KitchenScene] 📤 Sync emit: pentola → sui_fornelli')
+        }
       }
       
       // Tasto 6 - Pentola TORNA A CASA (per ESP32)
       if (event.key === '6') {
         console.log('[KitchenScene] 🏠 Tasto 6 - Pentola AL POSTO ORIGINALE')
         setPentolaSuiFornelli(false)
+        
+        // 📤 SYNC WebSocket
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'cucina',
+            objectName: 'pentola',
+            animationState: 'posto_originale',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[KitchenScene] 📤 Sync emit: pentola → posto_originale')
+        }
       }
       
       // Tasti 1 e 2 - Animazione sportello 1
       if (event.key === '1') {
         console.log('[KitchenScene] 🚪 Tasto 1 - Apri sportello 1')
         setAnimatedDoorOpen(true)
+        
+        // 📤 SYNC WebSocket
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'cucina',
+            objectName: 'anta_mobile',
+            animationState: 'open',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[KitchenScene] 📤 Sync emit: anta_mobile → open')
+        }
       }
       if (event.key === '2') {
         console.log('[KitchenScene] 🚪 Tasto 2 - Chiudi sportello 1')
         setAnimatedDoorOpen(false)
+        
+        // 📤 SYNC WebSocket
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'cucina',
+            objectName: 'anta_mobile',
+            animationState: 'closed',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[KitchenScene] 📤 Sync emit: anta_mobile → closed')
+        }
       }
       
       // Tasti 3 e 4 - Animazione sportello frigo
       if (event.key === '3') {
         console.log('[KitchenScene] 🧊 Tasto 3 - Apri sportello frigo')
         setFridgeDoorOpen(true)
+        
+        // 📤 SYNC WebSocket
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'cucina',
+            objectName: 'frigo',
+            animationState: 'open',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[KitchenScene] 📤 Sync emit: frigo → open')
+        }
       }
       if (event.key === '4') {
         console.log('[KitchenScene] 🧊 Tasto 4 - Chiudi sportello frigo')
         setFridgeDoorOpen(false)
+        
+        // 📤 SYNC WebSocket
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'cucina',
+            objectName: 'frigo',
+            animationState: 'closed',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[KitchenScene] 📤 Sync emit: frigo → closed')
+        }
       }
       
       // Tasti 9 e 0 - Animazione porta cucina
       if (event.key === '9') {
         console.log('[KitchenScene] 🚪 Tasto 9 - Apri porta cucina')
         setPortaCucinaOpen(true)
+        
+        // 📤 SYNC WebSocket
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'cucina',
+            objectName: 'porta',
+            animationState: 'open',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[KitchenScene] 📤 Sync emit: porta → open')
+        }
       }
       if (event.key === '0') {
         console.log('[KitchenScene] 🚪 Tasto 0 - Chiudi porta cucina')
         setPortaCucinaOpen(false)
+        
+        // 📤 SYNC WebSocket
+        if (socket && sessionId) {
+          socket.emit('syncAnimation', {
+            sessionId,
+            room: 'cucina',
+            objectName: 'porta',
+            animationState: 'closed',
+            playerName: 'DevPlayer',
+            additionalData: {}
+          })
+          console.log('[KitchenScene] 📤 Sync emit: porta → closed')
+        }
       }
     }
     

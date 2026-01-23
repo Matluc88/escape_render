@@ -692,6 +692,116 @@ export default function BathroomScene({ onObjectClick, onLookAtChange, mobileInp
   const bathroom = useBathroomPuzzle(sessionId, socket) // 🔥 FIX WEBSOCKET: Passa socket per aggiornamenti in tempo reale!
   const { getDoorLEDColor } = useGameCompletion(sessionId, socket) // ✅ FIX: Passa socket!
   
+  // 📥 LISTENER WebSocket - Sincronizzazione Player-to-Player
+  useEffect(() => {
+    if (!socket) return
+
+    const handleAnimationSync = (data) => {
+      // Filtra solo eventi per questo room
+      if (data.room !== 'bagno') return
+
+      console.log('[BathroomScene] 📥 Sync ricevuto da:', data.triggeredBy, '→', data.objectName, data.animationState)
+
+      // 🚿 Doccia sync
+      if (data.objectName === 'doccia') {
+        setShowerIsOpen(data.animationState === 'open')
+        console.log('[BathroomScene] ✅ Doccia sincronizzata:', data.animationState)
+      }
+
+      // 🚪 Porta finestra sync
+      if (data.objectName === 'porta_finestra') {
+        setDoorIsOpen(data.animationState === 'open')
+        console.log('[BathroomScene] ✅ Porta finestra sincronizzata:', data.animationState)
+      }
+
+      // 💡 Luci bagno sync
+      if (data.objectName === 'luci') {
+        setLampsEnabled(data.animationState === 'on')
+        console.log('[BathroomScene] ✅ Luci bagno sincronizzate:', data.animationState)
+      }
+    }
+
+    socket.on('animationStateChanged', handleAnimationSync)
+    console.log('[BathroomScene] ✅ Listener player-to-player registrato')
+
+    return () => {
+      socket.off('animationStateChanged', handleAnimationSync)
+      console.log('[BathroomScene] 🔌 Listener player-to-player rimosso')
+    }
+  }, [socket])
+  
+  // 📤 EMIT WebSocket - Sincronizza doccia quando cambia stato
+  const prevShowerStateRef = useRef(showerIsOpen)
+  useEffect(() => {
+    // Salta il primo render (inizializzazione)
+    if (prevShowerStateRef.current === showerIsOpen) {
+      prevShowerStateRef.current = showerIsOpen
+      return
+    }
+    
+    if (socket && sessionId) {
+      socket.emit('syncAnimation', {
+        sessionId,
+        room: 'bagno',
+        objectName: 'doccia',
+        animationState: showerIsOpen ? 'open' : 'closed',
+        playerName: 'DevPlayer',
+        additionalData: {}
+      })
+      console.log('[BathroomScene] 📤 EMIT: Doccia', showerIsOpen ? 'APERTA' : 'CHIUSA')
+    }
+    
+    prevShowerStateRef.current = showerIsOpen
+  }, [showerIsOpen, socket, sessionId])
+  
+  // 📤 EMIT WebSocket - Sincronizza porta-finestra quando cambia stato
+  const prevDoorStateRef = useRef(doorIsOpen)
+  useEffect(() => {
+    // Salta il primo render (inizializzazione)
+    if (prevDoorStateRef.current === doorIsOpen) {
+      prevDoorStateRef.current = doorIsOpen
+      return
+    }
+    
+    if (socket && sessionId) {
+      socket.emit('syncAnimation', {
+        sessionId,
+        room: 'bagno',
+        objectName: 'porta_finestra',
+        animationState: doorIsOpen ? 'open' : 'closed',
+        playerName: 'DevPlayer',
+        additionalData: {}
+      })
+      console.log('[BathroomScene] 📤 EMIT: Porta finestra', doorIsOpen ? 'APERTA' : 'CHIUSA')
+    }
+    
+    prevDoorStateRef.current = doorIsOpen
+  }, [doorIsOpen, socket, sessionId])
+  
+  // 📤 EMIT WebSocket - Sincronizza luci quando cambia stato
+  const prevLampsStateRef = useRef(lampsEnabled)
+  useEffect(() => {
+    // Salta il primo render (inizializzazione)
+    if (prevLampsStateRef.current === lampsEnabled) {
+      prevLampsStateRef.current = lampsEnabled
+      return
+    }
+    
+    if (socket && sessionId) {
+      socket.emit('syncAnimation', {
+        sessionId,
+        room: 'bagno',
+        objectName: 'luci',
+        animationState: lampsEnabled ? 'on' : 'off',
+        playerName: 'DevPlayer',
+        additionalData: {}
+      })
+      console.log('[BathroomScene] 📤 EMIT: Luci bagno', lampsEnabled ? 'ACCESE' : 'SPENTE')
+    }
+    
+    prevLampsStateRef.current = lampsEnabled
+  }, [lampsEnabled, socket, sessionId])
+  
   // 🔄 AUTO-RESET al caricamento scena (come cucina)
   useEffect(() => {
     if (bathroom.resetPuzzles) {
