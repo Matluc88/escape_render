@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Dashboard from './pages/admin/Dashboard'
 import Lobby from './pages/admin/Lobby'
@@ -9,11 +9,13 @@ import StudentLanding from './pages/StudentLanding'
 import RoomScene from './pages/RoomScene'
 import Victory from './pages/Victory'
 import DebugCollisionScene from './components/scenes/DebugCollisionScene'
+import LoadingScreen from './components/UI/LoadingScreen'
 
 function App() {
   return (
     <Router>
-      <Routes>
+      <Suspense fallback={<LoadingScreen />}>
+        <Routes>
         <Route path="/admin" element={<Dashboard />} />
         <Route path="/admin/session/:sessionId/lobby" element={<Lobby />} />
         <Route path="/admin/session/:sessionId/qrcodes" element={<QRCodesPage />} />
@@ -41,6 +43,7 @@ function App() {
         {/* Production: redirect to admin dashboard */}
         <Route path="/" element={<Navigate to="/admin" replace />} />
       </Routes>
+      </Suspense>
     </Router>
   )
 }

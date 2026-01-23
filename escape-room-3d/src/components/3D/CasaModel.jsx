@@ -97,7 +97,8 @@ export default function CasaModel({
   porteSoggiornoConfig = null, // 🚪 NUOVO: Configurazione 3 porte soggiorno
   showGrigliaHitbox = false // 🔍 NUOVO: Debug visivo hitbox griglia ventola (tasto F)
 }) {
-  const { scene } = useGLTF('/models/casa.glb', true)
+  // 🚀 OTTIMIZZAZIONE: Usa modello compresso con Draco (19.15 MB invece di 91.81 MB, -79%)
+  const { scene } = useGLTF('/models/casa_compressed.glb', true)
   const groupRef = useRef()
   const ledCancelloRef = useRef(null) // 💡 LED CANCELLO (fotocellula)
   const ledPortaIngressoRef = useRef(null) // 💡 LED PORTA INGRESSO
@@ -1385,4 +1386,4 @@ export default function CasaModel({
   )
 }
 
-useGLTF.preload('/models/casa.glb', true)
+useGLTF.preload('/models/casa_compressed.glb', true)
