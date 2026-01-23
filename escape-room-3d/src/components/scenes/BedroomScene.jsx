@@ -673,6 +673,44 @@ export default function BedroomScene({ onObjectClick, onLookAtChange, mobileInpu
     return () => socket.off('animationStateChanged', handleAnimationSync)
   }, [socket, comodinoSequenceData, comodinoSequencePhase, materassoSequenceData, materassoSequencePhase])
   
+  // 🔄 SYNC MESSAGGI COMPLETAMENTO - Monitora cambi stato puzzle e mostra messaggi
+  // Enigma Letto (comodino + materasso)
+  useEffect(() => {
+    const comodinoCompleted = bedroomPuzzle.puzzleStates?.comodino === 'completed' || bedroomPuzzle.puzzleStates?.comodino === 'done'
+    const materassoCompleted = bedroomPuzzle.puzzleStates?.materasso === 'completed' || bedroomPuzzle.puzzleStates?.materasso === 'done'
+    
+    if (comodinoCompleted && materassoCompleted && !messaggioCompletamentoLetto) {
+      console.log('[BedroomScene] 📥 SYNC: Letto completato da altro player - Mostro messaggio!')
+      setMessaggioObiettivoLetto(false)
+      setMessaggioCompletamentoLetto(true)
+      setTimeout(() => setMessaggioCompletamentoLetto(false), 3000)
+    }
+  }, [bedroomPuzzle.puzzleStates?.comodino, bedroomPuzzle.puzzleStates?.materasso])
+  
+  // Enigma Poltrona
+  useEffect(() => {
+    const poltronaCompleted = bedroomPuzzle.puzzleStates?.poltrona === 'completed' || bedroomPuzzle.puzzleStates?.poltrona === 'done'
+    
+    if (poltronaCompleted && !messaggioCompletamentoPoltrona) {
+      console.log('[BedroomScene] 📥 SYNC: Poltrona completata da altro player - Mostro messaggio!')
+      setMessaggioObiettivoPoltrona(false)
+      setMessaggioCompletamentoPoltrona(true)
+      setTimeout(() => setMessaggioCompletamentoPoltrona(false), 3000)
+    }
+  }, [bedroomPuzzle.puzzleStates?.poltrona])
+  
+  // Enigma Ventola
+  useEffect(() => {
+    const ventolaCompleted = bedroomPuzzle.puzzleStates?.ventola === 'completed' || bedroomPuzzle.puzzleStates?.ventola === 'done'
+    
+    if (ventolaCompleted && !messaggioCompletamentoVentola) {
+      console.log('[BedroomScene] 📥 SYNC: Ventola completata da altro player - Mostro messaggio!')
+      setMessaggioObiettivoVentola(false)
+      setMessaggioCompletamentoVentola(true)
+      setTimeout(() => setMessaggioCompletamentoVentola(false), 3000)
+    }
+  }, [bedroomPuzzle.puzzleStates?.ventola])
+  
   // 🔄 LISTENER WebSocket per sincronizzazione player-to-player
   useEffect(() => {
     if (!socket) return
