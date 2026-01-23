@@ -1,0 +1,26 @@
+# Render Static Site Redirects
+# Serve static files directly without SPA fallback
+
+# Serve files with extensions as-is (no redirect to index.html)
+/*.js    /:splat    200
+/*.css   /:splat    200
+/*.json  /:splat    200
+/*.glb   /:splat    200
+/*.gltf  /:splat    200
+/*.bin   /:splat    200
+/*.png   /:splat    200
+/*.jpg   /:splat    200
+/*.jpeg  /:splat    200
+/*.gif   /:splat    200
+/*.svg   /:splat    200
+/*.ico   /:splat    200
+/*.woff  /:splat    200
+/*.woff2 /:splat    200
+/*.ttf   /:splat    200
+/*.eot   /:splat    200
+/*.mp3   /:splat    200
+/*.mp4   /:splat    200
+/*.webm  /:splat    200
+
+# SPA fallback: redirect all other requests to index.html
+/*    /index.html   200
