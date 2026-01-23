@@ -850,6 +850,11 @@ export default function LivingRoomScene({ onObjectClick, onLookAtChange, mobileI
       console.log('[LivingRoomScene] ✅ PRIMO ENIGMA COMPLETATO (TV solved)')
       enigma1CompletatoRef.current = true
       setEnigma1Completato(true) // ← STATO REATTIVO per proximity trigger
+      
+      // 📺 MOSTRA MESSAGGIO SUCCESSO IMMEDIATAMENTE
+      console.log('[LivingRoomScene] 📢 Mostrando messaggio successo TV')
+      setMessaggioSuccessoEnigma1(true)
+      setTimeout(() => setMessaggioSuccessoEnigma1(false), 3000)
     }
   }, [livingRoomPuzzle.ledStates?.pianta])
   
@@ -880,6 +885,11 @@ export default function LivingRoomScene({ onObjectClick, onLookAtChange, mobileI
       console.log('[LivingRoomScene] ✅ SECONDO ENIGMA COMPLETATO (Pianta solved)')
       enigma2CompletatoRef.current = true
       setEnigma2Completato(true) // ← STATO REATTIVO per proximity trigger
+      
+      // 🌱 MOSTRA MESSAGGIO SUCCESSO IMMEDIATAMENTE
+      console.log('[LivingRoomScene] 📢 Mostrando messaggio successo Pianta')
+      setMessaggioSuccessoEnigma2(true)
+      setTimeout(() => setMessaggioSuccessoEnigma2(false), 3000)
     }
   }, [livingRoomPuzzle.ledStates?.condizionatore])
   
@@ -918,10 +928,17 @@ export default function LivingRoomScene({ onObjectClick, onLookAtChange, mobileI
       enigma3CompletatoRef.current = true
       setEnigma3Completato(true) // ← STATO REATTIVO per proximity trigger
       
-      // ✅ MOSTRA MESSAGGIO FINALE COMPLETAMENTO
-      console.log('[LivingRoomScene] 🎉 Mostrando messaggio finale completamento!')
-      setMessaggioFinaleStanza(true)
-      setTimeout(() => setMessaggioFinaleStanza(false), 5000)
+      // ❄️ MOSTRA MESSAGGIO SUCCESSO CONDIZIONATORE PRIMA DEL FINALE
+      console.log('[LivingRoomScene] 📢 Mostrando messaggio successo Condizionatore')
+      setMessaggioSuccessoEnigma3(true)
+      setTimeout(() => {
+        setMessaggioSuccessoEnigma3(false)
+        
+        // ✅ POI MOSTRA MESSAGGIO FINALE COMPLETAMENTO
+        console.log('[LivingRoomScene] 🎉 Mostrando messaggio finale completamento!')
+        setMessaggioFinaleStanza(true)
+        setTimeout(() => setMessaggioFinaleStanza(false), 5000)
+      }, 3000) // Attendi che finisca il messaggio successo
     }
   }, [livingRoomPuzzle.ledStates?.condizionatore])
   
