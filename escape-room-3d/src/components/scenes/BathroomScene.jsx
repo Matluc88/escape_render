@@ -687,6 +687,21 @@ export default function BathroomScene({ onObjectClick, onLookAtChange, mobileInp
     setWorldReady(true)
   }, [])
   
+  // 🚿 State per animazione doccia (gestita dentro Canvas) - DICHIARATO PRIMA DEI REF!
+  const [showerIsOpen, setShowerIsOpen] = useState(true) // ✅ Inizia APERTA a 30°
+  const [showerIsAnimating, setShowerIsAnimating] = useState(false)
+  const [showerConfig, setShowerConfig] = useState(null)
+  const showerToggleRef = useRef(null)
+  
+  // 🚪 State per porta-finestra bagno (tasto K) - MULTI-OGGETTO - DICHIARATO PRIMA DEI REF!
+  const [doorIsOpen, setDoorIsOpen] = useState(true) // ✅ Inizia APERTA a 30°
+  const [doorIsAnimating, setDoorIsAnimating] = useState(false)
+  const [doorConfig, setDoorConfig] = useState(null)
+  const doorToggleRef = useRef(null)
+  
+  // 💡 State per luci bagno (tasto J) - DICHIARATO PRIMA DEI REF!
+  const [lampsEnabled, setLampsEnabled] = useState(false) // ✅ Inizia SPENTO
+  
   // 💡 Sistema LED Bagno
   const { socket } = useWebSocket(sessionId, 'bagno', playerName) // ✅ FIX COMPLETO: Passa tutti e 3 i parametri!
   const bathroom = useBathroomPuzzle(sessionId, socket) // 🔥 FIX WEBSOCKET: Passa socket per aggiornamenti in tempo reale!
@@ -851,21 +866,6 @@ export default function BathroomScene({ onObjectClick, onLookAtChange, mobileInp
   
   // 🎯 State per nascondere TUTTI i pannelli con tasto \
   const [hideAllPanels, setHideAllPanels] = useState(true)
-  
-  // 🚿 State per animazione doccia (gestita dentro Canvas)
-  const [showerIsOpen, setShowerIsOpen] = useState(true) // ✅ Inizia APERTA a 30°
-  const [showerIsAnimating, setShowerIsAnimating] = useState(false)
-  const [showerConfig, setShowerConfig] = useState(null)
-  const showerToggleRef = useRef(null)
-  
-  // 🚪 State per porta-finestra bagno (tasto K) - MULTI-OGGETTO
-  const [doorIsOpen, setDoorIsOpen] = useState(true) // ✅ Inizia APERTA a 30°
-  const [doorIsAnimating, setDoorIsAnimating] = useState(false)
-  const [doorConfig, setDoorConfig] = useState(null)
-  const doorToggleRef = useRef(null)
-  
-  // 💡 State per luci bagno (tasto J)
-  const [lampsEnabled, setLampsEnabled] = useState(false) // ✅ Inizia SPENTO
   
   // 🪞 ENIGMA SPECCHIO BAGNO - Messaggi obiettivo
   const [messaggioInizialeSpecchio, setMessaggioInizialeSpecchio] = useState(false)
