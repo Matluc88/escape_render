@@ -1279,6 +1279,39 @@ export default function BathroomScene({ onObjectClick, onLookAtChange, mobileInp
     }
   }, [doorIsOpen, enigma2Completato, enigma3Completato])
   
+  // 🔄 SYNC MESSAGGI COMPLETAMENTO - Enigma 1 (Specchio)
+  // Monitora bathroom.specchioStatus e mostra messaggio quando cambia a 'done'
+  useEffect(() => {
+    if (bathroom.specchioStatus === 'done' && !messaggioSuccessoSpecchio && !enigma1Completato) {
+      console.log('[BathroomScene] 📥 SYNC: Specchio completato da altro player - Mostro messaggio!')
+      setMessaggioSuccessoSpecchio(true)
+      setTimeout(() => setMessaggioSuccessoSpecchio(false), 5000)
+      setEnigma1Completato(true)
+    }
+  }, [bathroom.specchioStatus])
+  
+  // 🔄 SYNC MESSAGGI COMPLETAMENTO - Enigma 2 (Doccia)
+  // Monitora bathroom.docciaStatus e mostra messaggio quando cambia a 'done'
+  useEffect(() => {
+    if (bathroom.docciaStatus === 'done' && !messaggioConfermaSpazio && !enigma2Completato) {
+      console.log('[BathroomScene] 📥 SYNC: Doccia completata da altro player - Mostro messaggio!')
+      setMessaggioConfermaSpazio(true)
+      setTimeout(() => setMessaggioConfermaSpazio(false), 5000)
+      setEnigma2Completato(true)
+    }
+  }, [bathroom.docciaStatus])
+  
+  // 🔄 SYNC MESSAGGI COMPLETAMENTO - Enigma 3 (Ventola)
+  // Monitora bathroom.ventolaStatus e mostra messaggio quando cambia a 'done'
+  useEffect(() => {
+    if (bathroom.ventolaStatus === 'done' && !messaggioFinale && !enigma3Completato) {
+      console.log('[BathroomScene] 📥 SYNC: Ventola completata da altro player - Mostro messaggio!')
+      setMessaggioFinale(true)
+      setTimeout(() => setMessaggioFinale(false), 5000)
+      setEnigma3Completato(true)
+    }
+  }, [bathroom.ventolaStatus])
+  
   // === CONFIGURAZIONE FISICA AGGIORNATA ===
   const MODEL_SCALE = 1
   
