@@ -16,8 +16,7 @@ backups/
 *.tmp
 *.temp
 
-# Modelli 3D grandi (da gestire separatamente)
-*.glb
+# Build directory
 escape-room-3d/dist/
 
 # File deploy e archivi
