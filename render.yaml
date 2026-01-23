@@ -12,7 +12,7 @@ services:
           type: web
           name: escape-room-backend
           envVarKey: RENDER_EXTERNAL_URL
-      - key: VITE_API_URL
+      - key: VITE_BACKEND_URL
         fromService:
           type: web
           name: escape-room-backend
