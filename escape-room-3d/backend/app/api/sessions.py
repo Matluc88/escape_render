@@ -29,6 +29,26 @@ def get_active_session(db: Session = Depends(get_db)):
     return session
 
 
+@router.get("/by-pin/{pin}", response_model=GameSessionResponse)
+def get_session_by_pin(pin: str, db: Session = Depends(get_db)):
+    """Ottiene una sessione tramite PIN se valida"""
+    session_service = SessionService(db)
+    session = session_service.get_by_pin(pin)
+    
+    if not session:
+        raise HTTPException(status_code=404, detail="PIN non valido")
+    
+    # Verifica se la sessione è terminata
+    if session.end_time is not None:
+        raise HTTPException(status_code=410, detail="Sessione terminata")
+    
+    # Verifica se il gioco è già iniziato (status != waiting)
+    if session.status != "waiting":
+        raise HTTPException(status_code=403, detail="Gioco già iniziato, troppo tardi!")
+    
+    return session
+
+
 @router.get("/{session_id}", response_model=GameSessionResponse)
 def get_session(session_id: int, db: Session = Depends(get_db)):
     service = SessionService(db)
@@ -104,26 +124,6 @@ def validate_pin(pin: str, db: Session = Depends(get_db)):
         "pin": session.pin,
         "status": session.status
     }
-
-
-@router.get("/by-pin/{pin}", response_model=GameSessionResponse)
-def get_session_by_pin(pin: str, db: Session = Depends(get_db)):
-    """Ottiene una sessione tramite PIN se valida"""
-    session_service = SessionService(db)
-    session = session_service.get_by_pin(pin)
-    
-    if not session:
-        raise HTTPException(status_code=404, detail="PIN non valido")
-    
-    # Verifica se la sessione è terminata
-    if session.end_time is not None:
-        raise HTTPException(status_code=410, detail="Sessione terminata")
-    
-    # Verifica se il gioco è già iniziato (status != waiting)
-    if session.status != "waiting":
-        raise HTTPException(status_code=403, detail="Gioco già iniziato, troppo tardi!")
-    
-    return session
 
 
 @router.post("/end", response_model=GameSessionResponse)
