@@ -401,6 +401,28 @@ function Lobby() {
           >
             📱 Mostra QR Codes
           </Link>
+
+          <button
+            onClick={() => {
+              window.open('/admin-panel/index.html', '_blank', 'width=1400,height=900')
+            }}
+            style={{
+              flex: '1',
+              minWidth: '200px',
+              padding: '20px 30px',
+              backgroundColor: '#9C27B0',
+              color: 'white',
+              border: '2px solid #7B1FA2',
+              borderRadius: '10px',
+              fontSize: '18px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            ⚙️ MONITOR DISPOSITIVI
+          </button>
         </div>
 
         {/* Info */}
