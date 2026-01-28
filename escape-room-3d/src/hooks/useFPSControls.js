@@ -199,12 +199,13 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
     playerConfig.current.eyeHeight = eyeHeight
     playerConfig.current.moveSpeed = moveSpeed
     playerConfig.current.cameraCollisionRadius = collisionRadius * 0.5
-    console.log('[FPS Controls] Updated playerConfig from props:', {
-      moveSpeed,
-      collisionRadius,
-      playerHeight,
-      eyeHeight
-    })
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // console.log('[FPS Controls] Updated playerConfig from props:', {
+    //   moveSpeed,
+    //   collisionRadius,
+    //   playerHeight,
+    //   eyeHeight
+    // })
   }, [moveSpeed, collisionRadius, playerHeight, eyeHeight])
   
   // FIX ORDINE TEMPORALE: Blocca ref finché non arrivano dati reali + track transizione + snap iniziale
@@ -225,10 +226,11 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
         didInitialCollisionSnapRef.current = true
       }
       
-      console.log('[FPS] First 5 collidable objects:', collisionObjects.slice(0, 5).map(o => ({
-        name: o.name,
-        userData: o.userData
-      })))
+      // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+      // console.log('[FPS] First 5 collidable objects:', collisionObjects.slice(0, 5).map(o => ({
+      //   name: o.name,
+      //   userData: o.userData
+      // })))
     }
   }, [collisionObjects])
   
@@ -236,7 +238,8 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
   useEffect(() => {
     if (groundObjects && groundObjects.length > 0) {
       groundObjectsRef.current = groundObjects
-      console.log('[FPS] groundObjects LOCKED:', groundObjects.length)
+      // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+      // console.log('[FPS] groundObjects LOCKED:', groundObjects.length)
     } else if (collisionObjectsRef.current) {
       // Se groundObjects non è fornito, usa collisionObjects come fallback
       groundObjectsRef.current = collisionObjectsRef.current
@@ -311,7 +314,8 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
     cameraRigRef.current = cameraRig
     hierarchyInitializedRef.current = true
     
-    console.log('✅ [FPS Controls] Hierarchy initialized at ATOMIC position:', initialPosition)
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // console.log('✅ [FPS Controls] Hierarchy initialized at ATOMIC position:', initialPosition)
     
     // Detect touch capability using multiple methods
     const detectTouchDevice = () => {
@@ -334,11 +338,12 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
     // Mobile mode is active if we have mobileInput AND touch is detected
     isMobile.current = !!mobileInput && touchDetectedRef.current
     
-    console.log('[FPS Controls] Touch detection:', {
-      touchDetected: touchDetectedRef.current,
-      hasMobileInput: !!mobileInput,
-      isMobileMode: isMobile.current
-    })
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // console.log('[FPS Controls] Touch detection:', {
+    //   touchDetected: touchDetectedRef.current,
+    //   hasMobileInput: !!mobileInput,
+    //   isMobileMode: isMobile.current
+    // })
     
     return () => {
       // Cleanup: restore camera to scene root
@@ -373,7 +378,8 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
     // PROBLEMA: React.StrictMode in DEV causa doppio mount → updateMatrixWorld() eseguito 2x
     // In DOCKER (production) senza StrictMode → updateMatrixWorld() eseguito 1x ma DOPO spawn
     // SOLUZIONE: Garantire matrici world sincrone indipendentemente da React lifecycle
-    console.log('[FPS Controls] 🔧 SYNC: Forzando aggiornamento matrici world prima dello spawn...')
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // console.log('[FPS Controls] 🔧 SYNC: Forzando aggiornamento matrici world prima dello spawn...')
     if (playerRootRef.current.parent) {
       playerRootRef.current.parent.updateMatrixWorld(true)
     }
@@ -381,7 +387,8 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
     cameraRigRef.current.updateMatrixWorld(true)
     camera.updateMatrixWorld(true)
     
-    console.log('[FPS Controls] 🎯 REPOSITIONING PLAYER TO:', initialPosition, '| eyeHeight:', CAMERA_EYE_LEVEL)
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // console.log('[FPS Controls] 🎯 REPOSITIONING PLAYER TO:', initialPosition, '| eyeHeight:', CAMERA_EYE_LEVEL)
     playerRootRef.current.position.set(
       initialPosition.x,
       initialPosition.y || 0,
@@ -397,7 +404,8 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
     playerRootRef.current.updateMatrixWorld(true)
     cameraRigRef.current.updateMatrixWorld(true)
     camera.updateMatrixWorld(true)
-    console.log('[FPS Controls] ✅ SYNC COMPLETE: Matrici world aggiornate dopo spawn')
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // console.log('[FPS Controls] ✅ SYNC COMPLETE: Matrici world aggiornate dopo spawn')
     
     // EXTENDED PROTECTION: Set spawn guard and reset protection frame counter
     // This will protect the initial position for ~5 seconds (300 frames)
@@ -425,15 +433,15 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
       }
     }, 100) // Update every 100ms for smooth progress
     
-    // Log final positions for verification
-    console.log('✅ FINAL Player root position:', {
-      x: playerRootRef.current.position.x,
-      y: playerRootRef.current.position.y,
-      z: playerRootRef.current.position.z
-    })
-    console.log('✅ FINAL CameraRig position.y (eyeHeight):', cameraRigRef.current.position.y)
-    console.log('✅ FINAL Camera position (local Y for bobbing):', camera.position.y)
-    console.log('✅ FINAL Camera position (world Y):', playerRootRef.current.position.y + cameraRigRef.current.position.y + camera.position.y)
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // console.log('✅ FINAL Player root position:', {
+    //   x: playerRootRef.current.position.x,
+    //   y: playerRootRef.current.position.y,
+    //   z: playerRootRef.current.position.z
+    // })
+    // console.log('✅ FINAL CameraRig position.y (eyeHeight):', cameraRigRef.current.position.y)
+    // console.log('✅ FINAL Camera position (local Y for bobbing):', camera.position.y)
+    // console.log('✅ FINAL Camera position (world Y):', playerRootRef.current.position.y + cameraRigRef.current.position.y + camera.position.y)
     
     // Cleanup interval on unmount
     return () => {
@@ -445,7 +453,8 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
   useEffect(() => {
     if (!yawPivotRef.current || initialYaw === undefined) return
     
-    console.log('[FPS Controls] Setting initial yaw to:', initialYaw, 'radians')
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // console.log('[FPS Controls] Setting initial yaw to:', initialYaw, 'radians')
     yawRef.current = initialYaw
     yawPivotRef.current.rotation.y = initialYaw
   }, [initialYaw])
@@ -461,11 +470,12 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
     // Camera local Y is for bobbing only - keep current bobbing offset
     camera.position.y = bobbingState.current.baseY + bobbingState.current.currentBobY
     
-    console.log('[FPS Controls] Re-applied eyeHeight to cameraRig:', {
-      eyeHeight: playerConfig.current.eyeHeight,
-      cameraRigY: cameraRigRef.current.position.y,
-      cameraLocalY: camera.position.y
-    })
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // console.log('[FPS Controls] Re-applied eyeHeight to cameraRig:', {
+    //   eyeHeight: playerConfig.current.eyeHeight,
+    //   cameraRigY: cameraRigRef.current.position.y,
+    //   cameraLocalY: camera.position.y
+    // })
   }, [eyeHeight, camera])
   
   // Setup desktop controls (mouse look and keyboard)
@@ -564,7 +574,8 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
     const gamepads = navigator.getGamepads ? navigator.getGamepads() : []
     for (let i = 0; i < gamepads.length; i++) {
       if (gamepads[i]) {
-        console.log('[FPS Controls] Found existing gamepad:', gamepads[i].id)
+        // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+        // console.log('[FPS Controls] Found existing gamepad:', gamepads[i].id)
         gamepadIndexRef.current = gamepads[i].index
         break
       }
@@ -844,13 +855,13 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
       return null
     }
     
-    // 🔴 LOG DIAGNOSTICO CRITICO: Verifica che collisionObjects arrivino al raycast
-    if (frameIdRef.current % 60 === 0) { // Log ogni secondo
-      console.log('[FPS COLLISION CHECK]', 
-        collisionObjectsRef.current.length, 
-        collisionObjectsRef.current[0]?.name || 'N/A'
-      )
-    }
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // if (frameIdRef.current % 60 === 0) { // Log ogni secondo
+    //   console.log('[FPS COLLISION CHECK]', 
+    //     collisionObjectsRef.current.length, 
+    //     collisionObjectsRef.current[0]?.name || 'N/A'
+    //   )
+    // }
     
     let closestHit = null
     let closestDistance = Infinity
@@ -1147,7 +1158,8 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
           const apply = delta * SNAP_LERP
           playerRoot.position.y += apply
           playerRoot.updateMatrixWorld(true)
-          console.log('[FPS Controls] SNAP playerRoot (lerp) applied delta:', apply.toFixed(3))
+          // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+          // console.log('[FPS Controls] SNAP playerRoot (lerp) applied delta:', apply.toFixed(3))
         }
         
         // Reset se delta molto piccolo
@@ -1213,7 +1225,8 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
            return groundY
         }
         // Se è troppo alto (muro/soffitto), NON FARE NULLA (rimani giù)
-        console.log(`[Ground][Skip] IGNORATO muro/soffitto: deltaY=${deltaY.toFixed(2)}m > MAX_STEP_UP=${MAX_STEP_UP}m`)
+        // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+        // console.log(`[Ground][Skip] IGNORATO muro/soffitto: deltaY=${deltaY.toFixed(2)}m > MAX_STEP_UP=${MAX_STEP_UP}m`)
         return null 
       }
       
@@ -1690,10 +1703,10 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
       if (hasSpawnedRef.current) {
         spawnProtectionFramesRef.current++
         
-        // Log progress every second (frame-based)
-        if (spawnProtectionFramesRef.current % 60 === 0) {
-          console.log('🛡️ [FPS Controls] SPAWN PROTECTION ACTIVE (frames) - frame', spawnProtectionFramesRef.current, '/', MAX_SPAWN_PROTECTION_FRAMES)
-        }
+        // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+        // if (spawnProtectionFramesRef.current % 60 === 0) {
+        //   console.log('🛡️ [FPS Controls] SPAWN PROTECTION ACTIVE (frames) - frame', spawnProtectionFramesRef.current, '/', MAX_SPAWN_PROTECTION_FRAMES)
+        // }
       }
       
       // Only run ground detection if:
@@ -1736,10 +1749,10 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
         // Skip ground detection - still in spawn protection period
         // (Already logged above every 30 frames)
       } else if (!hasCollisions) {
-        // Skip ground detection - collision lists not ready
-        if (frameId % 60 === 0) { // Log every second
-          console.log('⏭️ [FPS Controls] Skipping ground detection - collision lists not ready')
-        }
+        // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+        // if (frameId % 60 === 0) { // Log every second
+        //   console.log('⏭️ [FPS Controls] Skipping ground detection - collision lists not ready')
+        // }
       }
       bobbingState.current.baseY = 0
     }
@@ -1781,23 +1794,23 @@ export function useFPSControls(collisionObjects = [], mobileInput = null, ground
     updateCameraBobbing(delta, isMoving && !isGamepadMoving)
     
     // ========================================
-    // DIAGNOSTIC: End-of-frame collision summary
-    // Logs minimum collision distance and collider names per frame
+    // DIAGNOSTIC: End-of-frame collision summary (🔇 DISABILITATO)
     // ========================================
-    if (frameMinDistance < Infinity) {
-      const radius = playerConfig.current.radius
-      const threshold = radius + DIAGNOSTIC_THRESHOLD_OFFSET
-      const isPenetrating = frameMinDistance < threshold
-      console.log(
-        `[DIAGNOSTIC][Frame ${frameIdRef.current}] ` +
-        `minDist=${frameMinDistance.toFixed(3)} | ` +
-        `radius=${radius.toFixed(3)} | ` +
-        `threshold=${threshold.toFixed(3)} | ` +
-        `isPenetrating=${isPenetrating} | ` +
-        `source=${frameCollisionSource} | ` +
-        `colliders=[${[...frameMinHitNames].join(', ')}]`
-      )
-    }
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // if (frameMinDistance < Infinity) {
+    //   const radius = playerConfig.current.radius
+    //   const threshold = radius + DIAGNOSTIC_THRESHOLD_OFFSET
+    //   const isPenetrating = frameMinDistance < threshold
+    //   console.log(
+    //     `[DIAGNOSTIC][Frame ${frameIdRef.current}] ` +
+    //     `minDist=${frameMinDistance.toFixed(3)} | ` +
+    //     `radius=${radius.toFixed(3)} | ` +
+    //     `threshold=${threshold.toFixed(3)} | ` +
+    //     `isPenetrating=${isPenetrating} | ` +
+    //     `source=${frameCollisionSource} | ` +
+    //     `colliders=[${[...frameMinHitNames].join(', ')}]`
+    //   )
+    // }
   })
   
   return {

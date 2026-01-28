@@ -21,13 +21,13 @@ const NEON_SERRA_UUID = 'BA166D41-384C-499E-809C-E932A5015BB4'
 function teleportAndSnap(spawnPoint, scene, camera, eyeHeight = 1.3) {
   if (!spawnPoint || !camera) return
 
-  // 🚨 DEBUG: Log stack trace per identificare quando viene chiamato
-  console.log('🚨 [CasaModel] TELEPORT CHIAMATO!', {
-    spawnPoint,
-    eyeHeight,
-    cameraPos: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
-    stack: new Error().stack?.split('\n').slice(1, 4).join('\n') // Prime 3 righe dello stack
-  })
+  // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+  // console.log('🚨 [CasaModel] TELEPORT CHIAMATO!', {
+  //   spawnPoint,
+  //   eyeHeight,
+  //   cameraPos: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
+  //   stack: new Error().stack?.split('\n').slice(1, 4).join('\n') // Prime 3 righe dello stack
+  // })
 
   // 1. Posizione Base
   const pos = new Vector3(spawnPoint.x, spawnPoint.y, spawnPoint.z)
@@ -49,16 +49,19 @@ function teleportAndSnap(spawnPoint, scene, camera, eyeHeight = 1.3) {
   const groundHit = hits.find(h => h.object.isMesh && (h.object.userData.ground || h.object.userData.collidable))
   
   if (groundHit) {
-      console.log(`[CasaModel] 🦶 SNAP TO GROUND: Trovato "${groundHit.object.name}" a Y=${groundHit.point.y.toFixed(3)}`)
+      // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+      // console.log(`[CasaModel] 🦶 SNAP TO GROUND: Trovato "${groundHit.object.name}" a Y=${groundHit.point.y.toFixed(3)}`)
       finalY = groundHit.point.y + eyeHeight
   } else {
-      console.warn(`[CasaModel] ⚠️ Nessun pavimento sotto lo spawn. Uso Y predefinita.`)
+      // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+      // console.warn(`[CasaModel] ⚠️ Nessun pavimento sotto lo spawn. Uso Y predefinita.`)
       finalY = pos.y + (eyeHeight > 2 ? 0 : eyeHeight) // Se spawn è a terra, aggiungi eyeHeight
   }
 
   camera.position.set(pos.x, finalY, pos.z)
   camera.updateMatrixWorld(true)
-  console.log(`[CasaModel] 📸 Camera Teleported to: ${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)}`)
+  // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+  // console.log(`[CasaModel] 📸 Camera Teleported to: ${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)}`)
 }
 
 export default function CasaModel({ 
@@ -679,7 +682,8 @@ export default function CasaModel({
   // 🎯 FIX CORRETTO: Callback ref STABILE (senza dipendenze)
   // Fa SOLO assignment + trigger state. Setup logic va in useLayoutEffect
   const handleGroupMount = useCallback((node) => {
-    console.log('[CasaModel] 🎯 handleGroupMount - node:', !!node)
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // console.log('[CasaModel] 🎯 handleGroupMount - node:', !!node)
     groupRef.current = node
     if (node) {  // ← SOLO quando monta, non quando smonta (node = null)!
       setGroupMounted(prev => !prev) // Toggle per triggerare useLayoutEffect
@@ -689,11 +693,13 @@ export default function CasaModel({
   // 🎯 Setup logic triggerato da groupMounted state + dipendenze reali
   useLayoutEffect(() => {
     if (!groupRef.current || !scene) {
-      console.log('[CasaModel] ⏳ Setup skipped - groupRef or scene not ready')
+      // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+      // console.log('[CasaModel] ⏳ Setup skipped - groupRef or scene not ready')
       return
     }
     
-    console.log('[CasaModel] 🚀 SETUP LOGIC EXECUTING - gruppo pronto!')
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // console.log('[CasaModel] 🚀 SETUP LOGIC EXECUTING - gruppo pronto!')
 
     // 0. Pulizia Camere
     scene.traverse(o => { if (o.isCamera && o.parent) o.parent.remove(o) })
@@ -732,7 +738,8 @@ export default function CasaModel({
           // Prendi il pavimento più ALTO tra quelli trovati (piano terra/giardino, non cantina)
           if (mainFloorY === null || floorY > mainFloorY) {
             mainFloorY = floorY
-            console.log(`[CasaModel] 🏠 ${sceneType === 'esterno' ? 'Giardino' : 'Piano terra'} trovato: "${o.name}" a Y=${floorY.toFixed(3)}`)
+            // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+            // console.log(`[CasaModel] 🏠 ${sceneType === 'esterno' ? 'Giardino' : 'Piano terra'} trovato: "${o.name}" a Y=${floorY.toFixed(3)}`)
           }
         }
       }
@@ -740,9 +747,11 @@ export default function CasaModel({
     
     if (mainFloorY !== null) {
       targetGroundY = mainFloorY
-      console.log(`[CasaModel] ✅ Usando ${sceneType === 'esterno' ? 'giardino' : 'pavimento piano terra'} come riferimento: Y=${targetGroundY.toFixed(3)}`)
+      // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+      // console.log(`[CasaModel] ✅ Usando ${sceneType === 'esterno' ? 'giardino' : 'pavimento piano terra'} come riferimento: Y=${targetGroundY.toFixed(3)}`)
     } else {
-      console.warn(`[CasaModel] ⚠️ Pavimento principale non trovato, uso min.y=${targetGroundY.toFixed(3)}`)
+      // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+      // console.warn(`[CasaModel] ⚠️ Pavimento principale non trovato, uso min.y=${targetGroundY.toFixed(3)}`)
     }
     
     // ALZO TUTTO IL PIANO TERRA (giardino) invece di abbassare la cantina!
@@ -751,38 +760,34 @@ export default function CasaModel({
     groupRef.current.position.set(-center.x, -targetGroundY + actualOffset, -center.z)
     groupRef.current.updateWorldMatrix(true, true)
     
-    console.log(`[CasaModel] 🏡 Piano terra alzato di ${actualOffset}m ${modelYOffset !== null ? '(CUSTOM DEBUG OFFSET)' : '(default)'} → cantina ora ${actualOffset}m più bassa!`)
-    
-    // 🔬 DIAGNOSTIC LOG - RUNTIME SETUP (Fase 3 del piano diagnostico)
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-    console.log('[CasaModel] 🏠 CASAMODEL RUNTIME DEBUG')
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-    console.log('🏗️ MODEL SETUP:')
-    console.log('  CASA_SCALE:', CASA_SCALE)
-    console.log('  sceneType:', sceneType)
-    console.log('  PIANO_TERRA_HEIGHT:', actualOffset + 'm')
-    console.log('  targetGroundY:', targetGroundY.toFixed(3) + 'm')
-    
-    console.log('\n📐 GROUP TRANSFORM:')
-    console.log('  groupRef.position:', {
-      x: groupRef.current.position.x.toFixed(3),
-      y: groupRef.current.position.y.toFixed(3),
-      z: groupRef.current.position.z.toFixed(3)
-    })
-    console.log('  groupRef.scale:', {
-      x: groupRef.current.scale.x,
-      y: groupRef.current.scale.y,
-      z: groupRef.current.scale.z
-    })
-    
-    // ✅ Log matrixWorld
-    const matrixElements = groupRef.current.matrixWorld.elements
-    console.log('\n🌍 GROUP MATRIX WORLD (4x4):')
-    console.log('  Row 1:', matrixElements.slice(0, 4).map(n => n.toFixed(3)))
-    console.log('  Row 2:', matrixElements.slice(4, 8).map(n => n.toFixed(3)))
-    console.log('  Row 3:', matrixElements.slice(8, 12).map(n => n.toFixed(3)))
-    console.log('  Row 4:', matrixElements.slice(12, 16).map(n => n.toFixed(3)))
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // console.log(`[CasaModel] 🏡 Piano terra alzato di ${actualOffset}m ${modelYOffset !== null ? '(CUSTOM DEBUG OFFSET)' : '(default)'} → cantina ora ${actualOffset}m più bassa!`)
+    // console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    // console.log('[CasaModel] 🏠 CASAMODEL RUNTIME DEBUG')
+    // console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    // console.log('🏗️ MODEL SETUP:')
+    // console.log('  CASA_SCALE:', CASA_SCALE)
+    // console.log('  sceneType:', sceneType)
+    // console.log('  PIANO_TERRA_HEIGHT:', actualOffset + 'm')
+    // console.log('  targetGroundY:', targetGroundY.toFixed(3) + 'm')
+    // console.log('\n📐 GROUP TRANSFORM:')
+    // console.log('  groupRef.position:', {
+    //   x: groupRef.current.position.x.toFixed(3),
+    //   y: groupRef.current.position.y.toFixed(3),
+    //   z: groupRef.current.position.z.toFixed(3)
+    // })
+    // console.log('  groupRef.scale:', {
+    //   x: groupRef.current.scale.x,
+    //   y: groupRef.current.scale.y,
+    //   z: groupRef.current.scale.z
+    // })
+    // const matrixElements = groupRef.current.matrixWorld.elements
+    // console.log('\n🌍 GROUP MATRIX WORLD (4x4):')
+    // console.log('  Row 1:', matrixElements.slice(0, 4).map(n => n.toFixed(3)))
+    // console.log('  Row 2:', matrixElements.slice(4, 8).map(n => n.toFixed(3)))
+    // console.log('  Row 3:', matrixElements.slice(8, 12).map(n => n.toFixed(3)))
+    // console.log('  Row 4:', matrixElements.slice(12, 16).map(n => n.toFixed(3)))
+    // console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
     // 2. Variabili
     let gateEyeHeight = null

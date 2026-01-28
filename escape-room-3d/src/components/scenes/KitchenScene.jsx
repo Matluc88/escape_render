@@ -1167,25 +1167,26 @@ export default function KitchenScene({ onObjectClick, onLookAtChange, mobileInpu
   const [spawnWorldPosition, setSpawnWorldPosition] = useState(null)
   
   useEffect(() => {
-    console.log('[KitchenScene] 🔍 DIAGNOSTIC A - useEffect conversione triggered')
-    console.log('[KitchenScene] 🔍 DIAGNOSTIC A - Condizioni:', {
-      modelRef: !!modelRef?.current,
-      spawnPosition: !!spawnPosition,
-      worldReady
-    })
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // console.log('[KitchenScene] 🔍 DIAGNOSTIC A - useEffect conversione triggered')
+    // console.log('[KitchenScene] 🔍 DIAGNOSTIC A - Condizioni:', {
+    //   modelRef: !!modelRef?.current,
+    //   spawnPosition: !!spawnPosition,
+    //   worldReady
+    // })
     
     // ✅ GUARD: Aspetta che ENTRAMBI siano pronti
     if (!modelRef?.current || !spawnPosition || !worldReady) {
-      console.log('[KitchenScene] 🔍 DIAGNOSTIC B1 - Guard: Aspettando prerequisiti per conversione')
+      // console.log('[KitchenScene] 🔍 DIAGNOSTIC B1 - Guard: Aspettando prerequisiti per conversione')
       return
     }
     
-    console.log('[KitchenScene] 🔍 DIAGNOSTIC B2 - Guard PASSED - Inizio conversione')
+    // console.log('[KitchenScene] 🔍 DIAGNOSTIC B2 - Guard PASSED - Inizio conversione')
     
     // 🔬 CONVERSIONE LOCAL → WORLD (FIX CONTRATTO DATI)
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-    console.log('[KitchenScene] 🔄 CONVERSIONE LOCAL → WORLD')
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    // console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    // console.log('[KitchenScene] 🔄 CONVERSIONE LOCAL → WORLD')
+    // console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
     
     const spawnLocal = new THREE.Vector3(
       spawnPosition.x,
@@ -1193,21 +1194,21 @@ export default function KitchenScene({ onObjectClick, onLookAtChange, mobileInpu
       spawnPosition.z
     )
     
-    console.log('[KitchenScene] 🔍 DIAGNOSTIC B3 - INPUT RAW/LOCAL:', {
-      x: spawnLocal.x.toFixed(3),
-      y: spawnLocal.y.toFixed(3),
-      z: spawnLocal.z.toFixed(3)
-    })
+    // console.log('[KitchenScene] 🔍 DIAGNOSTIC B3 - INPUT RAW/LOCAL:', {
+    //   x: spawnLocal.x.toFixed(3),
+    //   y: spawnLocal.y.toFixed(3),
+    //   z: spawnLocal.z.toFixed(3)
+    // })
     
     // 🎯 APPLICA CONVERSIONE
     const spawnWorld = modelRef.current.localToWorld(spawnLocal.clone())
     
-    console.log('[KitchenScene] 🔍 DIAGNOSTIC C - OUTPUT WORLD (dopo localToWorld):', {
-      x: spawnWorld.x.toFixed(3),
-      y: spawnWorld.y.toFixed(3),
-      z: spawnWorld.z.toFixed(3)
-    })
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    // console.log('[KitchenScene] 🔍 DIAGNOSTIC C - OUTPUT WORLD (dopo localToWorld):', {
+    //   x: spawnWorld.x.toFixed(3),
+    //   y: spawnWorld.y.toFixed(3),
+    //   z: spawnWorld.z.toFixed(3)
+    // })
+    // console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
     
     // 🎯 SALVA COORDINATE WORLD (pronte per FPSController)
     setSpawnWorldPosition({
@@ -2582,7 +2583,8 @@ function PentolaFix({ modelRef }) {
       })
       
       // 🔍 DIAGNOSTICA COMPLETA PENTOLA - Log iniziale dettagliato
-      logPentolaDiagnostics(movable, camera, '🔥 SETUP INIZIALE')
+      // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+      // logPentolaDiagnostics(movable, camera, '🔥 SETUP INIZIALE')
     }
 
     // ⏱️ aspetta che CasaModel abbia finito TUTTO
