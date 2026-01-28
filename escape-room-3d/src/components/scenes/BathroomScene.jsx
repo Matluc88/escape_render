@@ -598,14 +598,15 @@ function ProximityCountdownController({
       Math.pow(worldPos.z - targetPos.z, 2)
     )
     
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
     // Log ogni secondo circa
-    if (!window._lastProximityLog || Date.now() - window._lastProximityLog > 1000) {
-      console.log('[ProximityCountdown] 🔍 Posizione camera (WORLD): X:', worldPos.x.toFixed(2), 'Z:', worldPos.z.toFixed(2))
-      console.log('[ProximityCountdown] 🎯 Target: X:', targetPos.x, 'Z:', targetPos.z)
-      console.log('[ProximityCountdown] 📏 Distanza:', distance.toFixed(2), 'm | Tolerance:', tolerance, 'm')
-      console.log('[ProximityCountdown] ✅ Enabled:', enabled, '| Dentro zona:', distance <= tolerance)
-      window._lastProximityLog = Date.now()
-    }
+    // if (!window._lastProximityLog || Date.now() - window._lastProximityLog > 1000) {
+    //   console.log('[ProximityCountdown] 🔍 Posizione camera (WORLD): X:', worldPos.x.toFixed(2), 'Z:', worldPos.z.toFixed(2))
+    //   console.log('[ProximityCountdown] 🎯 Target: X:', targetPos.x, 'Z:', targetPos.z)
+    //   console.log('[ProximityCountdown] 📏 Distanza:', distance.toFixed(2), 'm | Tolerance:', tolerance, 'm')
+    //   console.log('[ProximityCountdown] ✅ Enabled:', enabled, '| Dentro zona:', distance <= tolerance)
+    //   window._lastProximityLog = Date.now()
+    // }
     
     const inZone = distance <= tolerance
     

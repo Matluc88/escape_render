@@ -822,7 +822,8 @@ export default function CasaModel({
         if (mustBeCollidable) {
           child.userData.collidable = true
           child.userData.forceCollidable = true
-          console.log(`[CasaModel] 🔒 FORZA COLLIDABILE: ${child.name}`)
+          // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+          // console.log(`[CasaModel] 🔒 FORZA COLLIDABILE: ${child.name}`)
           
           // 🔧 FIX FANTASMA: DoubleSide per muri sottili e ringhiere
           // Questo garantisce che il raycaster rilevi il materiale da entrambi i lati
@@ -843,7 +844,8 @@ export default function CasaModel({
             // 🟢 FIX CRITICO: Ricalcola normali per oggetti con scala non uniforme
             // Questo corregge la direzione della "respinta" quando il player colpisce il cancello
             child.geometry.computeVertexNormals()
-            console.log(`[CasaModel] 🔧 Normali ricalcolate per: ${child.name}`)
+            // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+            // console.log(`[CasaModel] 🔧 Normali ricalcolate per: ${child.name}`)
           }
         }
         

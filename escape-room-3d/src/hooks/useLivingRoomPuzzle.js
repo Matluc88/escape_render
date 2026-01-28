@@ -223,15 +223,18 @@ export function useLivingRoomPuzzle(sessionId) {
   useEffect(() => {
     if (!sessionId) return;
     
-    console.log('[useLivingRoomPuzzle] 🔄 Polling attivo ogni 2 secondi per session:', sessionId);
+    // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+    // console.log('[useLivingRoomPuzzle] 🔄 Polling attivo ogni 2 secondi per session:', sessionId);
     
     const interval = setInterval(() => {
-      console.log('[useLivingRoomPuzzle] 📡 Polling stato puzzle...');
+      // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+      // console.log('[useLivingRoomPuzzle] 📡 Polling stato puzzle...');
       fetchPuzzleState();
     }, 2000); // Polling ogni 2 secondi
     
     return () => {
-      console.log('[useLivingRoomPuzzle] 🛑 Polling fermato');
+      // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+      // console.log('[useLivingRoomPuzzle] 🛑 Polling fermato');
       clearInterval(interval);
     };
   }, [sessionId, fetchPuzzleState]);
