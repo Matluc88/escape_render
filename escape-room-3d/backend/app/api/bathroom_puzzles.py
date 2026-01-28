@@ -155,11 +155,26 @@ async def reset_bathroom_puzzles(
             print(f"✅ [API /reset] LED states: {led_states}")
         except Exception as led_error:
             print(f"⚠️ [API /reset] Error getting LED states: {led_error}")
+            # CRITICAL: Rollback transaction on error to prevent InFailedSqlTransaction
+            db.rollback()
             # Fallback: all doors red (initial state)
             led_states = {"cucina": "red", "camera": "red", "bagno": "red", "soggiorno": "red"}
         
-        state = GameCompletionService.get_or_create_state(db, session_id)
-        print(f"✅ [API /reset] Completion state: game_won={state.game_won}, rooms={state.rooms_status}")
+        try:
+            state = GameCompletionService.get_or_create_state(db, session_id)
+            print(f"✅ [API /reset] Completion state: game_won={state.game_won}, rooms={state.rooms_status}")
+        except Exception as state_error:
+            print(f"⚠️ [API /reset] Error getting completion state: {state_error}")
+            db.rollback()
+            # Create minimal fallback state
+            from datetime import datetime
+            state = type('obj', (object,), {
+                'rooms_status': {"cucina": {"completed": False}, "camera": {"completed": False}, "bagno": {"completed": False}, "soggiorno": {"completed": False}},
+                'game_won': False,
+                'victory_time': None,
+                'updated_at': datetime.utcnow(),
+                'get_completed_rooms_count': lambda: 0
+            })()
         
         # STEP 5: Broadcast game completion update
         print(f"🔍 [API /reset] Step 5: Broadcasting game completion update...")

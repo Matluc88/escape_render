@@ -34,6 +34,8 @@ def get_game_completion_state(
             door_led_states = GameCompletionService.get_door_led_states(db, session_id)
         except Exception as led_error:
             print(f"⚠️ [game-completion/state] Error getting LED states: {led_error}")
+            # CRITICAL: Rollback transaction on error to prevent InFailedSqlTransaction
+            db.rollback()
             # Fallback: all doors red (initial state)
             door_led_states = {"cucina": "red", "camera": "red", "bagno": "red", "soggiorno": "red"}
         
