@@ -70,6 +70,9 @@ class KitchenPuzzleService:
             
         Returns:
             KitchenPuzzleState instance
+            
+        Raises:
+            ValueError: If session doesn't exist
         """
         # Try to get existing state
         state = db.query(KitchenPuzzleState).filter(
@@ -78,6 +81,11 @@ class KitchenPuzzleService:
         
         if state:
             return state
+        
+        # 🔒 VALIDATE: Check if session exists before creating state
+        session = db.query(GameSession).filter(GameSession.id == session_id).first()
+        if not session:
+            raise ValueError(f"Session {session_id} not found. Cannot create kitchen puzzle state.")
         
         # Create new state with initial configuration
         state = KitchenPuzzleState(

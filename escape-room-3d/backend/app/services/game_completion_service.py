@@ -21,13 +21,24 @@ class GameCompletionService:
     
     @staticmethod
     def get_or_create_state(db: Session, session_id: int) -> GameCompletionState:
-        """Get existing state or create new one"""
+        """
+        Get existing state or create new one
+        
+        Raises:
+            ValueError: If session doesn't exist
+        """
         state = db.query(GameCompletionState).filter(
             GameCompletionState.session_id == session_id
         ).first()
         
         if state:
             return state
+        
+        # 🔒 VALIDATE: Check if session exists before creating state
+        from app.models.game_session import GameSession
+        session = db.query(GameSession).filter(GameSession.id == session_id).first()
+        if not session:
+            raise ValueError(f"Session {session_id} not found. Cannot create game completion state.")
         
         # Create new state
         state = GameCompletionState(

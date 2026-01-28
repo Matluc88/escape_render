@@ -27,6 +27,12 @@ async def get_puzzle_state(
     try:
         state = KitchenPuzzleService.get_state_response(db, session_id)
         return state
+    except ValueError as e:
+        # Session doesn't exist
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

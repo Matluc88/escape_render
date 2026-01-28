@@ -45,6 +45,9 @@ def get_game_completion_state(
             completed_rooms_count=state.get_completed_rooms_count(),
             updated_at=state.updated_at
         )
+    except ValueError as e:
+        # Session doesn't exist
+        raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
