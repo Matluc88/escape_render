@@ -26,7 +26,7 @@ export function useBathroomPuzzle(sessionId, socket = null) {
     
     try {
       setLoading(true);
-      const response = await api.get(`/sessions/${sessionId}/bathroom-puzzles/state`);
+      const response = await api.get(`/api/sessions/${sessionId}/bathroom-puzzles/state`);
       setPuzzleState(response.data);
       setError(null);
     } catch (err) {
@@ -79,7 +79,7 @@ export function useBathroomPuzzle(sessionId, socket = null) {
     
     try {
       const response = await api.post(
-        `/sessions/${sessionId}/bathroom-puzzles/complete`,
+        `/api/sessions/${sessionId}/bathroom-puzzles/complete`,
         { puzzle_name: puzzleName }
       );
       
@@ -110,7 +110,7 @@ export function useBathroomPuzzle(sessionId, socket = null) {
     
     try {
       const response = await api.post(
-        `/sessions/${sessionId}/bathroom-puzzles/reset`,
+        `/api/sessions/${sessionId}/bathroom-puzzles/reset`,
         { level }
       );
       
