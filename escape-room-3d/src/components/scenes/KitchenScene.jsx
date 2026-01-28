@@ -1723,12 +1723,13 @@ export default function KitchenScene({ onObjectClick, onLookAtChange, mobileInpu
         )}
         
         <Suspense fallback={<LoadingIndicator />}>
+          {/* 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione) */}
           {/* 🔍 DEBUG: Log sceneType prima di passarlo a CasaModel */}
-          {(() => {
+          {/* {(() => {
             console.log('🔍 [KitchenScene] 🎨 PASSANDO sceneType a CasaModel:', 'cucina')
             console.log('🔍 [KitchenScene] 📊 Timestamp:', new Date().toISOString())
             return null
-          })()}
+          })()} */}
           
           <CasaModel 
             sceneType="cucina"
