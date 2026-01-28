@@ -28,7 +28,14 @@ def get_game_completion_state(
     """
     try:
         state = GameCompletionService.get_or_create_state(db, session_id)
-        door_led_states = GameCompletionService.get_door_led_states(db, session_id)
+        
+        # 🔧 FIX: Wrap get_door_led_states in try-except (can fail if puzzle states don't exist)
+        try:
+            door_led_states = GameCompletionService.get_door_led_states(db, session_id)
+        except Exception as led_error:
+            print(f"⚠️ [game-completion/state] Error getting LED states: {led_error}")
+            # Fallback: all doors red (initial state)
+            door_led_states = {"cucina": "red", "camera": "red", "bagno": "red", "soggiorno": "red"}
         
         # Convert rooms_status dict to typed schema
         rooms_status_typed = {
@@ -49,7 +56,10 @@ def get_game_completion_state(
         # Session doesn't exist
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"❌ [game-completion/state] Fatal error: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"{type(e).__name__}: {str(e)}")
 
 
 @router.post("/sessions/{session_id}/game-completion/sync")

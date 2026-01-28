@@ -149,8 +149,14 @@ async def reset_bathroom_puzzles(
         from app.services.game_completion_service import GameCompletionService
         from app.websocket.handler import broadcast_game_completion_update
         
-        led_states = GameCompletionService.get_door_led_states(db, session_id)
-        print(f"✅ [API /reset] LED states: {led_states}")
+        # 🔧 FIX: Wrap get_door_led_states in try-except (can fail if puzzle states don't exist)
+        try:
+            led_states = GameCompletionService.get_door_led_states(db, session_id)
+            print(f"✅ [API /reset] LED states: {led_states}")
+        except Exception as led_error:
+            print(f"⚠️ [API /reset] Error getting LED states: {led_error}")
+            # Fallback: all doors red (initial state)
+            led_states = {"cucina": "red", "camera": "red", "bagno": "red", "soggiorno": "red"}
         
         state = GameCompletionService.get_or_create_state(db, session_id)
         print(f"✅ [API /reset] Completion state: game_won={state.game_won}, rooms={state.rooms_status}")
