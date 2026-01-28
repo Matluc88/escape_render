@@ -897,10 +897,16 @@ async def broadcast_game_completion_update(session_id: int, completion_state):
     """
     logger.info(f"Broadcasting game completion update for session {session_id}")
     
-    # 🏆 MQTT: Pubblica stato vittoria agli ESP32
+    # 🏆 MQTT: Pubblica stato vittoria agli ESP32 (NON-BLOCKING)
+    # Se MQTT fallisce, il broadcast WebSocket deve comunque continuare
     game_won = completion_state.get('game_won', False)
-    from app.mqtt_client import MQTTClient
-    await MQTTClient.publish_game_won(game_won)
+    try:
+        from app.mqtt_client import MQTTClient
+        await MQTTClient.publish_game_won(game_won)
+        logger.info(f"✅ MQTT publish successful: game_won={game_won}")
+    except Exception as e:
+        logger.error(f"⚠️ MQTT publish failed (non-blocking): {e}")
+        # Continue even if MQTT fails - don't block WebSocket broadcast
     
     # Broadcast to all players in the session - USE CONSISTENT ROOM NAMING!
     await sio.emit('game_completion_update', completion_state, room=f"session_{session_id}")
