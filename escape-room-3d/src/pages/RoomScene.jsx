@@ -41,9 +41,9 @@ function RoomScene() {
   const sessionId = rawSessionId || '1'
   const playerName = searchParams.get('name') || 'Guest'
   
-  // Player mode - hide debug panels if ?name= is in URL AND name is not "Admin"
-  // Admin can access with ?name=Admin to see debug panels
-  const isPlayerMode = searchParams.has('name') && playerName.toLowerCase() !== 'admin'
+  // Admin mode - ONLY show admin controls if explicitly ?name=Admin
+  // Everyone else (including no ?name parameter) sees clean player interface
+  const isAdmin = playerName.toLowerCase() === 'admin'
 
   const [objectStates, setObjectStates] = useState({
     forno: 'off',
@@ -116,7 +116,7 @@ function RoomScene() {
 
   // Admin: Reset game with ESC key (only for admin)
   useEffect(() => {
-    if (!isPlayerMode && socket) {
+    if (isAdmin && socket) {
       const handleKeyDown = (e) => {
         if (e.key === 'Escape') {
           const confirm = window.confirm('⚠️ RESET GIOCO: Tutti i giocatori torneranno alla pagina di inserimento PIN. Confermi?')
@@ -132,7 +132,7 @@ function RoomScene() {
       window.addEventListener('keydown', handleKeyDown)
       return () => window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isPlayerMode, socket, sessionId, navigate])
+  }, [isAdmin, socket, sessionId, navigate])
 
   // Listen for reset game event from admin
   useEffect(() => {
@@ -240,7 +240,7 @@ function RoomScene() {
       onObjectClick: handleObjectClick,
       onLookAtChange: handleLookAtChange,
       mobileInput: mobileControls,
-      isAdmin: !isPlayerMode  // Admin = quando NON è player mode
+      isAdmin: isAdmin
     }
 
     if (room === 'esterno') {
@@ -346,14 +346,14 @@ function RoomScene() {
         color: 'white',
         padding: '15px 20px',
         display: 'flex',
-        justifyContent: isPlayerMode ? 'center' : 'space-between',
+        justifyContent: !isAdmin ? 'center' : 'space-between',
         alignItems: 'center',
         boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
         flexWrap: 'wrap',
         gap: '10px'
       }}>
-        {isPlayerMode ? (
-          // Header semplificato per studenti
+        {!isAdmin ? (
+          // Header semplificato per giocatori
           <h1 style={{ margin: 0, fontSize: '24px', textAlign: 'center' }}>
             {room.charAt(0).toUpperCase() + room.slice(1)}
           </h1>
@@ -419,7 +419,7 @@ function RoomScene() {
         {renderScene()}
         
         {/* Crosshair - center screen reticle for all players (not admin) */}
-        {isPlayerMode && <Crosshair active={currentTarget !== null} />}
+        {!isAdmin && <Crosshair active={currentTarget !== null} />}
         
         {/* Mobile controls - only show in landscape mode on mobile */}
         {isMobile && isLandscape && (
@@ -438,8 +438,8 @@ function RoomScene() {
         
         <NotificationToast notifications={notifications} />
         
-        {/* MQTT Panel - Hidden when in player mode (when ?name= is present) */}
-        {!isPlayerMode && (
+        {/* MQTT Panel - Only visible for admin */}
+        {isAdmin && (
           <div style={{
             position: 'absolute',
             top: '12px',
@@ -463,7 +463,7 @@ function RoomScene() {
         )}
         
         {/* Admin Control Panel - Only visible for admin */}
-        {!isPlayerMode && socket && (
+        {isAdmin && socket && (
           <div style={{
             position: 'absolute',
             top: '12px',
