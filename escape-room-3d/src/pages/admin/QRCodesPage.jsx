@@ -156,13 +156,19 @@ function QRCodesPage() {
           borderRadius: '15px',
           display: 'inline-block',
           marginBottom: '20px',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+          boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+          maxWidth: '100%'
         }}>
           <QRCodeSVG
             value={joinUrl}
             size={350}
             level="H"
             includeMargin={true}
+            style={{
+              width: '100%',
+              height: 'auto',
+              maxWidth: '350px'
+            }}
           />
         </div>
         

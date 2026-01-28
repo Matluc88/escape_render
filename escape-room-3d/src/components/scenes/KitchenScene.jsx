@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect, useRef, useMemo, useCallback } from 'rea
 import * as THREE from 'three'
 import CasaModel from '../3D/CasaModel'
 import SerraLight from '../3D/SerraLight'
+import CanvasResizeHandler from '../3D/CanvasResizeHandler'
 import { useFPSControls } from '../../hooks/useFPSControls'
 import { usePositionCapture } from '../../hooks/usePositionCapture'
 import { getCapturedPosition } from '../../utils/cameraPositioning'
@@ -1676,6 +1677,9 @@ export default function KitchenScene({ onObjectClick, onLookAtChange, mobileInpu
           dpr={isMobile ? [1, 1.2] : [1, 2]}
           gl={{ antialias: !isMobile, powerPreference: isMobile ? 'low-power' : 'high-performance' }}
         >
+        {/* 📱 RESIZE HANDLER - Aggiorna Canvas quando cambia orientamento */}
+        <CanvasResizeHandler />
+        
         {/* 🎯 FIX CAMERA: PerspectiveCamera esplicita con makeDefault */}
         <PerspectiveCamera
           makeDefault

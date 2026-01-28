@@ -7,9 +7,19 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Fix mobile viewport - previene problemi con barra indirizzi */
+  position: fixed;
+  width: 100%;
+  overflow: hidden;
 }
 
 #root {
   width: 100%;
+  /* Fix mobile: usa fill-available per iOS, fallback a 100vh */
   height: 100vh;
+  height: -webkit-fill-available;
+  height: fill-available;
+  /* Previene scroll indesiderato su mobile */
+  overflow: hidden;
+  touch-action: none;
 }
