@@ -341,7 +341,9 @@ function RoomScene() {
         </div>
       )}
       
-      <header style={{
+      {/* Header: nascondi su mobile (non admin) per massimizzare spazio 3D */}
+      {(!isMobile || isAdmin) && (
+        <header style={{
         backgroundColor: '#333',
         color: 'white',
         padding: '15px 20px',
@@ -413,7 +415,8 @@ function RoomScene() {
             </button>
           </>
         )}
-      </header>
+        </header>
+      )}
       
       <div style={{ flex: 1, position: 'relative' }}>
         {renderScene()}
