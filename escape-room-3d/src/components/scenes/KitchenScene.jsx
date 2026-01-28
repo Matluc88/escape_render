@@ -268,32 +268,33 @@ function FPSController({ modelRef, mobileInput, onLookAtChange, groundPlaneMesh,
     setInteractiveObjects(interactives)
   }, [modelRef, groundPlaneMesh])
   
+  // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
   // Log camera distance from ground periodically
-  const logTimerRef = useRef(0)
-  const LOG_INTERVAL = 2.0 // Log every 2 seconds
+  // const logTimerRef = useRef(0)
+  // const LOG_INTERVAL = 2.0 // Log every 2 seconds
   
-  useFrame((_, delta) => {
-    // Log camera position and distance from ground
-    logTimerRef.current += delta
-    if (logTimerRef.current >= LOG_INTERVAL) {
-      logTimerRef.current = 0
-      
-      const cameraY = camera.position.y
-      let minGroundDistance = Infinity
-      
-      // Find closest ground mesh
-      groundObjects.forEach(ground => {
-        const groundBox = new THREE.Box3().setFromObject(ground)
-        const groundY = groundBox.max.y // Top of ground mesh
-        const distance = Math.abs(cameraY - groundY)
-        if (distance < minGroundDistance) {
-          minGroundDistance = distance
-        }
-      })
-      
-      console.log(`[KitchenScene] 📷 Camera Y: ${cameraY.toFixed(2)} | Distance from ground: ${minGroundDistance.toFixed(2)} | Position: (${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)})`)
-    }
-  })
+  // useFrame((_, delta) => {
+  //   // Log camera position and distance from ground
+  //   logTimerRef.current += delta
+  //   if (logTimerRef.current >= LOG_INTERVAL) {
+  //     logTimerRef.current = 0
+  //     
+  //     const cameraY = camera.position.y
+  //     let minGroundDistance = Infinity
+  //     
+  //     // Find closest ground mesh
+  //     groundObjects.forEach(ground => {
+  //       const groundBox = new THREE.Box3().setFromObject(ground)
+  //       const groundY = groundBox.max.y // Top of ground mesh
+  //       const distance = Math.abs(cameraY - groundY)
+  //       if (distance < minGroundDistance) {
+  //         minGroundDistance = distance
+  //       }
+  //     })
+  //     
+  //     console.log(`[KitchenScene] 📷 Camera Y: ${cameraY.toFixed(2)} | Distance from ground: ${minGroundDistance.toFixed(2)} | Position: (${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)})`)
+  //   }
+  // })
   
   // Raycasting for interactive object detection
   // Throttled on mobile to improve performance (10 Hz instead of 60 Hz)
@@ -366,13 +367,14 @@ function FPSController({ modelRef, mobileInput, onLookAtChange, groundPlaneMesh,
     }
   }, [isLoading, loadingProgress, onLoadingStateChange])
   
+  // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
   // Log pulito ogni 2 secondi
-  useFrame((state) => {
-    if (Math.floor(state.clock.elapsedTime) % 2 !== 0) return;
-    const wp = new THREE.Vector3();
-    camera.getWorldPosition(wp);
-    console.log(`[FPS] Pos: ${wp.x.toFixed(2)}, ${wp.y.toFixed(2)}, ${wp.z.toFixed(2)}`);
-  })
+  // useFrame((state) => {
+  //   if (Math.floor(state.clock.elapsedTime) % 2 !== 0) return;
+  //   const wp = new THREE.Vector3();
+  //   camera.getWorldPosition(wp);
+  //   console.log(`[FPS] Pos: ${wp.x.toFixed(2)}, ${wp.y.toFixed(2)}, ${wp.z.toFixed(2)}`);
+  // })
   
   return (
     <>
@@ -2588,25 +2590,28 @@ function PentolaFix({ modelRef }) {
     return () => clearTimeout(t)
   }, [modelRef.current, scene, camera, gl])
   
-  // 🎥 FIX CAMERA SYNC - Forza aggiornamento ogni frame con camera corrente + DIAGNOSTICA
+  // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
+  // 🎥 FIX CAMERA SYNC - Forza aggiornamento ogni frame con camera corrente
   useFrame(({ camera: currentCamera }) => {
     if (!pentolaRef.current) return
     
     // Aggiorna matrice world ogni frame per assicurare rendering corretto
     pentolaRef.current.updateMatrixWorld(true)
     
-    // Log periodico ogni 2 secondi CON DIAGNOSTICA COMPLETA
-    const now = Date.now()
-    if (!pentolaRef.lastLog || now - pentolaRef.lastLog > 2000) {
-      pentolaRef.lastLog = now
-      logPentolaDiagnostics(pentolaRef.current, currentCamera, '🎥 FRAME UPDATE')
-    }
+    // Log periodico DISABILITATO per performance
+    // const now = Date.now()
+    // if (!pentolaRef.lastLog || now - pentolaRef.lastLog > 2000) {
+    //   pentolaRef.lastLog = now
+    //   logPentolaDiagnostics(pentolaRef.current, currentCamera, '🎥 FRAME UPDATE')
+    // }
   })
   
   return null
 }
 
-// 🔍 FUNZIONE DIAGNOSTICA COMPLETA PENTOLA
+// 🔇 FUNZIONE DIAGNOSTICA DISABILITATA (Opzione A - Zero log in produzione)
+// Questa funzione stampava 40+ linee di log ogni 2 secondi causando 3000+ log in 10 secondi
+/*
 function logPentolaDiagnostics(pentola, camera, label) {
   const pentolaPosWorld = new THREE.Vector3()
   pentola.getWorldPosition(pentolaPosWorld)
@@ -2707,6 +2712,7 @@ function logPentolaDiagnostics(pentola, camera, label) {
   console.log(`   Children: ${pentola.children.length}`)
   console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`)
 }
+*/
 
 // Componente per gestire la selezione e i visual helper nell'editor
 function AnimationEditorScene({ modelRef, selectedObject, onSelect, animationConfig, isAnimationPlaying, onAnimationComplete, pickDestinationMode, onDestinationPicked }) {

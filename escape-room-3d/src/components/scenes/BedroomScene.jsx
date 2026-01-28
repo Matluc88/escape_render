@@ -249,32 +249,33 @@ function FPSController({ modelRef, mobileInput, onLookAtChange, groundPlaneMesh,
     setInteractiveObjects(interactives)
   }, [modelRef, groundPlaneMesh, eyeHeight])
   
+  // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
   // Log camera distance from ground periodically
-  const logTimerRef = useRef(0)
-  const LOG_INTERVAL = 2.0 // Log every 2 seconds
+  // const logTimerRef = useRef(0)
+  // const LOG_INTERVAL = 2.0 // Log every 2 seconds
   
-  useFrame((_, delta) => {
-    // Log camera position and distance from ground
-    logTimerRef.current += delta
-    if (logTimerRef.current >= LOG_INTERVAL) {
-      logTimerRef.current = 0
-      
-      const cameraY = camera.position.y
-      let minGroundDistance = Infinity
-      
-      // Find closest ground mesh
-      groundObjects.forEach(ground => {
-        const groundBox = new THREE.Box3().setFromObject(ground)
-        const groundY = groundBox.max.y // Top of ground mesh
-        const distance = Math.abs(cameraY - groundY)
-        if (distance < minGroundDistance) {
-          minGroundDistance = distance
-        }
-      })
-      
-      console.log(`[BedroomScene] 📷 Camera Y: ${cameraY.toFixed(2)} | Distance from ground: ${minGroundDistance.toFixed(2)} | Position: (${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)})`)
-    }
-  })
+  // useFrame((_, delta) => {
+  //   // Log camera position and distance from ground
+  //   logTimerRef.current += delta
+  //   if (logTimerRef.current >= LOG_INTERVAL) {
+  //     logTimerRef.current = 0
+  //     
+  //     const cameraY = camera.position.y
+  //     let minGroundDistance = Infinity
+  //     
+  //     // Find closest ground mesh
+  //     groundObjects.forEach(ground => {
+  //       const groundBox = new THREE.Box3().setFromObject(ground)
+  //       const groundY = groundBox.max.y // Top of ground mesh
+  //       const distance = Math.abs(cameraY - groundY)
+  //       if (distance < minGroundDistance) {
+  //         minGroundDistance = distance
+  //       }
+  //     })
+  //     
+  //     console.log(`[BedroomScene] 📷 Camera Y: ${cameraY.toFixed(2)} | Distance from ground: ${minGroundDistance.toFixed(2)} | Position: (${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)})`)
+  //   }
+  // })
   
   useFrame((_, delta) => {
     if (!onLookAtChange || interactiveObjects.length === 0) return

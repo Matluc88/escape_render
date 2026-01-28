@@ -177,48 +177,49 @@ function FPSController({ modelRef, mobileInput, onLookAtChange, groundPlaneMesh,
     setInteractiveObjects(interactives)
   }, [modelRef, groundPlaneMesh, eyeHeight])
   
+  // 🔇 LOG DISABILITATO (Opzione A - Zero log in produzione)
   // 🎯 NUOVO LOG DETTAGLIATO - Posizione WORLD completa ogni 2 secondi
-  const logTimerRef = useRef(0)
-  const LOG_INTERVAL = 2.0 // Log every 2 seconds
+  // const logTimerRef = useRef(0)
+  // const LOG_INTERVAL = 2.0 // Log every 2 seconds
   
-  useFrame((_, delta) => {
-    // Log camera position WORLD and distance from ground
-    logTimerRef.current += delta
-    if (logTimerRef.current >= LOG_INTERVAL) {
-      logTimerRef.current = 0
-      
-      // ✅ POSIZIONE WORLD CAMERA
-      const cameraWorldPos = new THREE.Vector3()
-      camera.getWorldPosition(cameraWorldPos)
-      
-      // ✅ POSIZIONE WORLD PLAYERROOT (se esiste)
-      let playerRootWorldPos = null
-      if (camera.parent && camera.parent.parent) {
-        playerRootWorldPos = new THREE.Vector3()
-        camera.parent.parent.getWorldPosition(playerRootWorldPos)
-      }
-      
-      const cameraY = camera.position.y
-      let minGroundDistance = Infinity
-      
-      // Find closest ground mesh
-      groundObjects.forEach(ground => {
-        const groundBox = new THREE.Box3().setFromObject(ground)
-        const groundY = groundBox.max.y // Top of ground mesh
-        const distance = Math.abs(cameraY - groundY)
-        if (distance < minGroundDistance) {
-          minGroundDistance = distance
-        }
-      })
-      
-      console.log(`[BathroomScene] 📷 Camera LOCAL: (${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)})`)
-      console.log(`[BathroomScene] 🌍 Camera WORLD: (${cameraWorldPos.x.toFixed(2)}, ${cameraWorldPos.y.toFixed(2)}, ${cameraWorldPos.z.toFixed(2)})`)
-      if (playerRootWorldPos) {
-        console.log(`[BathroomScene] 🎯 PlayerRoot WORLD: (${playerRootWorldPos.x.toFixed(2)}, ${playerRootWorldPos.y.toFixed(2)}, ${playerRootWorldPos.z.toFixed(2)})`)
-      }
-      console.log(`[BathroomScene] 📏 Distance from ground: ${minGroundDistance.toFixed(2)}m`)
-    }
-  })
+  // useFrame((_, delta) => {
+  //   // Log camera position WORLD and distance from ground
+  //   logTimerRef.current += delta
+  //   if (logTimerRef.current >= LOG_INTERVAL) {
+  //     logTimerRef.current = 0
+  //     
+  //     // ✅ POSIZIONE WORLD CAMERA
+  //     const cameraWorldPos = new THREE.Vector3()
+  //     camera.getWorldPosition(cameraWorldPos)
+  //     
+  //     // ✅ POSIZIONE WORLD PLAYERROOT (se esiste)
+  //     let playerRootWorldPos = null
+  //     if (camera.parent && camera.parent.parent) {
+  //       playerRootWorldPos = new THREE.Vector3()
+  //       camera.parent.parent.getWorldPosition(playerRootWorldPos)
+  //     }
+  //     
+  //     const cameraY = camera.position.y
+  //     let minGroundDistance = Infinity
+  //     
+  //     // Find closest ground mesh
+  //     groundObjects.forEach(ground => {
+  //       const groundBox = new THREE.Box3().setFromObject(ground)
+  //       const groundY = groundBox.max.y // Top of ground mesh
+  //       const distance = Math.abs(cameraY - groundY)
+  //       if (distance < minGroundDistance) {
+  //         minGroundDistance = distance
+  //       }
+  //     })
+  //     
+  //     console.log(`[BathroomScene] 📷 Camera LOCAL: (${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)})`)
+  //     console.log(`[BathroomScene] 🌍 Camera WORLD: (${cameraWorldPos.x.toFixed(2)}, ${cameraWorldPos.y.toFixed(2)}, ${cameraWorldPos.z.toFixed(2)})`)
+  //     if (playerRootWorldPos) {
+  //       console.log(`[BathroomScene] 🎯 PlayerRoot WORLD: (${playerRootWorldPos.x.toFixed(2)}, ${playerRootWorldPos.y.toFixed(2)}, ${playerRootWorldPos.z.toFixed(2)})`)
+  //     }
+  //     console.log(`[BathroomScene] 📏 Distance from ground: ${minGroundDistance.toFixed(2)}m`)
+  //   }
+  // })
   
   useFrame((_, delta) => {
     if (!onLookAtChange || interactiveObjects.length === 0) return
