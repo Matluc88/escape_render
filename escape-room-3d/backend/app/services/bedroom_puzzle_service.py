@@ -79,6 +79,11 @@ class BedroomPuzzleService:
         if state:
             return state
         
+        # 🔒 VALIDATE: Check if session exists before creating state
+        session = db.query(GameSession).filter(GameSession.id == session_id).first()
+        if not session:
+            raise ValueError(f"Session {session_id} not found. Cannot create bedroom puzzle state.")
+        
         # Create new state with initial configuration
         state = BedroomPuzzleState(
             session_id=session_id,

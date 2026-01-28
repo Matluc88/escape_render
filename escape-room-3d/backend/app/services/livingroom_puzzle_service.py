@@ -32,6 +32,12 @@ class LivingRoomPuzzleService:
         ).first()
         
         if not puzzle:
+            # 🔒 VALIDATE: Check if session exists before creating state
+            session = db.query(GameSession).filter(GameSession.id == session_id).first()
+            if not session:
+                logger.error(f"[LivingRoomPuzzle] ❌ Session {session_id} not found")
+                raise ValueError(f"Session {session_id} not found. Cannot create livingroom puzzle state.")
+            
             logger.info(f"[LivingRoomPuzzle] Creating new puzzle state for session {session_id}")
             puzzle = LivingRoomPuzzleState(
                 session_id=session_id,

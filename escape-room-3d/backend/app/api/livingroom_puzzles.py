@@ -45,6 +45,11 @@ async def get_puzzle_state(
         
         logger.info(f"[API] Living room puzzle state retrieved for session {session_id}")
         return response
+    
+    except ValueError as e:
+        # Session doesn't exist - return 404
+        logger.error(f"[API] Session {session_id} not found: {e}")
+        raise HTTPException(status_code=404, detail=str(e))
         
     except Exception as e:
         logger.error(f"[API] Error getting puzzle state for session {session_id}: {e}")

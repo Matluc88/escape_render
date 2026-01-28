@@ -87,6 +87,12 @@ class BathroomPuzzleService:
         if state:
             return state
         
+        # 🔒 VALIDATE: Check if session exists before creating state
+        from app.models.game_session import GameSession
+        session = db.query(GameSession).filter(GameSession.id == session_id).first()
+        if not session:
+            raise ValueError(f"Session {session_id} not found. Cannot create bathroom puzzle state.")
+        
         # Create new state with initial configuration
         state = BathroomPuzzleState(
             session_id=session_id,

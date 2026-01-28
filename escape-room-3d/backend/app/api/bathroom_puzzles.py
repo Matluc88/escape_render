@@ -23,7 +23,19 @@ def get_bathroom_puzzle_state(session_id: int, db: Session = Depends(get_db)):
     - LED colors (off/red/green)
     - timestamps
     """
-    return BathroomPuzzleService.get_state_response(db, session_id)
+    try:
+        return BathroomPuzzleService.get_state_response(db, session_id)
+    except ValueError as e:
+        # Session doesn't exist - return 404
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get puzzle state: {str(e)}"
+        )
 
 
 @router.post("/sessions/{session_id}/bathroom-puzzles/complete", response_model=BathroomPuzzleStateResponse)
