@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.database import engine, Base, SessionLocal
 from app.api import rooms_router, sessions_router, elements_router, events_router, players_router, puzzles_router, spawn_router
+from app.api.puzzles import router as global_puzzles_router
 from app.api.kitchen_puzzles import router as kitchen_puzzles_router
 from app.api.bedroom_puzzles import router as bedroom_puzzles_router
 from app.api.bathroom_puzzles import router as bathroom_puzzles_router
@@ -127,6 +128,7 @@ app.include_router(elements_router)
 app.include_router(events_router)
 app.include_router(players_router)
 app.include_router(puzzles_router)
+app.include_router(global_puzzles_router)  # Global puzzle management (admin)
 app.include_router(kitchen_puzzles_router)
 app.include_router(bedroom_puzzles_router)
 app.include_router(bathroom_puzzles_router)

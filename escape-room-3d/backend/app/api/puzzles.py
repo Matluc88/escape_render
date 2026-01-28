@@ -1,180 +1,193 @@
-from fastapi import APIRouter, Depends, HTTPException
+"""
+Global Puzzle Management API Endpoints
+
+Provides admin endpoints for managing ALL puzzles across all rooms:
+- POST /initialize - Initialize all puzzles for a session
+- POST /reset - Reset all puzzles to initial state
+"""
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
+import logging
+
 from app.database import get_db
-from app.services.puzzle_service import PuzzleService
-from pydantic import BaseModel
+from app.models.game_session import GameSession
+
+# Import all puzzle services
+from app.services.kitchen_puzzle_service import KitchenPuzzleService
+from app.services.livingroom_puzzle_service import LivingRoomPuzzleService
+from app.services.bathroom_puzzle_service import BathroomPuzzleService
+from app.services.bedroom_puzzle_service import BedroomPuzzleService
+
+router = APIRouter(prefix="/api/puzzles/session/{session_id}", tags=["global-puzzles"])
+logger = logging.getLogger(__name__)
 
 
-router = APIRouter(prefix="/api/puzzles", tags=["puzzles"])
-
-
-class PuzzleResponse(BaseModel):
-    id: int
-    session_id: int
-    room: str
-    puzzle_number: int
-    puzzle_name: str = None
-    solved: bool
-    solved_by: str = None
-    solved_at: str = None
-
-
-class PuzzleSolveRequest(BaseModel):
-    solved_by: str
-
-
-class RoomProgressResponse(BaseModel):
-    room: str
-    total: int
-    solved: int
-    percentage: float
-    puzzles: List[dict]
-
-
-class SessionProgressResponse(BaseModel):
-    total_puzzles: int
-    solved_puzzles: int
-    percentage: float
-    all_solved: bool
-
-
-@router.post("/session/{session_id}/initialize")
-def initialize_puzzles(session_id: int, db: Session = Depends(get_db)):
-    """Inizializza tutti gli enigmi per una sessione (13 totali)"""
-    service = PuzzleService(db)
-    puzzles = service.initialize_puzzles_for_session(session_id)
-    return {
-        "message": "Enigmi inizializzati con successo",
-        "total": len(puzzles),
-        "puzzles": [p.to_dict() for p in puzzles]
-    }
-
-
-@router.post("/session/{session_id}/reset")
-def reset_puzzles(session_id: int, db: Session = Depends(get_db)):
-    """Resetta tutti gli enigmi di una sessione (soft reset)
-    Imposta solved=False per tutti gli enigmi senza eliminarli.
-    """
-    service = PuzzleService(db)
-    
-    # Verifica se esistono enigmi per questa sessione
-    puzzles = service.get_puzzles_by_session(session_id)
-    if not puzzles:
-        raise HTTPException(status_code=404, detail="Nessun enigma trovato per questa sessione")
-    
-    # Resetta gli enigmi
-    reset_count = service.reset_puzzles_for_session(session_id)
-    
-    # Ottieni il progresso aggiornato
-    progress = service.get_session_progress(session_id)
-    
-    return {
-        "message": f"Reset completato! {reset_count} enigmi resettati.",
-        "reset_count": reset_count,
-        "total_puzzles": len(puzzles),
-        "progress": progress
-    }
-
-
-@router.get("/session/{session_id}", response_model=List[PuzzleResponse])
-def get_session_puzzles(session_id: int, db: Session = Depends(get_db)):
-    """Ottiene tutti gli enigmi di una sessione"""
-    service = PuzzleService(db)
-    puzzles = service.get_puzzles_by_session(session_id)
-    return [PuzzleResponse(**p.to_dict()) for p in puzzles]
-
-
-@router.get("/session/{session_id}/room/{room}", response_model=List[PuzzleResponse])
-def get_room_puzzles(session_id: int, room: str, db: Session = Depends(get_db)):
-    """Ottiene tutti gli enigmi di una stanza"""
-    service = PuzzleService(db)
-    puzzles = service.get_puzzles_by_room(session_id, room)
-    return [PuzzleResponse(**p.to_dict()) for p in puzzles]
-
-
-@router.post("/session/{session_id}/room/{room}/puzzle/{puzzle_number}/solve")
-def solve_puzzle(
-    session_id: int, 
-    room: str, 
-    puzzle_number: int,
-    request: PuzzleSolveRequest,
+@router.post("/initialize")
+async def initialize_all_puzzles(
+    session_id: int,
     db: Session = Depends(get_db)
 ):
-    """Segna un enigma come risolto"""
-    service = PuzzleService(db)
+    """
+    Initialize ALL puzzles for a new game session.
     
-    # Verifica se l'enigma esiste
-    puzzle = service.get_puzzle(session_id, room, puzzle_number)
-    if not puzzle:
-        raise HTTPException(status_code=404, detail="Enigma non trovato")
+    This creates initial puzzle states for all 4 rooms:
+    - Kitchen (cucina)
+    - Living Room (soggiorno)
+    - Bathroom (bagno)
+    - Bedroom (camera)
     
-    # Verifica se è già stato risolto
-    if puzzle.solved:
+    Called by admin when starting a new game from Lobby.
+    """
+    try:
+        # 🔒 VALIDATE: Check if session exists
+        session = db.query(GameSession).filter(GameSession.id == session_id).first()
+        if not session:
+            logger.error(f"[GlobalPuzzles] ❌ Session {session_id} not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Session {session_id} not found"
+            )
+        
+        logger.info(f"[GlobalPuzzles] 🎯 Initializing all puzzles for session {session_id}")
+        
+        initialized_count = 0
+        
+        # Initialize Kitchen puzzles
+        try:
+            KitchenPuzzleService.get_or_create_state(db, session_id)
+            initialized_count += 1
+            logger.info(f"[GlobalPuzzles] ✅ Kitchen puzzles initialized")
+        except Exception as e:
+            logger.error(f"[GlobalPuzzles] ❌ Kitchen init error: {e}")
+        
+        # Initialize Living Room puzzles
+        try:
+            LivingRoomPuzzleService.get_or_create(db, session_id)
+            initialized_count += 1
+            logger.info(f"[GlobalPuzzles] ✅ Living Room puzzles initialized")
+        except Exception as e:
+            logger.error(f"[GlobalPuzzles] ❌ Living Room init error: {e}")
+        
+        # Initialize Bathroom puzzles
+        try:
+            BathroomPuzzleService.get_or_create_state(db, session_id)
+            initialized_count += 1
+            logger.info(f"[GlobalPuzzles] ✅ Bathroom puzzles initialized")
+        except Exception as e:
+            logger.error(f"[GlobalPuzzles] ❌ Bathroom init error: {e}")
+        
+        # Initialize Bedroom puzzles
+        try:
+            BedroomPuzzleService.get_or_create_state(db, session_id)
+            initialized_count += 1
+            logger.info(f"[GlobalPuzzles] ✅ Bedroom puzzles initialized")
+        except Exception as e:
+            logger.error(f"[GlobalPuzzles] ❌ Bedroom init error: {e}")
+        
+        logger.info(f"[GlobalPuzzles] 🎉 Initialization complete: {initialized_count}/4 rooms")
+        
         return {
-            "message": "Questo enigma è già stato risolto",
-            "puzzle": puzzle.to_dict(),
-            "already_solved": True
+            "message": "Puzzles initialized successfully",
+            "session_id": session_id,
+            "initialized_count": initialized_count,
+            "rooms": ["cucina", "soggiorno", "bagno", "camera"]
         }
     
-    # Risolvi l'enigma
-    solved_puzzle = service.solve_puzzle(session_id, room, puzzle_number, request.solved_by)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[GlobalPuzzles] ❌ Initialization failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to initialize puzzles: {str(e)}"
+        )
+
+
+@router.post("/reset")
+async def reset_all_puzzles(
+    session_id: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Reset ALL puzzles to initial state for a session.
     
-    # Verifica condizione di vittoria
-    victory = service.check_victory_condition(session_id)
+    This resets puzzle states for all 4 rooms:
+    - Kitchen (cucina) - 3 puzzles
+    - Living Room (soggiorno) - 3 puzzles
+    - Bathroom (bagno) - 3 puzzles
+    - Bedroom (camera) - 4 puzzles
     
-    return {
-        "message": f"Enigma risolto da {request.solved_by}!",
-        "puzzle": solved_puzzle.to_dict(),
-        "victory": victory,
-        "already_solved": False
-    }
-
-
-@router.get("/session/{session_id}/room/{room}/progress", response_model=RoomProgressResponse)
-def get_room_progress(session_id: int, room: str, db: Session = Depends(get_db)):
-    """Ottiene il progresso degli enigmi in una stanza"""
-    service = PuzzleService(db)
-    progress = service.get_room_progress(session_id, room)
-    return RoomProgressResponse(**progress)
-
-
-@router.get("/session/{session_id}/progress", response_model=SessionProgressResponse)
-def get_session_progress(session_id: int, db: Session = Depends(get_db)):
-    """Ottiene il progresso totale della sessione"""
-    service = PuzzleService(db)
-    progress = service.get_session_progress(session_id)
-    return SessionProgressResponse(**progress)
-
-
-@router.get("/session/{session_id}/victory")
-def check_victory(session_id: int, db: Session = Depends(get_db)):
-    """Verifica se tutti gli enigmi sono stati risolti"""
-    service = PuzzleService(db)
-    victory = service.check_victory_condition(session_id)
-    progress = service.get_session_progress(session_id)
+    Total: 13 puzzles (including 1 Esterno puzzle not managed here)
     
-    return {
-        "victory": victory,
-        "progress": progress
-    }
-
-
-@router.get("/session/{session_id}/room/{room}/next")
-def get_next_puzzle(session_id: int, room: str, db: Session = Depends(get_db)):
-    """Ottiene il prossimo enigma non risolto in una stanza"""
-    service = PuzzleService(db)
-    next_puzzle = service.get_next_puzzle(session_id, room)
-    
-    if not next_puzzle:
+    Called by admin from Lobby when clicking "RESET ENIGMI".
+    """
+    try:
+        # 🔒 VALIDATE: Check if session exists
+        session = db.query(GameSession).filter(GameSession.id == session_id).first()
+        if not session:
+            logger.error(f"[GlobalPuzzles] ❌ Session {session_id} not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Session {session_id} not found"
+            )
+        
+        logger.info(f"[GlobalPuzzles] 🔄 Resetting all puzzles for session {session_id}")
+        
+        reset_count = 0
+        
+        # Reset Kitchen puzzles (3 puzzles: frigo, anta pentola, pentola)
+        try:
+            await KitchenPuzzleService.reset_all_puzzles(db, session_id)
+            reset_count += 3
+            logger.info(f"[GlobalPuzzles] ✅ Kitchen puzzles reset (3 puzzles)")
+        except Exception as e:
+            logger.error(f"[GlobalPuzzles] ❌ Kitchen reset error: {e}")
+        
+        # Reset Living Room puzzles (3 puzzles: TV, pianta, condizionatore)
+        try:
+            await LivingRoomPuzzleService.reset_puzzles(db, session_id, level="full")
+            reset_count += 3
+            logger.info(f"[GlobalPuzzles] ✅ Living Room puzzles reset (3 puzzles)")
+        except Exception as e:
+            logger.error(f"[GlobalPuzzles] ❌ Living Room reset error: {e}")
+        
+        # Reset Bathroom puzzles (3 puzzles: specchio, doccia, ventola)
+        try:
+            BathroomPuzzleService.reset_puzzles(db, session_id, level="full")
+            reset_count += 3
+            logger.info(f"[GlobalPuzzles] ✅ Bathroom puzzles reset (3 puzzles)")
+        except Exception as e:
+            logger.error(f"[GlobalPuzzles] ❌ Bathroom reset error: {e}")
+        
+        # Reset Bedroom puzzles (4 puzzles: comodino, materasso, poltrona, ventola)
+        try:
+            BedroomPuzzleService.reset_puzzles(db, session_id, level="full")
+            reset_count += 4
+            logger.info(f"[GlobalPuzzles] ✅ Bedroom puzzles reset (4 puzzles)")
+        except Exception as e:
+            logger.error(f"[GlobalPuzzles] ❌ Bedroom reset error: {e}")
+        
+        logger.info(f"[GlobalPuzzles] 🎉 Reset complete: {reset_count}/13 puzzles")
+        
         return {
-            "message": "Tutti gli enigmi di questa stanza sono stati risolti!",
-            "completed": True,
-            "puzzle": None
+            "message": "All puzzles reset successfully",
+            "session_id": session_id,
+            "reset_count": reset_count,
+            "rooms": {
+                "cucina": 3,
+                "soggiorno": 3,
+                "bagno": 3,
+                "camera": 4
+            },
+            "note": "Esterno puzzle (1) is managed separately"
         }
     
-    return {
-        "message": f"Prossimo enigma: {next_puzzle.puzzle_name}",
-        "completed": False,
-        "puzzle": next_puzzle.to_dict()
-    }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[GlobalPuzzles] ❌ Reset failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to reset puzzles: {str(e)}"
+        )
