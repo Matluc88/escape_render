@@ -324,6 +324,67 @@
         </div>
     </footer>
 
+    <!-- Auth Check Script (must be first) -->
+    <script>
+        // Check authentication before loading dashboard
+        (async function checkAuth() {
+            const token = localStorage.getItem('admin_token');
+            
+            if (!token) {
+                // No token, redirect to login
+                window.location.href = '/admin/login.html';
+                return;
+            }
+            
+            // Verify token is valid
+            try {
+                const API_URL = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+                const response = await fetch(`${API_URL}/api/admin/auth/verify`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    // Token invalid, clear and redirect
+                    localStorage.removeItem('admin_token');
+                    localStorage.removeItem('admin_username');
+                    localStorage.removeItem('admin_email');
+                    window.location.href = '/admin/login.html';
+                    return;
+                }
+                
+                // Token valid, show admin info in header
+                const adminUsername = localStorage.getItem('admin_username') || 'Admin';
+                const headerDiv = document.querySelector('header .container > div');
+                if (headerDiv) {
+                    const adminInfo = document.createElement('div');
+                    adminInfo.className = 'flex items-center space-x-3';
+                    adminInfo.innerHTML = `
+                        <span class="text-sm text-gray-400">Logged as: <strong class="text-white">${adminUsername}</strong></span>
+                        <button id="logout-btn" class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-sm transition">
+                            🚪 Logout
+                        </button>
+                    `;
+                    headerDiv.insertBefore(adminInfo, headerDiv.lastElementChild);
+                    
+                    // Logout handler
+                    document.getElementById('logout-btn').addEventListener('click', () => {
+                        localStorage.removeItem('admin_token');
+                        localStorage.removeItem('admin_username');
+                        localStorage.removeItem('admin_email');
+                        window.location.href = '/admin/login.html';
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Auth check error:', error);
+                // On error, redirect to login
+                window.location.href = '/admin/login.html';
+            }
+        })();
+    </script>
+
     <!-- Scripts -->
     <script src="js/mqtt-client.js"></script>
     <script src="js/devices.js"></script>
