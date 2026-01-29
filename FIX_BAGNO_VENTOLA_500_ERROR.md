@@ -134,16 +134,30 @@ curl -X POST https://escape-house-backend.onrender.com/api/sessions/57/bathroom-
 
 ## 📦 Deploy
 
-### Commit e Push
+### Commit e Push - COMPLETATI ✅
 
+**Commit 1:** `1211401` - MQTT non-blocking
 ```bash
-cd /Users/matteo/Desktop/ESCAPE_render
-git add escape-room-3d/backend/app/websocket/handler.py
-git commit -m "fix: Make MQTT publish non-blocking in broadcast_game_completion_update"
-git push origin main
+fix: Make MQTT publish non-blocking in broadcast_game_completion_update
+- Wraps MQTTClient.publish_game_won() in try-except
+- Prevents 500 error when completing 'ventola' puzzle
 ```
 
-Render farà automaticamente il deploy del backend.
+**Commit 2:** `631f5e9` - Error handling get_door_led_states
+```bash
+fix: Add error handling for get_door_led_states in all endpoints
+- Wraps get_door_led_states() calls in try-except with fallback
+- Fixes 500 errors on /game-completion/state endpoint
+- Fixes 500 errors on /bathroom-puzzles/reset endpoint
+```
+
+Render sta facendo automaticamente il deploy del backend (2-3 minuti).
+
+### File Modificati
+
+1. `escape-room-3d/backend/app/websocket/handler.py` - MQTT non-blocking
+2. `escape-room-3d/backend/app/api/game_completion.py` - Error handling LED states
+3. `escape-room-3d/backend/app/api/bathroom_puzzles.py` - Error handling LED states
 
 ### Verifica Deploy
 

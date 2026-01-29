@@ -14,6 +14,8 @@ from app.api.bathroom_puzzles import router as bathroom_puzzles_router
 from app.api.livingroom_puzzles import router as livingroom_puzzles_router
 from app.api.gate_puzzles import router as gate_puzzles_router
 from app.api.game_completion import router as game_completion_router
+from app.api.admin_auth import router as admin_auth_router
+from app.api.admin_protected import router as admin_protected_router
 from app.mqtt.handler import mqtt_handler
 from app.websocket.handler import ws_handler, socket_app
 from app.services.element_service import ElementService
@@ -122,6 +124,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(admin_auth_router)  # Admin authentication (must be first)
+app.include_router(admin_protected_router)  # Admin protected endpoints
 app.include_router(rooms_router)
 app.include_router(sessions_router)
 app.include_router(elements_router)

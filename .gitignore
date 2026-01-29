@@ -22,3 +22,20 @@ escape-room-3d/dist/
 # File deploy e archivi
 escape-room-deploy*.tar.gz
 escape-frontend*.tar.gz
+
+# ===== SECURITY - File sensibili =====
+.env
+.env.*
+!.env.example
+!.env.production
+*.pem
+*.key
+*.crt
+mosquitto/config/passwd
+*.db
+*.sqlite
+secrets/
+credentials/
+__pycache__/
+*.pyc
+.pytest_cache/
