@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || ''
+// Backend URL - IMPORTANT: This must point to the backend service
+const API_URL = 'https://escape-house-backend.onrender.com'
 
 function ProtectedRoute({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(null) // null = loading, true/false = auth status
