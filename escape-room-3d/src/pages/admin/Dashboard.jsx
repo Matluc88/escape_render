@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createSession } from '../../utils/api'
 
@@ -6,6 +6,19 @@ function Dashboard() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [adminUsername, setAdminUsername] = useState('')
+
+  useEffect(() => {
+    const username = localStorage.getItem('admin_username') || 'Admin'
+    setAdminUsername(username)
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin_token')
+    localStorage.removeItem('admin_username')
+    localStorage.removeItem('admin_email')
+    window.location.href = '/admin/login.html'
+  }
 
   const handleCreateSession = async () => {
     setLoading(true)
@@ -33,8 +46,43 @@ function Dashboard() {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '20px'
+      padding: '20px',
+      position: 'relative'
     }}>
+      {/* Logout button in top right */}
+      <div style={{
+        position: 'absolute',
+        top: '20px',
+        right: '20px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '15px'
+      }}>
+        <span style={{
+          fontSize: '14px',
+          color: '#666'
+        }}>
+          👤 <strong>{adminUsername}</strong>
+        </span>
+        <button
+          onClick={handleLogout}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#dc3545',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            fontSize: '14px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            transition: 'all 0.3s ease'
+          }}
+          onMouseOver={(e) => e.target.style.backgroundColor = '#c82333'}
+          onMouseOut={(e) => e.target.style.backgroundColor = '#dc3545'}
+        >
+          🚪 Logout
+        </button>
+      </div>
       <div style={{
         backgroundColor: 'white',
         padding: '40px',

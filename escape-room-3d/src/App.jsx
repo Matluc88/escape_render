@@ -10,16 +10,17 @@ import RoomScene from './pages/RoomScene'
 import Victory from './pages/Victory'
 import DebugCollisionScene from './components/scenes/DebugCollisionScene'
 import LoadingScreen from './components/UI/LoadingScreen'
+import ProtectedRoute from './components/auth/ProtectedRoute'
 
 function App() {
   return (
     <Router>
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
-        <Route path="/admin" element={<Dashboard />} />
-        <Route path="/admin/session/:sessionId/lobby" element={<Lobby />} />
-        <Route path="/admin/session/:sessionId/qrcodes" element={<QRCodesPage />} />
-        <Route path="/admin/spawn-editor" element={<SpawnEditor />} />
+        <Route path="/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/admin/session/:sessionId/lobby" element={<ProtectedRoute><Lobby /></ProtectedRoute>} />
+        <Route path="/admin/session/:sessionId/qrcodes" element={<ProtectedRoute><QRCodesPage /></ProtectedRoute>} />
+        <Route path="/admin/spawn-editor" element={<ProtectedRoute><SpawnEditor /></ProtectedRoute>} />
         
         <Route path="/join" element={<JoinGame />} />
         <Route path="/s/:sessionId/:room" element={<StudentLanding />} />
