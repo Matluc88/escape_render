@@ -1,7 +1,7 @@
 """add admin users table
 
-Revision ID: add_admin_users
-Revises: 
+Revision ID: 016_add_admin_users
+Revises: 015_add_bathroom_hardware
 Create Date: 2026-01-29 12:41:00.000000
 
 """
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'add_admin_users'
-down_revision = None  # Update this if you have previous migrations
+revision = '016_add_admin_users'
+down_revision = '015_add_bathroom_hardware'
 branch_labels = None
 depends_on = None
 
