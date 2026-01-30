@@ -238,6 +238,11 @@
     </style>
 </head>
 <body>
+    <!-- Background Music -->
+    <audio id="bgMusic" loop>
+        <source src="/audio/lobby-music.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="login-container">
         <div class="logo">
             <svg class="logo-image" xmlns="http://www.w3.org/2000/svg" id="Livello_1" data-name="Livello 1" viewBox="0 0 600 114"><defs><style>      .cls-1 {        fill: #3aaa35;      }      .cls-2 {        fill: #3c3c3b;      }      .cls-3 {        fill: #5d4c4a;      }    </style></defs><polygon class="cls-3" points="10.46 92.47 0 92.47 0 1.08 101.94 1.08 101.94 11.54 10.46 11.54 10.46 92.47"></polygon><polygon class="cls-3" points="124.77 114.86 22.83 114.86 22.83 102.66 112.57 102.66 112.57 47.81 124.77 47.81 124.77 114.86"></polygon><rect class="cls-1" x="22.65" y="41.87" width="12.71" height="48.73" rx=".74" ry=".74"></rect><rect class="cls-1" x="22.72" y="23.27" width="12.56" height="12.71" rx=".74" ry=".74" transform="translate(-.62 58.63) rotate(-90)"></rect><rect class="cls-1" x="54.81" y="40.48" width="12.56" height="30.44" rx=".94" ry=".94" transform="translate(122.17 111.4) rotate(-180)"></rect><rect class="cls-1" x="54.81" y="12.96" width="12.56" height="33.25" rx=".94" ry=".94" transform="translate(90.67 -31.51) rotate(90)"></rect><path class="cls-1" d="M122.67,23.3h-35.2c-.46,0-.84.38-.84.84v52.55c0,.46-.37.84-.84.84l-40.5.09c-.46,0-.84.38-.84.84v11.35c0,.46.38.84.84.84l53.05-.09c.46,0,.84-.38.84-.84v-52.55c0-.46.38-.84.84-.84h22.64c.46,0,.84-.38.84-.84v-11.35c0-.46-.38-.84-.84-.84Z"></path><rect class="cls-3" x="113.82" y="1.08" width="10.51" height="10.51"></rect><rect class="cls-3" x="0" y="104.35" width="10.51" height="10.51"></rect><g><path class="cls-2" d="M180.79,65.2h-17.42l-3.61,8.2h-4.82l14.85-32.79h4.64l14.9,32.79h-4.92l-3.61-8.2ZM179.15,61.45l-7.07-16.07-7.07,16.07h14.15Z"></path><path class="cls-2" d="M191.04,57c0-9.7,7.4-16.77,17.38-16.77,5.06,0,9.46,1.73,12.46,5.11l-3.04,2.95c-2.53-2.67-5.62-3.89-9.23-3.89-7.4,0-12.88,5.34-12.88,12.6s5.48,12.6,12.88,12.6c3.61,0,6.7-1.27,9.23-3.93l3.04,2.95c-3,3.37-7.4,5.15-12.51,5.15-9.93,0-17.33-7.07-17.33-16.77Z"></path><path class="cls-2" d="M250.52,65.2h-17.42l-3.61,8.2h-4.82l14.85-32.79h4.64l14.9,32.79h-4.92l-3.61-8.2ZM248.88,61.45l-7.07-16.07-7.07,16.07h14.15Z"></path><path class="cls-2" d="M265.46,40.61h13.82c10.54,0,17.71,6.65,17.71,16.39s-7.17,16.39-17.71,16.39h-13.82v-32.79ZM279,69.32c8.1,0,13.3-4.97,13.3-12.32s-5.2-12.32-13.3-12.32h-8.85v24.64h8.85Z"></path><path class="cls-2" d="M328.6,69.32v4.08h-23.8v-32.79h23.14v4.08h-18.46v10.07h16.44v3.98h-16.44v10.59h19.11Z"></path><path class="cls-2" d="M366.77,73.39l-.05-23.89-11.85,19.91h-2.15l-11.85-19.77v23.75h-4.5v-32.79h3.84l13.68,23.05,13.49-23.05h3.84l.05,32.79h-4.5Z"></path><path class="cls-2" d="M396.51,62.06v11.34h-4.64v-11.43l-13.02-21.36h5.01l10.49,17.28,10.54-17.28h4.64l-13.02,21.45Z"></path><path class="cls-2" d="M424.18,57c0-9.7,7.4-16.77,17.38-16.77,5.06,0,9.46,1.73,12.46,5.11l-3.04,2.95c-2.53-2.67-5.62-3.89-9.23-3.89-7.4,0-12.88,5.34-12.88,12.6s5.48,12.6,12.88,12.6c3.61,0,6.7-1.27,9.23-3.93l3.04,2.95c-3,3.37-7.4,5.15-12.51,5.15-9.93,0-17.33-7.07-17.33-16.77Z"></path><path class="cls-2" d="M458.56,70.44c0-1.87,1.45-3.19,3.19-3.19s3.09,1.31,3.09,3.19-1.4,3.23-3.09,3.23-3.19-1.36-3.19-3.23Z"></path><path class="cls-2" d="M493.88,73.39l-7.07-10.07c-.66.05-1.36.09-2.06.09h-8.1v9.98h-4.68v-32.79h12.79c8.53,0,13.68,4.31,13.68,11.43,0,5.06-2.62,8.71-7.21,10.35l7.78,11.01h-5.11ZM493.74,52.03c0-4.68-3.14-7.35-9.13-7.35h-7.96v14.76h7.96c6,0,9.13-2.72,9.13-7.4Z"></path><path class="cls-2" d="M503.24,70.44c0-1.87,1.45-3.19,3.19-3.19s3.09,1.31,3.09,3.19-1.4,3.23-3.09,3.23-3.19-1.36-3.19-3.23Z"></path><path class="cls-2" d="M540.43,69.32v4.08h-23.8v-32.79h23.14v4.08h-18.46v10.07h16.44v3.98h-16.44v10.59h19.11Z"></path><path class="cls-2" d="M545.72,70.44c0-1.87,1.45-3.19,3.19-3.19s3.09,1.31,3.09,3.19-1.4,3.23-3.09,3.23-3.19-1.36-3.19-3.23Z"></path><path class="cls-2" d="M581.55,65.2h-17.42l-3.61,8.2h-4.82l14.85-32.79h4.64l14.9,32.79h-4.92l-3.61-8.2ZM579.91,61.45l-7.07-16.07-7.07,16.07h14.15Z"></path><path class="cls-2" d="M593.72,70.44c0-1.87,1.45-3.19,3.19-3.19s3.09,1.31,3.09,3.19-1.4,3.23-3.09,3.23-3.19-1.36-3.19-3.23Z"></path></g></svg>
@@ -375,6 +380,22 @@
                 setLoading(false);
             }
         });
+
+        // Start background music on first interaction
+        const bgMusic = document.getElementById('bgMusic');
+        let musicStarted = false;
+        
+        function startMusic() {
+            if (!musicStarted) {
+                bgMusic.volume = 0.3;
+                bgMusic.play().catch(e => console.log('Audio autoplay prevented'));
+                musicStarted = true;
+            }
+        }
+        
+        // Try to start music on any user interaction
+        document.addEventListener('click', startMusic, { once: true });
+        document.addEventListener('keydown', startMusic, { once: true });
 
         // Check if already logged in
         window.addEventListener('load', async () => {
