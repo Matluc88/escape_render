@@ -73,7 +73,7 @@ async def get_current_admin_info(
     return admin
 
 
-@router.post("/verify")
+@router.get("/verify")
 async def verify_token(
     admin: AdminUser = Depends(get_current_admin)
 ):
