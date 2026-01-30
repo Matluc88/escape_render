@@ -18,6 +18,7 @@
             height: 100%;
             pointer-events: none;
             z-index: 9998;
+            mix-blend-mode: screen;
         }
 
         /* Scanlines Effect */
@@ -534,8 +535,7 @@
         });
 
         function animate() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             for (let i = particles.length - 1; i >= 0; i--) {
                 particles[i].update();
