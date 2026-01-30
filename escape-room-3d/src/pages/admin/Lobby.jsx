@@ -107,6 +107,46 @@ function Lobby() {
     }
   }
 
+  const handleLogout = async () => {
+    const confirmMessage = `⚠️ LOGOUT ADMIN\n\nSei sicuro di voler uscire?\n\n• Tutti i giocatori verranno ESPULSI\n• Gli enigmi verranno RESETTATI\n• La sessione verrà CHIUSA\n\nVuoi procedere?`
+    
+    if (!confirm(confirmMessage)) {
+      return
+    }
+
+    try {
+      // STEP 1: Espelli tutti i giocatori via WebSocket
+      if (socket) {
+        socket.emit('adminResetGame', { sessionId: parseInt(sessionId) })
+        console.log('✅ Giocatori espulsi')
+      }
+
+      // STEP 2: Resetta tutti gli enigmi
+      const response = await fetch(`${API_URL}/api/puzzles/session/${sessionId}/reset`, {
+        method: 'POST'
+      })
+      
+      if (response.ok) {
+        console.log('✅ Enigmi resettati')
+      } else {
+        console.error('❌ Errore nel reset enigmi')
+      }
+
+      // STEP 3: Breve pausa per permettere al WebSocket di completare
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      // STEP 4: Logout admin
+      localStorage.removeItem('admin_token')
+      localStorage.removeItem('admin_username')
+      localStorage.removeItem('admin_email')
+      window.location.href = '/admin/login.html'
+      
+    } catch (error) {
+      console.error('Error during logout:', error)
+      alert('❌ Errore durante il logout. Riprova.')
+    }
+  }
+
   const handleResetPuzzles = async () => {
     const confirmMessage = `⚠️ RESET ENIGMI\n\nQuesto resetterà tutti i 13 enigmi allo stato iniziale.\nTutti i progressi verranno cancellati.\n\nVuoi procedere?`
     
@@ -149,8 +189,33 @@ function Lobby() {
           padding: '30px',
           borderRadius: '15px',
           boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-          marginBottom: '20px'
+          marginBottom: '20px',
+          position: 'relative'
         }}>
+          {/* Logout button */}
+          <button
+            onClick={handleLogout}
+            style={{
+              position: 'absolute',
+              top: '20px',
+              right: '20px',
+              padding: '10px 20px',
+              backgroundColor: '#dc3545',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '14px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#c82333'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#dc3545'}
+          >
+            🚪 Logout
+          </button>
+
           <h1 style={{
             fontSize: '32px',
             color: '#333',
