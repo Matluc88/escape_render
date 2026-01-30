@@ -284,7 +284,8 @@
     </div>
 
     <script>
-        const API_URL = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+        // IMPORTANTE: URL del backend su Render
+        const API_URL = 'https://escape-house-backend.onrender.com';
         
         const loginForm = document.getElementById('loginForm');
         const btnLogin = document.getElementById('btnLogin');
