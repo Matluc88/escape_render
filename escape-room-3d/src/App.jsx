@@ -1,5 +1,5 @@
-import React, { Suspense } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import React, { Suspense, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Dashboard from './pages/admin/Dashboard'
 import Lobby from './pages/admin/Lobby'
 import QRCodesPage from './pages/admin/QRCodesPage'
@@ -11,10 +11,34 @@ import Victory from './pages/Victory'
 import DebugCollisionScene from './components/scenes/DebugCollisionScene'
 import LoadingScreen from './components/UI/LoadingScreen'
 import ProtectedRoute from './components/auth/ProtectedRoute'
+import MusicControl from './components/UI/MusicControl'
+import { AudioProvider, useAudio } from './contexts/AudioContext'
 
-function App() {
+// Componente per gestire l'avvio automatico della musica
+const AutoPlayMusic = () => {
+  const { playMusic, isPlaying } = useAudio()
+  const location = useLocation()
+
+  useEffect(() => {
+    // Avvia la musica automaticamente quando l'utente entra nell'app
+    // (dopo il login, quindi in qualsiasi route protetta)
+    if (!isPlaying) {
+      const timer = setTimeout(() => {
+        playMusic()
+      }, 500) // Piccolo delay per garantire che l'audio sia pronto
+      
+      return () => clearTimeout(timer)
+    }
+  }, [location.pathname]) // Si attiva al primo caricamento di qualsiasi pagina
+
+  return null
+}
+
+function AppContent() {
   return (
-    <Router>
+    <>
+      <AutoPlayMusic />
+      <MusicControl />
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
         <Route path="/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -45,7 +69,17 @@ function App() {
         <Route path="/" element={<Navigate to="/admin" replace />} />
       </Routes>
       </Suspense>
-    </Router>
+    </>
+  )
+}
+
+function App() {
+  return (
+    <AudioProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AudioProvider>
   )
 }
 

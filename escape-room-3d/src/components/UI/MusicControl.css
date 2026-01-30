@@ -1,0 +1,80 @@
+.music-control {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  gap: 10px;
+  animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.music-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.music-btn:hover {
+  background: rgba(58, 170, 53, 0.8);
+  border-color: #3aaa35;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(58, 170, 53, 0.4);
+}
+
+.music-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.music-btn.playing {
+  border-color: #3aaa35;
+  box-shadow: 0 0 20px rgba(58, 170, 53, 0.5);
+}
+
+.music-btn.muted {
+  opacity: 0.6;
+  border-color: #c33;
+}
+
+.music-btn.muted:hover {
+  background: rgba(204, 51, 51, 0.8);
+  border-color: #c33;
+  box-shadow: 0 6px 20px rgba(204, 51, 51, 0.4);
+  opacity: 1;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .music-control {
+    bottom: 15px;
+    right: 15px;
+    gap: 8px;
+  }
+  
+  .music-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+  }
+}
