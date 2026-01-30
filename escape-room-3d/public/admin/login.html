@@ -365,9 +365,9 @@
                     
                     showSuccess('✅ Login effettuato con successo! Reindirizzamento...');
                     
-                    // Redirect to admin panel
+                    // Redirect to admin dashboard (React)
                     setTimeout(() => {
-                        window.location.href = 'index.html';
+                        window.location.href = '/admin';
                     }, 1000);
                 } else {
                     const errorMsg = data?.detail || `❌ Errore ${response.status}: ${response.statusText}`;
@@ -409,8 +409,8 @@
                     });
                     
                     if (response.ok) {
-                        // Token valid, redirect
-                        window.location.href = 'index.html';
+                        // Token valid, redirect to dashboard
+                        window.location.href = '/admin';
                     } else {
                         // Token invalid, clear it
                         localStorage.removeItem('admin_token');
