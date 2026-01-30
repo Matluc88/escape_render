@@ -219,14 +219,16 @@ function JoinGame() {
           <source src="/audio/lobby-music.mp3" type="audio/mpeg" />
         </audio>
 
-        {/* Grid 3D Background - stesso della join */}
+        {/* Tunnel 3D Background - effetto futuristico */}
         <div style={{
           position: 'fixed',
           top: 0,
           left: 0,
           width: '100%',
           height: '100%',
-          background: '#000',
+          background: 'linear-gradient(135deg, #1a0033 0%, #0d1b4d 25%, #4a1a4a 50%, #7c2a2a 75%, #1a0033 100%)',
+          backgroundSize: '400% 400%',
+          animation: 'gradientShift 15s ease infinite',
           overflow: 'hidden',
           zIndex: 0
         }}>
@@ -236,22 +238,13 @@ function JoinGame() {
             left: '50%',
             width: '200%',
             height: '200%',
+            background: `
+              repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(138, 43, 226, 0.3) 50px, rgba(138, 43, 226, 0.3) 52px),
+              repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0, 191, 255, 0.3) 50px, rgba(0, 191, 255, 0.3) 52px)
+            `,
             transform: 'translate(-50%, -50%)',
-            perspective: '1000px',
-          }}>
-            <div className="grid-3d" style={{
-              width: '100%',
-              height: '100%',
-              background: `
-                linear-gradient(0deg, transparent 24%, rgba(58, 170, 53, .2) 25%, rgba(58, 170, 53, .2) 26%, transparent 27%, transparent 74%, rgba(58, 170, 53, .2) 75%, rgba(58, 170, 53, .2) 76%, transparent 77%, transparent),
-                linear-gradient(90deg, transparent 24%, rgba(58, 170, 53, .2) 25%, rgba(58, 170, 53, .2) 26%, transparent 27%, transparent 74%, rgba(58, 170, 53, .2) 75%, rgba(58, 170, 53, .2) 76%, transparent 77%, transparent)
-              `,
-              backgroundSize: '50px 50px',
-              transform: 'rotateX(60deg)',
-              animation: 'gridMove 20s linear infinite',
-              boxShadow: '0 0 100px rgba(58, 170, 53, 0.5)',
-            }} />
-          </div>
+            animation: 'tunnel3D 20s linear infinite',
+          }} />
         </div>
 
         {/* Audio Control Button */}
@@ -420,12 +413,18 @@ function JoinGame() {
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
           
-          @keyframes gridMove {
+          @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+          
+          @keyframes tunnel3D {
             0% {
-              transform: rotateX(60deg) translateY(0);
+              transform: translate(-50%, -50%) perspective(500px) rotateX(60deg) translateZ(0);
             }
             100% {
-              transform: rotateX(60deg) translateY(50px);
+              transform: translate(-50%, -50%) perspective(500px) rotateX(60deg) translateZ(100px);
             }
           }
           
@@ -446,14 +445,16 @@ function JoinGame() {
         <source src="/audio/lobby-music.mp3" type="audio/mpeg" />
       </audio>
 
-      {/* Grid 3D Background */}
+      {/* Tunnel 3D Background - effetto futuristico */}
       <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        background: '#000',
+        background: 'linear-gradient(135deg, #1a0033 0%, #0d1b4d 25%, #4a1a4a 50%, #7c2a2a 75%, #1a0033 100%)',
+        backgroundSize: '400% 400%',
+        animation: 'gradientShift 15s ease infinite',
         overflow: 'hidden',
         zIndex: 0
       }}>
@@ -463,22 +464,13 @@ function JoinGame() {
           left: '50%',
           width: '200%',
           height: '200%',
+          background: `
+            repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(138, 43, 226, 0.3) 50px, rgba(138, 43, 226, 0.3) 52px),
+            repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0, 191, 255, 0.3) 50px, rgba(0, 191, 255, 0.3) 52px)
+          `,
           transform: 'translate(-50%, -50%)',
-          perspective: '1000px',
-        }}>
-          <div className="grid-3d" style={{
-            width: '100%',
-            height: '100%',
-            background: `
-              linear-gradient(0deg, transparent 24%, rgba(58, 170, 53, .2) 25%, rgba(58, 170, 53, .2) 26%, transparent 27%, transparent 74%, rgba(58, 170, 53, .2) 75%, rgba(58, 170, 53, .2) 76%, transparent 77%, transparent),
-              linear-gradient(90deg, transparent 24%, rgba(58, 170, 53, .2) 25%, rgba(58, 170, 53, .2) 26%, transparent 27%, transparent 74%, rgba(58, 170, 53, .2) 75%, rgba(58, 170, 53, .2) 76%, transparent 77%, transparent)
-            `,
-            backgroundSize: '50px 50px',
-            transform: 'rotateX(60deg)',
-            animation: 'gridMove 20s linear infinite',
-            boxShadow: '0 0 100px rgba(58, 170, 53, 0.5)',
-          }} />
-        </div>
+          animation: 'tunnel3D 20s linear infinite',
+        }} />
       </div>
 
       {/* Audio Control Button */}
