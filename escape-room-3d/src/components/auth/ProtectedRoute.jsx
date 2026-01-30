@@ -20,6 +20,7 @@ function ProtectedRoute({ children }) {
 
       try {
         const response = await fetch(`${API_URL}/api/admin/auth/verify`, {
+          method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
           }
