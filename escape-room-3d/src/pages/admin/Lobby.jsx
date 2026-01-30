@@ -97,8 +97,10 @@ function Lobby() {
         setCountdown(count)
         if (count <= 0) {
           clearInterval(interval)
+          // Admin rimane in Lobby per monitorare il gioco
           setTimeout(() => {
-            navigate(`/play/${sessionId}/esterno?name=Admin`)
+            setCountdown(null)
+            setStarting(false)
           }, 500)
         }
       }, 1000)
