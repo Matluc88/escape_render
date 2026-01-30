@@ -9,6 +9,40 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        /* Cursor Trail Effect */
+        #cursorTrail {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        /* Scanlines Effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9997;
+            background: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0) 50%,
+                rgba(0, 255, 255, 0.03) 50%
+            );
+            background-size: 100% 4px;
+            animation: scanlines 8s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes scanlines {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
+        }
         * {
             margin: 0;
             padding: 0;
@@ -69,6 +103,8 @@
 
         .login-container {
             background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 100px rgba(138, 43, 226, 0.3);
             width: 100%;
@@ -77,8 +113,25 @@
             animation: slideIn 0.5s ease-out;
             position: relative;
             z-index: 1;
-            backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Chromatic aberration effect */
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: inherit;
+            border-radius: inherit;
+            filter: 
+                drop-shadow(2px 0 0 rgba(255, 0, 0, 0.1))
+                drop-shadow(-2px 0 0 rgba(0, 255, 255, 0.1));
+            z-index: -1;
+            opacity: 0.5;
+            pointer-events: none;
         }
 
         @keyframes slideIn {
@@ -138,9 +191,12 @@
 
         input:focus {
             outline: none;
-            border-color: #3aaa35;
+            border-color: rgba(0, 255, 255, 0.6);
             background: white;
-            box-shadow: 0 0 0 3px rgba(58, 170, 53, 0.1);
+            box-shadow: 
+                0 0 10px rgba(0, 255, 255, 0.3),
+                0 0 20px rgba(138, 43, 226, 0.2),
+                0 0 0 3px rgba(58, 170, 53, 0.1);
         }
 
         .btn-login {
@@ -150,16 +206,37 @@
             color: white;
             border: none;
             border-radius: 10px;
-            font-size: 16px;
+            fontSize: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 10px;
+            animation: neonPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes neonPulse {
+            0%, 100% {
+                box-shadow: 
+                    0 0 10px rgba(0, 255, 255, 0.5),
+                    0 0 20px rgba(255, 0, 255, 0.3),
+                    0 0 30px rgba(138, 43, 226, 0.2);
+            }
+            50% {
+                box-shadow: 
+                    0 0 20px rgba(0, 255, 255, 0.8),
+                    0 0 40px rgba(255, 0, 255, 0.6),
+                    0 0 60px rgba(138, 43, 226, 0.4);
+            }
         }
 
         .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(58, 170, 53, 0.3);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 
+                0 0 30px rgba(0, 255, 255, 0.8),
+                0 0 60px rgba(255, 0, 255, 0.6),
+                0 0 90px rgba(138, 43, 226, 0.4),
+                0 10px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 255, 255, 0.8);
         }
 
         .btn-login:active {
@@ -240,13 +317,20 @@
         .footer a:hover {
             text-decoration: underline;
         }
+
+        /* Selection color neon */
+        ::selection {
+            background: rgba(0, 255, 255, 0.3);
+            color: #fff;
+        }
     </style>
 </head>
 <body>
-    <!-- Background Music -->
-    <audio id="bgMusic" loop>
-        <source src="/audio/lobby-music.mp3" type="audio/mpeg">
-    </audio>
+    <!-- Scanlines Effect -->
+    <div class="scanlines"></div>
+    
+    <!-- Cursor Trail Canvas -->
+    <canvas id="cursorTrail"></canvas>
 
     <div class="login-container">
         <div class="logo">
@@ -287,10 +371,6 @@
                 Accedi
             </button>
         </form>
-
-        <div class="footer">
-            <p>Torna alla <a href="/">lobby giocatori</a></p>
-        </div>
     </div>
 
     <script>
@@ -386,21 +466,93 @@
             }
         });
 
-        // Start background music on first interaction
-        const bgMusic = document.getElementById('bgMusic');
-        let musicStarted = false;
-        
-        function startMusic() {
-            if (!musicStarted) {
-                bgMusic.volume = 0.3;
-                bgMusic.play().catch(e => console.log('Audio autoplay prevented'));
-                musicStarted = true;
+        // Cursor Trail Effect
+        const canvas = document.getElementById('cursorTrail');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+
+        class TrailParticle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.life = 1.0;
+                this.decay = 0.02;
+                this.size = Math.random() * 3 + 2;
+                this.hue = Math.random() * 60 + 270;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= this.decay;
+                this.size *= 0.98;
+            }
+
+            draw() {
+                if (this.life <= 0) return;
+                ctx.save();
+                ctx.globalAlpha = this.life;
+                
+                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 3);
+                gradient.addColorStop(0, `hsla(${this.hue}, 100%, 70%, ${this.life})`);
+                gradient.addColorStop(0.5, `hsla(${this.hue + 30}, 100%, 60%, ${this.life * 0.5})`);
+                gradient.addColorStop(1, `hsla(${this.hue + 60}, 100%, 50%, 0)`);
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = `hsla(${this.hue}, 100%, 90%, ${this.life})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.restore();
+            }
+
+            isDead() {
+                return this.life <= 0 || this.size < 0.5;
             }
         }
-        
-        // Try to start music on any user interaction
-        document.addEventListener('click', startMusic, { once: true });
-        document.addEventListener('keydown', startMusic, { once: true });
+
+        document.addEventListener('mousemove', (e) => {
+            for (let i = 0; i < 3; i++) {
+                particles.push(new TrailParticle(
+                    e.clientX + (Math.random() - 0.5) * 5,
+                    e.clientY + (Math.random() - 0.5) * 5
+                ));
+            }
+            if (particles.length > 100) {
+                particles.splice(0, particles.length - 100);
+            }
+        });
+
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].isDead()) {
+                    particles.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
 
         // Check if already logged in
         window.addEventListener('load', async () => {

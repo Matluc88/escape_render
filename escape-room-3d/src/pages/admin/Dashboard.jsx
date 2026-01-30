@@ -7,35 +7,11 @@ function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [adminUsername, setAdminUsername] = useState('')
-  const audioRef = useRef(null)
-  const [audioMuted, setAudioMuted] = useState(false)
 
   useEffect(() => {
     const username = localStorage.getItem('admin_username') || 'Admin'
     setAdminUsername(username)
-    
-    // Prova ad avviare l'audio dopo il primo click
-    const startAudio = () => {
-      if (audioRef.current) {
-        audioRef.current.play().catch(err => {
-          console.log('Autoplay bloccato:', err)
-        })
-      }
-    }
-    document.addEventListener('click', startAudio, { once: true })
-    return () => document.removeEventListener('click', startAudio)
   }, [])
-
-  const toggleAudio = () => {
-    if (audioRef.current) {
-      if (audioMuted) {
-        audioRef.current.play()
-      } else {
-        audioRef.current.pause()
-      }
-      setAudioMuted(!audioMuted)
-    }
-  }
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token')
@@ -62,11 +38,6 @@ function Dashboard() {
 
   return (
     <>
-      {/* Audio background */}
-      <audio ref={audioRef} loop>
-        <source src="/audio/lobby-music.mp3" type="audio/mpeg" />
-      </audio>
-
       {/* Tunnel 3D Background */}
       <div style={{
         position: 'fixed',
@@ -145,34 +116,7 @@ function Dashboard() {
           </button>
         </div>
 
-        {/* Audio Control Button */}
-        <button
-          onClick={toggleAudio}
-          style={{
-            position: 'absolute',
-            top: '20px',
-            left: '20px',
-            width: '50px',
-            height: '50px',
-            borderRadius: '50%',
-            border: '2px solid #3aaa35',
-            background: 'rgba(0, 0, 0, 0.8)',
-            color: '#3aaa35',
-            fontSize: '24px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 0 20px rgba(58, 170, 53, 0.5)',
-            zIndex: 1000,
-            transition: 'all 0.3s ease'
-          }}
-        >
-          {audioMuted ? '🔇' : '🔊'}
-        </button>
-
-        <div style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        <div className="glassmorphism glassmorphism-container" style={{
           padding: '40px',
           borderRadius: '15px',
           boxShadow: '0 0 40px rgba(58, 170, 53, 0.3), 0 10px 40px rgba(0,0,0,0.5)',

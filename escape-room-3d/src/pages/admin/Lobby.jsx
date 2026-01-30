@@ -264,8 +264,7 @@ function Lobby() {
           margin: '0 auto'
         }}>
           {/* Header con PIN */}
-          <div style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          <div className="glassmorphism glassmorphism-container" style={{
             padding: '30px',
             borderRadius: '15px',
             boxShadow: '0 0 40px rgba(58, 170, 53, 0.3), 0 10px 40px rgba(0,0,0,0.5)',
@@ -385,9 +384,8 @@ function Lobby() {
           )}
 
           {/* Players List */}
-          <div style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            padding: '30px',
+        <div className="glassmorphism glassmorphism-container" style={{
+          padding: '30px',
             borderRadius: '15px',
             boxShadow: '0 0 40px rgba(58, 170, 53, 0.3), 0 10px 40px rgba(0,0,0,0.5)',
             marginBottom: '20px',

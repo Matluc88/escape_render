@@ -11,8 +11,10 @@ import Victory from './pages/Victory'
 import DebugCollisionScene from './components/scenes/DebugCollisionScene'
 import LoadingScreen from './components/UI/LoadingScreen'
 import ProtectedRoute from './components/auth/ProtectedRoute'
-import MusicControl from './components/UI/MusicControl'
+import CursorTrail from './components/UI/CursorTrail'
+import Scanlines from './components/UI/Scanlines'
 import { AudioProvider, useAudio } from './contexts/AudioContext'
+import './components/UI/GlobalEffects.css'
 
 // Componente per gestire l'avvio automatico della musica
 const AutoPlayMusic = () => {
@@ -38,7 +40,8 @@ function AppContent() {
   return (
     <>
       <AutoPlayMusic />
-      <MusicControl />
+      <CursorTrail />
+      <Scanlines />
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
         <Route path="/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

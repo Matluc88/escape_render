@@ -1,0 +1,192 @@
+/* ============================================
+   CYBERPUNK GLOBAL EFFECTS
+   ============================================ */
+
+/* Neon Glow Pulsante per pulsanti e card */
+@keyframes neonPulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 10px rgba(0, 255, 255, 0.5),
+      0 0 20px rgba(255, 0, 255, 0.3),
+      0 0 30px rgba(138, 43, 226, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 0 20px rgba(0, 255, 255, 0.8),
+      0 0 40px rgba(255, 0, 255, 0.6),
+      0 0 60px rgba(138, 43, 226, 0.4);
+  }
+}
+
+/* Chromatic Aberration per contenitori */
+.glassmorphism-container {
+  position: relative;
+}
+
+.glassmorphism-container::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: inherit;
+  border-radius: inherit;
+  filter: 
+    drop-shadow(2px 0 0 rgba(255, 0, 0, 0.1))
+    drop-shadow(-2px 0 0 rgba(0, 255, 255, 0.1));
+  z-index: -1;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Stile Glassmorphism uniforme */
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 
+    0 8px 32px 0 rgba(31, 38, 135, 0.37),
+    0 0 20px rgba(138, 43, 226, 0.1) !important;
+}
+
+/* Pulsanti con glow neon */
+button.neon-button,
+.btn-login,
+.btn-primary,
+button[type="submit"] {
+  animation: neonPulse 2s ease-in-out infinite !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Hover effects estremi */
+button.neon-button:hover,
+.btn-login:hover,
+.btn-primary:hover,
+button[type="submit"]:hover,
+.card-hover:hover {
+  transform: translateY(-5px) scale(1.05) !important;
+  box-shadow: 
+    0 0 30px rgba(0, 255, 255, 0.8),
+    0 0 60px rgba(255, 0, 255, 0.6),
+    0 0 90px rgba(138, 43, 226, 0.4),
+    0 10px 40px rgba(0, 0, 0, 0.3) !important;
+  border-color: rgba(0, 255, 255, 0.8) !important;
+}
+
+/* Bordi neon animati */
+@keyframes borderGlow {
+  0%, 100% {
+    border-color: rgba(0, 255, 255, 0.5);
+  }
+  33% {
+    border-color: rgba(255, 0, 255, 0.5);
+  }
+  66% {
+    border-color: rgba(138, 43, 226, 0.5);
+  }
+}
+
+.neon-border {
+  animation: borderGlow 3s linear infinite;
+}
+
+/* Card con hover effect */
+.card-hover {
+  transition: all 0.3s ease !important;
+  cursor: pointer;
+}
+
+/* Input fields con glow sottile */
+input:focus,
+textarea:focus,
+select:focus {
+  box-shadow: 
+    0 0 10px rgba(0, 255, 255, 0.3),
+    0 0 20px rgba(138, 43, 226, 0.2),
+    0 0 0 3px rgba(58, 170, 53, 0.1) !important;
+  border-color: rgba(0, 255, 255, 0.6) !important;
+}
+
+/* Effetto glitch subtile su hover per titoli */
+.glitch-hover:hover {
+  animation: glitch 0.3s ease;
+}
+
+@keyframes glitch {
+  0%, 100% {
+    transform: translate(0);
+  }
+  33% {
+    transform: translate(-2px, 2px);
+  }
+  66% {
+    transform: translate(2px, -2px);
+  }
+}
+
+/* Particle background (opzionale per alcuni container) */
+.particle-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.particle-bg::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: 
+    radial-gradient(2px 2px at 20% 30%, rgba(0, 255, 255, 0.3), transparent),
+    radial-gradient(2px 2px at 60% 70%, rgba(255, 0, 255, 0.3), transparent),
+    radial-gradient(1px 1px at 50% 50%, rgba(138, 43, 226, 0.3), transparent),
+    radial-gradient(1px 1px at 80% 10%, rgba(0, 255, 255, 0.2), transparent);
+  background-size: 200px 200px, 250px 250px, 150px 150px, 180px 180px;
+  animation: particleFloat 20s linear infinite;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(50px, 50px) rotate(360deg);
+  }
+}
+
+/* Scroll bar custom neon */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00ffff, #ff00ff);
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #00ffff, #8a2be2);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+}
+
+/* Selection color neon */
+::selection {
+  background: rgba(0, 255, 255, 0.3);
+  color: #fff;
+}
+
+::-moz-selection {
+  background: rgba(0, 255, 255, 0.3);
+  color: #fff;
+}
