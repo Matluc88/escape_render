@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - Escape Room</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,7 +15,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Orbitron', sans-serif;
             background: #000;
             min-height: 100vh;
             display: flex;
@@ -102,6 +105,7 @@
             color: #3aaa35;
             font-size: 32px;
             margin-bottom: 10px;
+            font-family: 'Orbitron', sans-serif;
         }
 
         .logo p {
@@ -219,22 +223,6 @@
             to { transform: rotate(360deg); }
         }
 
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #666;
-            font-size: 13px;
-        }
-
-        .footer a {
-            color: #3aaa35;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
@@ -277,10 +265,6 @@
                 Accedi
             </button>
         </form>
-
-        <div class="footer">
-            <p>Torna alla <a href="/">lobby giocatori</a></p>
-        </div>
     </div>
 
     <script>
