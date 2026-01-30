@@ -294,9 +294,19 @@
                     body: JSON.stringify({ username, password })
                 });
 
-                const data = await response.json();
+                let data = null;
+                const contentType = response.headers.get('content-type');
+                
+                // Prova a parsare JSON solo se la risposta è JSON
+                if (contentType && contentType.includes('application/json')) {
+                    try {
+                        data = await response.json();
+                    } catch (jsonError) {
+                        console.error('JSON parse error:', jsonError);
+                    }
+                }
 
-                if (response.ok) {
+                if (response.ok && data) {
                     // Save token
                     localStorage.setItem('admin_token', data.access_token);
                     localStorage.setItem('admin_username', data.admin.username);
@@ -309,7 +319,8 @@
                         window.location.href = 'index.html';
                     }, 1000);
                 } else {
-                    showError(data.detail || '❌ Credenziali non valide');
+                    const errorMsg = data?.detail || `❌ Errore ${response.status}: ${response.statusText}`;
+                    showError(errorMsg);
                     setLoading(false);
                 }
             } catch (error) {
