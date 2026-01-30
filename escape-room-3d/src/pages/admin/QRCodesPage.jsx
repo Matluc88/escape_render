@@ -119,7 +119,8 @@ function QRCodesPage() {
           fontSize: '32px',
           color: '#333',
           marginBottom: '10px',
-          marginTop: 0
+          marginTop: 0,
+          fontFamily: "'Orbitron', sans-serif"
         }}>
           Scansiona per Entrare
         </h2>

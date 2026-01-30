@@ -302,7 +302,7 @@ function JoinGame() {
                   marginBottom: '20px',
                   animation: 'pulse 1s infinite',
                   textShadow: '0 0 30px rgba(58, 170, 53, 0.8), 0 0 50px rgba(58, 170, 53, 0.6)',
-                  fontFamily: "'Creepster', cursive"
+                  fontFamily: "'Orbitron', sans-serif"
                 }}>
                   {countdown}
                 </div>
@@ -310,7 +310,7 @@ function JoinGame() {
                   fontSize: '32px',
                   color: '#3aaa35',
                   margin: 0,
-                  fontFamily: "'Creepster', cursive",
+                  fontFamily: "'Orbitron', sans-serif",
                   textShadow: '0 0 20px rgba(58, 170, 53, 0.6)'
                 }}>
                   Il gioco sta per iniziare!
@@ -349,7 +349,7 @@ function JoinGame() {
                   color: '#3aaa35',
                   marginTop: 0,
                   marginBottom: '10px',
-                  fontFamily: "'Creepster', cursive",
+                  fontFamily: "'Orbitron', sans-serif",
                   textShadow: '0 0 20px rgba(58, 170, 53, 0.6)'
                 }}>
                   Ciao, {nickname}!
@@ -411,8 +411,6 @@ function JoinGame() {
         </div>
 
         <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
-          
           @keyframes gradientShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -566,7 +564,7 @@ function JoinGame() {
             color: '#3aaa35',
             marginTop: 0,
             marginBottom: '10px',
-            fontFamily: "'Creepster', cursive",
+            fontFamily: "'Orbitron', sans-serif",
             textShadow: '0 0 20px rgba(58, 170, 53, 0.8), 0 0 30px rgba(58, 170, 53, 0.6)',
             letterSpacing: '2px'
           }}>
@@ -714,8 +712,6 @@ function JoinGame() {
 
       {/* Styles */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
-        
         @keyframes gridMove {
           0% {
             transform: rotateX(60deg) translateY(0);
