@@ -1,20 +1,20 @@
 /* ============================================
-   CYBERPUNK GLOBAL EFFECTS
+   CYBERPUNK GLOBAL EFFECTS - POTENZIATI 3X!
    ============================================ */
 
-/* Neon Glow Pulsante per pulsanti e card */
+/* Neon Glow Pulsante ESPLOSIVO per pulsanti e card */
 @keyframes neonPulse {
   0%, 100% {
     box-shadow: 
-      0 0 10px rgba(0, 255, 255, 0.5),
-      0 0 20px rgba(255, 0, 255, 0.3),
-      0 0 30px rgba(138, 43, 226, 0.2);
+      0 0 20px rgba(0, 255, 255, 0.6),
+      0 0 40px rgba(255, 0, 255, 0.4),
+      0 0 60px rgba(138, 43, 226, 0.3);
   }
   50% {
     box-shadow: 
-      0 0 20px rgba(0, 255, 255, 0.8),
-      0 0 40px rgba(255, 0, 255, 0.6),
-      0 0 60px rgba(138, 43, 226, 0.4);
+      0 0 40px rgba(0, 255, 255, 1),
+      0 0 80px rgba(255, 0, 255, 0.8),
+      0 0 120px rgba(138, 43, 226, 0.6);
   }
 }
 
@@ -26,65 +26,75 @@
 .glassmorphism-container::before {
   content: '';
   position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
   background: inherit;
   border-radius: inherit;
   filter: 
-    drop-shadow(2px 0 0 rgba(255, 0, 0, 0.1))
-    drop-shadow(-2px 0 0 rgba(0, 255, 255, 0.1));
+    drop-shadow(3px 0 0 rgba(255, 0, 0, 0.2))
+    drop-shadow(-3px 0 0 rgba(0, 255, 255, 0.2));
   z-index: -1;
-  opacity: 0.5;
+  opacity: 0.7;
   pointer-events: none;
 }
 
-/* Stile Glassmorphism uniforme */
+/* Stile Glassmorphism POTENZIATO */
 .glassmorphism {
-  background: rgba(255, 255, 255, 0.75) !important;
-  backdrop-filter: blur(15px) !important;
-  -webkit-backdrop-filter: blur(15px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(25px) !important;
+  -webkit-backdrop-filter: blur(25px) !important;
+  border: 2px solid rgba(255, 255, 255, 0.4) !important;
   box-shadow: 
-    0 8px 32px 0 rgba(31, 38, 135, 0.37),
-    0 0 20px rgba(138, 43, 226, 0.1) !important;
+    0 12px 48px 0 rgba(31, 38, 135, 0.45),
+    0 0 40px rgba(138, 43, 226, 0.2),
+    0 0 60px rgba(0, 255, 255, 0.1) !important;
 }
 
-/* Pulsanti con glow neon */
+/* Pulsanti con glow neon ESPLOSIVO */
 button.neon-button,
 .btn-login,
 .btn-primary,
-button[type="submit"] {
+button[type="submit"],
+button[class*="btn-"] {
   animation: neonPulse 2s ease-in-out infinite !important;
-  transition: all 0.3s ease !important;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
 }
 
-/* Hover effects estremi */
+/* Hover effects ESTREMI - SCALE 1.15 + ROTATE */
 button.neon-button:hover,
 .btn-login:hover,
 .btn-primary:hover,
 button[type="submit"]:hover,
 .card-hover:hover {
-  transform: translateY(-5px) scale(1.05) !important;
+  transform: translateY(-8px) scale(1.15) rotate(2deg) !important;
   box-shadow: 
-    0 0 30px rgba(0, 255, 255, 0.8),
-    0 0 60px rgba(255, 0, 255, 0.6),
-    0 0 90px rgba(138, 43, 226, 0.4),
-    0 10px 40px rgba(0, 0, 0, 0.3) !important;
-  border-color: rgba(0, 255, 255, 0.8) !important;
+    0 0 60px rgba(0, 255, 255, 1),
+    0 0 120px rgba(255, 0, 255, 0.8),
+    0 0 180px rgba(138, 43, 226, 0.6),
+    0 15px 50px rgba(0, 0, 0, 0.4) !important;
+  border-color: rgba(0, 255, 255, 1) !important;
+  filter: brightness(1.2) saturate(1.3);
 }
 
-/* Bordi neon animati */
+/* Bordi neon animati RAINBOW */
 @keyframes borderGlow {
-  0%, 100% {
-    border-color: rgba(0, 255, 255, 0.5);
+  0% {
+    border-color: rgba(0, 255, 255, 0.8);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
   }
   33% {
-    border-color: rgba(255, 0, 255, 0.5);
+    border-color: rgba(255, 0, 255, 0.8);
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.6);
   }
   66% {
-    border-color: rgba(138, 43, 226, 0.5);
+    border-color: rgba(255, 255, 0, 0.8);
+    box-shadow: 0 0 30px rgba(255, 255, 0, 0.6);
+  }
+  100% {
+    border-color: rgba(0, 255, 255, 0.8);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
   }
 }
 
@@ -92,41 +102,48 @@ button[type="submit"]:hover,
   animation: borderGlow 3s linear infinite;
 }
 
-/* Card con hover effect */
+/* Card con hover effect potenziato */
 .card-hover {
-  transition: all 0.3s ease !important;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
   cursor: pointer;
 }
 
-/* Input fields con glow sottile */
+/* Input fields con glow INTENSO */
 input:focus,
 textarea:focus,
 select:focus {
   box-shadow: 
-    0 0 10px rgba(0, 255, 255, 0.3),
-    0 0 20px rgba(138, 43, 226, 0.2),
-    0 0 0 3px rgba(58, 170, 53, 0.1) !important;
-  border-color: rgba(0, 255, 255, 0.6) !important;
+    0 0 20px rgba(0, 255, 255, 0.5),
+    0 0 40px rgba(138, 43, 226, 0.3),
+    0 0 0 4px rgba(58, 170, 53, 0.2) !important;
+  border-color: rgba(0, 255, 255, 0.8) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
 }
 
-/* Effetto glitch subtile su hover per titoli */
+/* Effetto glitch INTENSO su hover per titoli */
 .glitch-hover:hover {
-  animation: glitch 0.3s ease;
+  animation: glitchIntense 0.5s ease;
 }
 
-@keyframes glitch {
+@keyframes glitchIntense {
   0%, 100% {
     transform: translate(0);
   }
-  33% {
-    transform: translate(-2px, 2px);
+  20% {
+    transform: translate(-3px, 3px);
   }
-  66% {
-    transform: translate(2px, -2px);
+  40% {
+    transform: translate(3px, -3px);
+  }
+  60% {
+    transform: translate(-2px, -2px);
+  }
+  80% {
+    transform: translate(2px, 2px);
   }
 }
 
-/* Particle background (opzionale per alcuni container) */
+/* Particle background POTENZIATO */
 .particle-bg {
   position: relative;
   overflow: hidden;
@@ -140,14 +157,14 @@ select:focus {
   width: 200%;
   height: 200%;
   background-image: 
-    radial-gradient(2px 2px at 20% 30%, rgba(0, 255, 255, 0.3), transparent),
-    radial-gradient(2px 2px at 60% 70%, rgba(255, 0, 255, 0.3), transparent),
-    radial-gradient(1px 1px at 50% 50%, rgba(138, 43, 226, 0.3), transparent),
-    radial-gradient(1px 1px at 80% 10%, rgba(0, 255, 255, 0.2), transparent);
+    radial-gradient(3px 3px at 20% 30%, rgba(0, 255, 255, 0.5), transparent),
+    radial-gradient(3px 3px at 60% 70%, rgba(255, 0, 255, 0.5), transparent),
+    radial-gradient(2px 2px at 50% 50%, rgba(138, 43, 226, 0.5), transparent),
+    radial-gradient(2px 2px at 80% 10%, rgba(0, 255, 255, 0.4), transparent);
   background-size: 200px 200px, 250px 250px, 150px 150px, 180px 180px;
   animation: particleFloat 20s linear infinite;
   pointer-events: none;
-  opacity: 0.3;
+  opacity: 0.5;
 }
 
 @keyframes particleFloat {
@@ -159,34 +176,57 @@ select:focus {
   }
 }
 
-/* Scroll bar custom neon */
+/* Scroll bar custom neon POTENZIATO */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #00ffff, #ff00ff);
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #00ffff, #8a2be2);
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+  box-shadow: 0 0 40px rgba(0, 255, 255, 1);
 }
 
-/* Selection color neon */
+/* Selection color neon POTENZIATO */
 ::selection {
-  background: rgba(0, 255, 255, 0.3);
+  background: rgba(0, 255, 255, 0.5);
   color: #fff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 1);
 }
 
 ::-moz-selection {
-  background: rgba(0, 255, 255, 0.3);
+  background: rgba(0, 255, 255, 0.5);
   color: #fff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 1);
+}
+
+/* Animazione pulsante speciale per bottoni critici */
+@keyframes superGlow {
+  0%, 100% {
+    box-shadow: 
+      0 0 30px rgba(58, 170, 53, 0.6),
+      0 0 60px rgba(0, 255, 255, 0.4),
+      0 0 90px rgba(255, 0, 255, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 0 60px rgba(58, 170, 53, 1),
+      0 0 120px rgba(0, 255, 255, 0.8),
+      0 0 180px rgba(255, 0, 255, 0.6);
+  }
+}
+
+.super-glow {
+  animation: superGlow 1.5s ease-in-out infinite !important;
 }

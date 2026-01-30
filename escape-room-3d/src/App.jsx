@@ -13,6 +13,7 @@ import LoadingScreen from './components/UI/LoadingScreen'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import CursorTrail from './components/UI/CursorTrail'
 import Scanlines from './components/UI/Scanlines'
+import MusicControl from './components/UI/MusicControl'
 import { AudioProvider, useAudio } from './contexts/AudioContext'
 import './components/UI/GlobalEffects.css'
 
@@ -22,14 +23,11 @@ const AutoPlayMusic = () => {
 
   useEffect(() => {
     // Avvia la musica automaticamente quando l'utente entra nell'app
-    // (dopo il login, quindi in qualsiasi route protetta)
-    // Si attiva SOLO UNA VOLTA al primo caricamento dell'app
+    // Il browser potrebbe bloccare l'autoplay - in quel caso l'utente userà i controlli
     if (!isPlaying) {
-      const timer = setTimeout(() => {
-        playMusic()
-      }, 500) // Piccolo delay per garantire che l'audio sia pronto
-      
-      return () => clearTimeout(timer)
+      playMusic().catch(err => {
+        console.log('Autoplay bloccato dal browser. Usa i controlli musica per avviare.')
+      })
     }
   }, []) // Array vuoto = si attiva solo una volta al mount
 
@@ -42,6 +40,7 @@ function AppContent() {
       <AutoPlayMusic />
       <CursorTrail />
       <Scanlines />
+      <MusicControl />
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
         <Route path="/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

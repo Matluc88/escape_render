@@ -1,80 +1,113 @@
+/* ============================================
+   CYBERPUNK MUSIC CONTROLS
+   ============================================ */
+
 .music-control {
   position: fixed;
-  bottom: 20px;
+  top: 20px;
   right: 20px;
-  z-index: 9999;
+  z-index: 10000;
   display: flex;
-  gap: 10px;
-  animation: slideInRight 0.5s ease-out;
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  gap: 12px;
+  filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.5));
 }
 
 .music-btn {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
+  border: 3px solid;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(10px);
-  color: white;
-  font-size: 20px;
+  color: #00ffff;
+  font-size: 24px;
   cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  animation: borderRainbow 3s linear infinite, neonPulseControl 2s ease-in-out infinite;
+  box-shadow: 
+    0 0 20px rgba(0, 255, 255, 0.4),
+    0 0 40px rgba(255, 0, 255, 0.3),
+    inset 0 0 20px rgba(0, 255, 255, 0.1);
 }
 
 .music-btn:hover {
-  background: rgba(58, 170, 53, 0.8);
-  border-color: #3aaa35;
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 6px 20px rgba(58, 170, 53, 0.4);
+  transform: scale(1.2) rotate(15deg);
+  box-shadow: 
+    0 0 40px rgba(0, 255, 255, 0.9),
+    0 0 80px rgba(255, 0, 255, 0.7),
+    0 0 120px rgba(138, 43, 226, 0.5),
+    inset 0 0 30px rgba(0, 255, 255, 0.3);
 }
 
 .music-btn:active {
-  transform: translateY(0) scale(0.95);
+  transform: scale(1.05);
 }
 
 .music-btn.playing {
-  border-color: #3aaa35;
-  box-shadow: 0 0 20px rgba(58, 170, 53, 0.5);
+  color: #00ff00;
+  text-shadow: 0 0 10px #00ff00;
+}
+
+.music-btn.paused {
+  color: #ff00ff;
+  text-shadow: 0 0 10px #ff00ff;
 }
 
 .music-btn.muted {
-  opacity: 0.6;
-  border-color: #c33;
+  color: #ff0000;
+  text-shadow: 0 0 10px #ff0000;
+  animation: warningPulse 1s ease-in-out infinite;
 }
 
-.music-btn.muted:hover {
-  background: rgba(204, 51, 51, 0.8);
-  border-color: #c33;
-  box-shadow: 0 6px 20px rgba(204, 51, 51, 0.4);
-  opacity: 1;
+@keyframes borderRainbow {
+  0% { border-color: #00ffff; }
+  33% { border-color: #ff00ff; }
+  66% { border-color: #ffff00; }
+  100% { border-color: #00ffff; }
 }
 
-/* Mobile responsive */
+@keyframes neonPulseControl {
+  0%, 100% {
+    box-shadow: 
+      0 0 20px rgba(0, 255, 255, 0.4),
+      0 0 40px rgba(255, 0, 255, 0.3),
+      inset 0 0 20px rgba(0, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 0 30px rgba(0, 255, 255, 0.6),
+      0 0 60px rgba(255, 0, 255, 0.5),
+      inset 0 0 30px rgba(0, 255, 255, 0.2);
+  }
+}
+
+@keyframes warningPulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 20px rgba(255, 0, 0, 0.6),
+      0 0 40px rgba(255, 0, 0, 0.4);
+  }
+  50% {
+    box-shadow: 
+      0 0 40px rgba(255, 0, 0, 1),
+      0 0 80px rgba(255, 0, 0, 0.8);
+  }
+}
+
+/* Responsive per mobile */
 @media (max-width: 768px) {
   .music-control {
-    bottom: 15px;
+    top: 15px;
     right: 15px;
     gap: 8px;
   }
   
   .music-btn {
-    width: 45px;
-    height: 45px;
-    font-size: 18px;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
   }
 }

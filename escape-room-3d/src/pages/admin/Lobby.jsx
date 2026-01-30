@@ -264,8 +264,8 @@ function Lobby() {
           margin: '0 auto'
         }}>
           {/* Header con PIN */}
-          <div className="glassmorphism glassmorphism-container" style={{
-            padding: '30px',
+          <div className="glassmorphism glassmorphism-container particle-bg" style={{
+            padding: 'clamp(20px, 4vw, 30px)',
             borderRadius: '15px',
             boxShadow: '0 0 40px rgba(58, 170, 53, 0.3), 0 10px 40px rgba(0,0,0,0.5)',
             marginBottom: '20px',
@@ -275,29 +275,28 @@ function Lobby() {
             {/* Logout button */}
             <button
               onClick={handleLogout}
+              className="neon-button"
               style={{
                 position: 'absolute',
                 top: '20px',
                 right: '20px',
-                padding: '10px 20px',
+                padding: 'clamp(8px, 2vw, 10px) clamp(15px, 3vw, 20px)',
                 backgroundColor: '#dc3545',
                 color: 'white',
-                border: 'none',
+                border: '2px solid #ff0000',
                 borderRadius: '8px',
-                fontSize: '14px',
+                fontSize: 'clamp(12px, 2.5vw, 14px)',
                 cursor: 'pointer',
                 fontWeight: 'bold',
-                boxShadow: '0 0 15px rgba(220, 53, 69, 0.5)',
-                transition: 'all 0.3s ease'
+                boxShadow: '0 0 20px rgba(220, 53, 69, 0.6)',
+                fontFamily: "'Orbitron', sans-serif"
               }}
-              onMouseOver={(e) => e.target.style.backgroundColor = '#c82333'}
-              onMouseOut={(e) => e.target.style.backgroundColor = '#dc3545'}
             >
               🚪 Logout
             </button>
 
-            <h1 style={{
-              fontSize: '32px',
+            <h1 className="glitch-hover" style={{
+              fontSize: 'clamp(20px, 5vw, 32px)',
               color: '#3aaa35',
               marginBottom: '10px',
               marginTop: 0,
@@ -326,11 +325,12 @@ function Lobby() {
                   🔢 PIN di Accesso
                 </p>
                 <div style={{
-                  fontSize: '48px',
+                  fontSize: 'clamp(32px, 8vw, 48px)',
                   fontWeight: 'bold',
                   color: '#3aaa35',
-                  letterSpacing: '12px',
-                  fontFamily: "'Orbitron', sans-serif"
+                  letterSpacing: 'clamp(6px, 2vw, 12px)',
+                  fontFamily: "'Orbitron', sans-serif",
+                  textShadow: '0 0 30px rgba(58, 170, 53, 0.8)'
                 }}>
                   {pin}
                 </div>
@@ -457,13 +457,14 @@ function Lobby() {
 
           {/* Actions */}
           <div style={{
-            display: 'flex',
-            gap: '15px',
-            flexWrap: 'wrap'
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))',
+            gap: '15px'
           }}>
             <button
               onClick={handleStartGame}
               disabled={starting || players.length === 0}
+              className={starting || players.length === 0 ? '' : 'neon-button super-glow'}
               style={{
                 flex: '1',
                 minWidth: '200px',
@@ -485,6 +486,7 @@ function Lobby() {
 
             <button
               onClick={handleResetPuzzles}
+              className="neon-button"
               style={{
                 flex: '1',
                 minWidth: '200px',
@@ -517,6 +519,7 @@ function Lobby() {
                 }
               }}
               disabled={players.length === 0}
+              className={players.length === 0 ? '' : 'neon-button'}
               style={{
                 flex: '1',
                 minWidth: '200px',
@@ -538,6 +541,7 @@ function Lobby() {
 
             <Link
               to={`/admin/session/${sessionId}/qrcodes`}
+              className="neon-button"
               style={{
                 flex: '1',
                 minWidth: '200px',
@@ -564,9 +568,8 @@ function Lobby() {
               onClick={() => {
                 window.open('/admin-panel/index.html', '_blank', 'width=1400,height=900')
               }}
+              className="neon-button"
               style={{
-                flex: '1',
-                minWidth: '200px',
                 padding: '20px 30px',
                 background: 'linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%)',
                 color: 'white',

@@ -38,7 +38,8 @@ export const AudioProvider = ({ children }) => {
 
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : volume
+      audioRef.current.muted = isMuted
+      audioRef.current.volume = volume
     }
   }, [volume, isMuted])
 
@@ -77,7 +78,11 @@ export const AudioProvider = ({ children }) => {
   }
 
   const toggleMute = () => {
-    setIsMuted(!isMuted)
+    const newMutedState = !isMuted
+    setIsMuted(newMutedState)
+    if (audioRef.current) {
+      audioRef.current.muted = newMutedState
+    }
   }
 
   const value = {

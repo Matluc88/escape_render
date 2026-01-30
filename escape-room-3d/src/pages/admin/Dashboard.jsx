@@ -97,36 +97,35 @@ function Dashboard() {
           </span>
           <button
             onClick={handleLogout}
+            className="neon-button"
             style={{
               padding: '8px 16px',
               backgroundColor: '#dc3545',
               color: 'white',
-              border: 'none',
-              borderRadius: '5px',
-              fontSize: '14px',
+              border: '2px solid #ff0000',
+              borderRadius: '8px',
+              fontSize: 'clamp(12px, 3vw, 14px)',
               cursor: 'pointer',
               fontWeight: 'bold',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 0 15px rgba(220, 53, 69, 0.5)'
+              boxShadow: '0 0 20px rgba(220, 53, 69, 0.6)',
+              fontFamily: "'Orbitron', sans-serif"
             }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#c82333'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#dc3545'}
           >
             🚪 Logout
           </button>
         </div>
 
-        <div className="glassmorphism glassmorphism-container" style={{
-          padding: '40px',
+        <div className="glassmorphism glassmorphism-container particle-bg" style={{
+          padding: 'clamp(20px, 5vw, 40px)',
           borderRadius: '15px',
           boxShadow: '0 0 40px rgba(58, 170, 53, 0.3), 0 10px 40px rgba(0,0,0,0.5)',
           textAlign: 'center',
-          maxWidth: '500px',
+          maxWidth: 'min(500px, 90vw)',
           width: '100%',
           border: '2px solid rgba(58, 170, 53, 0.3)'
         }}>
-          <h1 style={{
-            fontSize: '32px',
+          <h1 className="glitch-hover" style={{
+            fontSize: 'clamp(24px, 6vw, 32px)',
             color: '#3aaa35',
             marginBottom: '10px',
             marginTop: 0,
@@ -137,7 +136,7 @@ function Dashboard() {
           </h1>
           
           <p style={{
-            fontSize: '16px',
+            fontSize: 'clamp(14px, 3.5vw, 16px)',
             color: '#666',
             marginBottom: '30px'
           }}>
@@ -160,19 +159,19 @@ function Dashboard() {
           <button
             onClick={handleCreateSession}
             disabled={loading}
+            className={loading ? '' : 'neon-button super-glow'}
             style={{
               width: '100%',
-              padding: '15px 30px',
+              padding: 'clamp(12px, 3vw, 15px) clamp(20px, 5vw, 30px)',
               background: loading ? '#cccccc' : 'linear-gradient(135deg, #3aaa35 0%, #3c3c3b 100%)',
               color: 'white',
               border: '2px solid #3aaa35',
               borderRadius: '10px',
-              fontSize: '18px',
+              fontSize: 'clamp(16px, 4vw, 18px)',
               cursor: loading ? 'not-allowed' : 'pointer',
               fontWeight: 'bold',
-              boxShadow: '0 0 20px rgba(58, 170, 53, 0.5), 0 4px 15px rgba(0,0,0,0.2)',
-              transition: 'all 0.3s ease',
-              textShadow: '0 0 10px rgba(0, 0, 0, 0.5)'
+              textShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
+              fontFamily: "'Orbitron', sans-serif"
             }}
           >
             {loading ? '⏳ Creazione in corso...' : '➕ Crea Nuova Sessione'}
