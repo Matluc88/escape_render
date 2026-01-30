@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape Room - Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-900 text-gray-100">
+    <!-- Header -->
+    <header class="bg-gray-800 shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <span class="text-2xl">🏠</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">Escape Room Admin</h1>
+                        <p class="text-sm text-gray-400">Cloud-First Device Management</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div id="mqtt-status" class="flex items-center space-x-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
+                        <span class="text-sm">MQTT Disconnected</span>
+                    </div>
+                    <button id="refresh-btn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition">
+                        🔄 Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Devices Online</p>
+                        <p id="stat-online" class="text-3xl font-bold text-green-400">0</p>
+                    </div>
+                    <div class="text-4xl">✅</div>
+                </div>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Devices Offline</p>
+                        <p id="stat-offline" class="text-3xl font-bold text-red-400">0</p>
+                    </div>
+                    <div class="text-4xl">❌</div>
+                </div>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Active Session</p>
+                        <p id="stat-session" class="text-3xl font-bold text-blue-400">999</p>
+                    </div>
+                    <div class="text-4xl">🎮</div>
+                </div>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">MQTT Messages</p>
+                        <p id="stat-messages" class="text-3xl font-bold text-purple-400">0</p>
+                    </div>
+                    <div class="text-4xl">📡</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session Control -->
+        <div class="bg-gray-800 rounded-lg p-6 shadow-lg mb-8">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <span class="text-2xl mr-2">🎮</span>
+                Session Management
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">New Session ID</label>
+                    <input type="number" id="new-session-id" 
+                           class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                           placeholder="Enter session ID (e.g., 1)" min="1">
+                </div>
+                <div class="flex items-end">
+                    <button id="create-session-btn" 
+                            class="w-full px-6 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-semibold transition">
+                        ▶️ Start New Session
+                    </button>
+                </div>
+                <div class="flex items-end">
+                    <button id="stop-session-btn" 
+                            class="w-full px-6 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition">
+                        ⏹️ Stop Session
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Devices Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Device Card Template -->
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg" id="device-esterno">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-2xl">
+                            🚪
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold">ESTERNO</h3>
+                            <p class="text-xs text-gray-400">device_id: esterno</p>
+                        </div>
+                    </div>
+                    <div class="device-status">
+                        <span class="px-3 py-1 bg-red-900 text-red-300 rounded-full text-xs font-semibold">
+                            OFFLINE
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div class="text-center">
+                        <p class="text-xs text-gray-400">Uptime</p>
+                        <p class="device-uptime text-sm font-semibold">-</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs text-gray-400">WiFi RSSI</p>
+                        <p class="device-rssi text-sm font-semibold">-</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs text-gray-400">Free Heap</p>
+                        <p class="device-heap text-sm font-semibold">-</p>
+                    </div>
+                </div>
+
+                <div class="device-last-seen text-xs text-gray-500 mb-4">
+                    Last seen: Never
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm transition device-test-btn">
+                        🔧 Test LED
+                    </button>
+                    <button class="flex-1 px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-sm transition device-reset-btn">
+                        🔄 Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Repeat for other devices -->
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg" id="device-soggiorno">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center text-2xl">
+                            📺
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold">SOGGIORNO</h3>
+                            <p class="text-xs text-gray-400">device_id: soggiorno</p>
+                        </div>
+                    </div>
+                    <div class="device-status">
+                        <span class="px-3 py-1 bg-red-900 text-red-300 rounded-full text-xs font-semibold">
+                            OFFLINE
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div class="text-center">
+                        <p class="text-xs text-gray-400">Uptime</p>
+                        <p class="device-uptime text-sm font-semibold">-</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs text-gray-400">WiFi RSSI</p>
+                        <p class="device-rssi text-sm font-semibold">-</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs text-gray-400">Free Heap</p>
+                        <p class="device-heap text-sm font-semibold">-</p>
+                    </div>
+                </div>
+
+                <div class="device-last-seen text-xs text-gray-500 mb-4">
+                    Last seen: Never
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm transition device-test-btn">
+                        🔧 Test LED
+                    </button>
+                    <button class="flex-1 px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-sm transition device-reset-btn">
+                        🔄 Reset
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg" id="device-bagno">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-cyan-600 rounded-lg flex items-center justify-center text-2xl">
+                            🚿
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold">BAGNO</h3>
+                            <p class="text-xs text-gray-400">device_id: bagno</p>
+                        </div>
+                    </div>
+                    <div class="device-status">
+                        <span class="px-3 py-1 bg-red-900 text-red-300 rounded-full text-xs font-semibold">
+                            OFFLINE
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div class="text-center">
+                        <p class="text-xs text-gray-400">Uptime</p>
+                        <p class="device-uptime text-sm font-semibold">-</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs text-gray-400">WiFi RSSI</p>
+                        <p class="device-rssi text-sm font-semibold">-</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs text-gray-400">Free Heap</p>
+                        <p class="device-heap text-sm font-semibold">-</p>
+                    </div>
+                </div>
+
+                <div class="device-last-seen text-xs text-gray-500 mb-4">
+                    Last seen: Never
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm transition device-test-btn">
+                        🔧 Test LED
+                    </button>
+                    <button class="flex-1 px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-sm transition device-reset-btn">
+                        🔄 Reset
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg" id="device-cucina">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center text-2xl">
+                            🍳
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold">CUCINA</h3>
+                            <p class="text-xs text-gray-400">device_id: cucina</p>
+                        </div>
+                    </div>
+                    <div class="device-status">
+                        <span class="px-3 py-1 bg-red-900 text-red-300 rounded-full text-xs font-semibold">
+                            OFFLINE
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div class="text-center">
+                        <p class="text-xs text-gray-400">Uptime</p>
+                        <p class="device-uptime text-sm font-semibold">-</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs text-gray-400">WiFi RSSI</p>
+                        <p class="device-rssi text-sm font-semibold">-</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs text-gray-400">Free Heap</p>
+                        <p class="device-heap text-sm font-semibold">-</p>
+                    </div>
+                </div>
+
+                <div class="device-last-seen text-xs text-gray-500 mb-4">
+                    Last seen: Never
+                </div>
+
+                <div class="flex space-x-2">
+                    <button class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm transition device-test-btn">
+                        🔧 Test LED
+                    </button>
+                    <button class="flex-1 px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-sm transition device-reset-btn">
+                        🔄 Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MQTT Logs -->
+        <div class="bg-gray-800 rounded-lg p-6 shadow-lg">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold flex items-center">
+                    <span class="text-2xl mr-2">📡</span>
+                    MQTT Live Logs
+                </h2>
+                <button id="clear-logs-btn" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition">
+                    🗑️ Clear
+                </button>
+            </div>
+            <div id="mqtt-logs" class="bg-gray-900 rounded-lg p-4 h-96 overflow-y-auto font-mono text-xs space-y-1">
+                <div class="text-gray-500">Waiting for MQTT connection...</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 mt-12 py-6">
+        <div class="container mx-auto px-4 text-center text-gray-400 text-sm">
+            <p>Escape Room Admin Panel v2.0 - FASE 3 Implementation</p>
+            <p class="mt-2">Powered by HiveMQ Cloud MQTT + TailwindCSS</p>
+        </div>
+    </footer>
+
+    <!-- Auth Check Script (must be first) -->
+    <script>
+        // Check authentication before loading dashboard
+        (async function checkAuth() {
+            const token = localStorage.getItem('admin_token');
+            
+            if (!token) {
+                // No token, redirect to login
+                window.location.href = '/admin/login.html';
+                return;
+            }
+            
+            // Verify token is valid
+            try {
+                // IMPORTANTE: URL del backend su Render
+                const API_URL = 'https://escape-house-backend.onrender.com';
+                const response = await fetch(`${API_URL}/api/admin/auth/verify`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    // Token invalid, clear and redirect
+                    localStorage.removeItem('admin_token');
+                    localStorage.removeItem('admin_username');
+                    localStorage.removeItem('admin_email');
+                    window.location.href = '/admin/login.html';
+                    return;
+                }
+                
+                // Token valid, show admin info in header
+                const adminUsername = localStorage.getItem('admin_username') || 'Admin';
+                const headerDiv = document.querySelector('header .container > div');
+                if (headerDiv) {
+                    const adminInfo = document.createElement('div');
+                    adminInfo.className = 'flex items-center space-x-3';
+                    adminInfo.innerHTML = `
+                        <span class="text-sm text-gray-400">Logged as: <strong class="text-white">${adminUsername}</strong></span>
+                        <button id="logout-btn" class="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-sm transition">
+                            🚪 Logout
+                        </button>
+                    `;
+                    headerDiv.insertBefore(adminInfo, headerDiv.lastElementChild);
+                    
+                    // Logout handler
+                    document.getElementById('logout-btn').addEventListener('click', () => {
+                        localStorage.removeItem('admin_token');
+                        localStorage.removeItem('admin_username');
+                        localStorage.removeItem('admin_email');
+                        window.location.href = '/admin/login.html';
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Auth check error:', error);
+                // On error, redirect to login
+                window.location.href = '/admin/login.html';
+            }
+        })();
+    </script>
+
+    <!-- Scripts -->
+    <script src="js/mqtt-client.js"></script>
+    <script src="js/devices.js"></script>
+    <script src="js/sessions.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
