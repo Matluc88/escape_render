@@ -300,7 +300,7 @@
                     
                     // Redirect to admin panel
                     setTimeout(() => {
-                        window.location.href = 'index.html';
+                        window.location.href = '/admin';
                     }, 1000);
                 } else {
                     showError(data.detail || '❌ Credenziali non valide');
@@ -326,7 +326,7 @@
                     
                     if (response.ok) {
                         // Token valid, redirect
-                        window.location.href = 'index.html';
+                        window.location.href = '/admin';
                     } else {
                         // Token invalid, clear it
                         localStorage.removeItem('admin_token');
