@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Dashboard from './pages/admin/Dashboard'
 import Lobby from './pages/admin/Lobby'
 import QRCodesPage from './pages/admin/QRCodesPage'
@@ -17,11 +17,11 @@ import { AudioProvider, useAudio } from './contexts/AudioContext'
 // Componente per gestire l'avvio automatico della musica
 const AutoPlayMusic = () => {
   const { playMusic, isPlaying } = useAudio()
-  const location = useLocation()
 
   useEffect(() => {
     // Avvia la musica automaticamente quando l'utente entra nell'app
     // (dopo il login, quindi in qualsiasi route protetta)
+    // Si attiva SOLO UNA VOLTA al primo caricamento dell'app
     if (!isPlaying) {
       const timer = setTimeout(() => {
         playMusic()
@@ -29,7 +29,7 @@ const AutoPlayMusic = () => {
       
       return () => clearTimeout(timer)
     }
-  }, [location.pathname]) // Si attiva al primo caricamento di qualsiasi pagina
+  }, []) // Array vuoto = si attiva solo una volta al mount
 
   return null
 }
